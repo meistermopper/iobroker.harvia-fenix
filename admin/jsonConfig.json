@@ -1,26 +1,27 @@
 {
-	"i18n": true,
-	"type": "panel",
+	"type": "tabs",
 	"items": {
-		"option1": {
-			"type": "checkbox",
-			"label": "option1",
-			"newLine": true,
-			"xs": 12,
-			"sm": 12,
-			"md": 6,
-			"lg": 4,
-			"xl": 4
-		},
-		"option2": {
-			"type": "text",
-			"label": "option2",
-			"newLine": true,
-			"xs": 12,
-			"sm": 12,
-			"md": 6,
-			"lg": 4,
-			"xl": 4
+		"main": {
+			"title": "Login Settings",
+			"type": "panel",
+			"items": {
+				"username": {
+					"type": "text",
+					"label": "Username / Email",
+					"sm": 6
+				},
+				"password": {
+					"type": "password",
+					"label": "Password",
+					"sm": 6
+				},
+				"deviceId": {
+					"type": "text",
+					"label": "Device ID",
+					"sm": 12,
+					"help": "Die Device-ID findest du in der Harvia App oder im API-Log"
+				}
+			}
 		}
 	}
 }
