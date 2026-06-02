@@ -1,0 +1,46 @@
+{
+	"cli": true,
+	"target": "directory",
+	"adapterName": "harvia-fenix",
+	"title": "Harvia Fenix Sauna Control",
+	"description": "iot-systems",
+	"keywords": [
+		"door-safety",
+		"heatOn",
+		"lightOn",
+		"panelTemp",
+		"targetTemp",
+		"totalSessions",
+		"totalOperatingHours"
+	],
+	"expert": "no",
+	"features": [
+		"adapter"
+	],
+	"adminFeatures": [],
+	"type": "household",
+	"startMode": "daemon",
+	"connectionType": "cloud",
+	"dataSource": "poll",
+	"connectionIndicator": "no",
+	"language": "TypeScript",
+	"nodeVersion": "20",
+	"adminUi": "json",
+	"tools": [
+		"ESLint"
+	],
+	"eslintConfig": "official",
+	"releaseScript": "yes",
+	"devServer": "local",
+	"indentation": "Tab",
+	"quotes": "single",
+	"authorName": "meistermopper",
+	"authorGithub": "meistermopper",
+	"authorEmail": "meister.mopper@gmail.com",
+	"gitRemoteProtocol": "HTTPS",
+	"gitCommit": "no",
+	"defaultBranch": "main",
+	"license": "MIT License",
+	"dependabot": "yes",
+	"creatorVersion": "3.1.5"
+}
