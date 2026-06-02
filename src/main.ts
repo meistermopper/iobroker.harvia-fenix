@@ -68,7 +68,10 @@ class HarviaFenix extends utils.Adapter {
 			{ id: 'heaterPower', type: 'number', role: 'value.power', unit: 'W', def: 0 },
 			{ id: 'doorSafety', type: 'boolean', role: 'indicator.safety', def: false },
 			{ id: 'remoteControl', type: 'boolean', role: 'indicator.state', def: false },
-			{ id: 'errorMsg', type: 'string', role: 'text', def: '' }
+			{ id: 'errorMsg', type: 'string', role: 'text', def: '' },
+			{ id: 'panelTemp', type: 'number', role: 'value.temperature', unit: '°C', def: 0 },
+			{ id: 'totalSessions', type: 'number', role: 'value', def: 0 },
+			{ id: 'totalOperatingHours', type: 'number', role: 'value', unit: 'h', def: 0 }
 		];
 
 		for (const s of states) {
@@ -151,6 +154,10 @@ class HarviaFenix extends utils.Adapter {
 				await this.setState('doorSafety', p.doorSafetyState === 1, true);
 				await this.setState('remoteControl', p.remoteControlState === 1, true);
 				await this.setState('online', true, true);
+
+				if (p.panelTemperature !== undefined) await this.setState('panelTemp', parseFloat(p.panelTemperature), true);
+				if (p.totalSessions !== undefined) await this.setState('totalSessions', parseInt(p.totalSessions), true);
+				if (p.totalOperatingHours !== undefined) await this.setState('totalOperatingHours', parseFloat(p.totalOperatingHours), true);
 			}
 		} catch (err: any) {
 			if (err.response?.status === 401) {
