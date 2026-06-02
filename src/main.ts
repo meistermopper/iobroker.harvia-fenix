@@ -32,6 +32,8 @@ class HarviaFenix extends utils.Adapter {
 		// this.config:
 		this.log.debug('config option1: ${this.config.option1}');
 		this.log.debug('config option2: ${this.config.option2}');
+		this.log.debug(`config option1: ${this.config.option1}`);
+		this.log.debug(`config option2: ${this.config.option2}`);
 
 		/*
 		For every state in the system there has to be also an object of type state
