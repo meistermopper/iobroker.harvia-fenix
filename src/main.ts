@@ -5,11 +5,26 @@
 // The adapter-core module gives you access to the core ioBroker functions
 // you need to create an adapter
 import * as utils from '@iobroker/adapter-core';
+import axios, { AxiosInstance } from 'axios';
 
-// Load your modules here, e.g.:
-// import * as fs from 'fs';
+// Harvia API Konstanten
+const CLIENT_ID = '24emhb2mm0v4sscqhbdev86b2v';
+const PARTNER_ID = 'ORG/prod:0:6656:0';
+const LATENCY_MS = 5000;
 
 class HarviaFenix extends utils.Adapter {
+	private client: AxiosInstance;
+	private idToken: string = '';
+	private dataBaseUrl: string = '';
+	private deviceBaseUrl: string = '';
+	private authUrl: string = '';
+
+	private isLoggingIn: boolean = false;
+	private isSendingCommand: boolean = false;
+	private lastCommandTime: number = 0;
+	private updateInterval: ioBroker.Timeout | undefined;
+	private loginInterval: ioBroker.Interval | undefined;
+
 	public constructor(options: Partial<utils.AdapterOptions> = {}) {
 		super({
 			...options,
@@ -20,145 +35,204 @@ class HarviaFenix extends utils.Adapter {
 		// this.on('objectChange', this.onObjectChange.bind(this));
 		// this.on('message', this.onMessage.bind(this));
 		this.on('unload', this.onUnload.bind(this));
+
+		this.client = axios.create({ timeout: 20000 });
 	}
 
 	/**
 	 * Is called when databases are connected and adapter received configuration.
 	 */
 	private async onReady(): Promise<void> {
-		// Initialize your adapter here
+		// Reset status states
+		await this.setState('info.connection', false, true);
 
-		// The adapters config (in the instance object everything under the attribute "native") is accessible via
-		// this.config:
-		this.log.debug('config option1: ${this.config.option1}');
-		this.log.debug('config option2: ${this.config.option2}');
-		this.log.debug(`config option1: ${this.config.option1}`);
-		this.log.debug(`config option2: ${this.config.option2}`);
+		// Create necessary state objects
+		await this.ensureObjects();
 
-		/*
-		For every state in the system there has to be also an object of type state
-		Here a simple template for a boolean variable named "testVariable"
-		Because every adapter instance uses its own unique namespace variable names can't collide with other adapters variables
+		// Subscribe to writable states
+		this.subscribeStates('heatOn');
+		this.subscribeStates('lightOn');
+		this.subscribeStates('targetTemp');
 
-		IMPORTANT: State roles should be chosen carefully based on the state's purpose.
-		           Please refer to the state roles documentation for guidance:
-		           https://www.iobroker.net/#en/documentation/dev/stateroles.md
-		*/
-		await this.setObjectNotExistsAsync('testVariable', {
-			type: 'state',
-			common: {
-				name: 'testVariable',
-				type: 'boolean',
-				role: 'indicator',
-				read: true,
-				write: true,
-			},
-			native: {},
-		});
+		// Start connection logic
+		await this.startCloudConnection();
+	}
 
-		// In order to get state updates, you need to subscribe to them. The following line adds a subscription for our variable we have created above.
-		this.subscribeStates('testVariable');
-		// You can also add a subscription for multiple states. The following line watches all states starting with "lights."
-		// this.subscribeStates('lights.*');
-		// Or, if you really must, you can also watch all states. Don't do this if you don't need to. Otherwise this will cause a lot of unnecessary load on the system:
-		// this.subscribeStates('*');
+	private async ensureObjects(): Promise<void> {
+		const states = [
+			{ id: 'online', type: 'boolean', role: 'indicator.reachable', def: false },
+			{ id: 'heatOn', type: 'boolean', role: 'switch.power', def: false },
+			{ id: 'lightOn', type: 'boolean', role: 'switch.light', def: false },
+			{ id: 'temp', type: 'number', role: 'value.temperature', unit: '°C', def: 0 },
+			{ id: 'targetTemp', type: 'number', role: 'level.temperature', unit: '°C', def: 90 },
+			{ id: 'heaterPower', type: 'number', role: 'value.power', unit: 'W', def: 0 },
+			{ id: 'doorSafety', type: 'boolean', role: 'indicator.safety', def: false },
+			{ id: 'remoteControl', type: 'boolean', role: 'indicator.state', def: false },
+			{ id: 'errorMsg', type: 'string', role: 'text', def: '' }
+		];
 
-		/*
-			setState examples
-			you will notice that each setState will cause the stateChange event to fire (because of above subscribeStates cmd)
-		*/
-		// the variable testVariable is set to true as command (ack=false)
-		await this.setState('testVariable', true);
+		for (const s of states) {
+			await this.setObjectNotExistsAsync(s.id, {
+				type: 'state',
+				common: { name: s.id, type: s.type as any, role: s.role, unit: s.unit, read: true, write: true },
+				native: {},
+			});
+		}
+	}
 
-		// same thing, but the value is flagged "ack"
-		// ack should be always set to true if the value is received from or acknowledged from the target system
-		await this.setState('testVariable', { val: true, ack: true });
+	private async fetchConfig(): Promise<boolean> {
+		try {
+			const response = await this.client.get('https://api.harvia.io/endpoints');
+			const ep = response.data.endpoints.RestApi;
+			this.dataBaseUrl = ep.data.https;
+			this.deviceBaseUrl = ep.device.https;
+			this.authUrl = `${ep.generics.https}/auth/token`;
+			return true;
+		} catch (err: any) {
+			this.log.error(`Fehler beim Laden der API-Konfiguration: ${err.message}`);
+			return false;
+		}
+	}
 
-		// same thing, but the state is deleted after 30s (getState will return null afterwards)
-		await this.setState('testVariable', { val: true, ack: true, expire: 30 });
+	private async login(): Promise<boolean> {
+		if (this.isLoggingIn) return false;
+		this.isLoggingIn = true;
 
-		// examples for the checkPassword/checkGroup functions
-		const pwdResult = await this.checkPasswordAsync('admin', 'iobroker');
-		this.log.info(`check user admin pw iobroker: ${JSON.stringify(pwdResult)}`);
+		try {
+			if (!this.authUrl && !(await this.fetchConfig())) return false;
 
-		const groupResult = await this.checkGroupAsync('admin', 'admin');
-		this.log.info(`check group user admin group admin: ${JSON.stringify(groupResult)}`);
+			const response = await this.client.post(this.authUrl, {
+				username: this.config.username,
+				password: this.config.password,
+				client_id: CLIENT_ID
+			});
+			this.idToken = response.data.idToken;
+			await this.setState('info.connection', true, true);
+			return true;
+		} catch (err: any) {
+			this.log.error(`Login fehlgeschlagen: ${err.message}`);
+			return false;
+		} finally {
+			this.isLoggingIn = false;
+		}
+	}
+
+	private async startCloudConnection(): Promise<void> {
+		if (await this.login()) {
+			this.updateStatus();
+			this.loginInterval = this.setInterval(() => this.login(), 50 * 60 * 1000);
+		} else {
+			this.log.warn('Erster Login fehlgeschlagen. Versuche es in 5 Minuten erneut...');
+			this.updateInterval = this.setTimeout(() => this.startCloudConnection(), 5 * 60 * 1000);
+		}
+	}
+
+	private async updateStatus(): Promise<void> {
+		try {
+			if (!this.idToken || !this.dataBaseUrl) return;
+
+			const response = await this.client.get(`${this.dataBaseUrl}/data/latest-data?deviceId=${this.config.deviceId}`, {
+				headers: { 'Authorization': `Bearer ${this.idToken}`, 'x-harvia-partner-id': PARTNER_ID }
+			});
+
+			const p = response.data?.data;
+			if (p && (Date.now() - this.lastCommandTime > LATENCY_MS)) {
+				const currentTemp = p.temperature !== undefined ? p.temperature : p.temp;
+				if (currentTemp !== undefined) await this.setState('temp', parseFloat(currentTemp), true);
+
+				const actualHeat = p.heatState !== undefined ? p.heatState : p.heat;
+				await this.setState('heatOn', !!(actualHeat === 1 || actualHeat === true || actualHeat === 'on'), true);
+
+				const actualLight = p.lightState !== undefined ? p.lightState : p.light;
+				await this.setState('lightOn', !!(actualLight === 1 || actualLight === true || actualLight === 'on'), true);
+
+				if (p.targetTemperature !== undefined) await this.setState('targetTemp', parseFloat(p.targetTemperature), true);
+
+				await this.setState('doorSafety', p.doorSafetyState === 1, true);
+				await this.setState('remoteControl', p.remoteControlState === 1, true);
+				await this.setState('online', true, true);
+			}
+		} catch (err: any) {
+			if (err.response?.status === 401) {
+				this.login();
+			} else {
+				this.log.debug(`Abruf-Fehler: ${err.message}`);
+				await this.setState('online', false, true);
+			}
+		} finally {
+			this.updateInterval = this.setTimeout(() => this.updateStatus(), 60 * 1000);
+		}
+	}
+
+	private async setSaunaState(stateName: string, value: any): Promise<void> {
+		if (!this.idToken || !this.deviceBaseUrl) return;
+		if (this.isSendingCommand) return;
+
+		this.isSendingCommand = true;
+		try {
+			if (stateName === 'heatOn' || stateName === 'lightOn') {
+				const commandType = stateName === 'heatOn' ? 'SAUNA' : 'LIGHTS';
+				const stateStr = value ? 'on' : 'off';
+				const payload = { deviceId: this.config.deviceId, cabin: { id: 'C1' }, command: { type: commandType, state: stateStr } };
+
+				const resp = await this.client.post(`${this.deviceBaseUrl}/devices/command`, payload, {
+					headers: { 'Authorization': `Bearer ${this.idToken}`, 'Content-Type': 'application/json' }
+				});
+
+				if (resp.data?.handled) {
+					this.log.info(`${commandType} -> ${stateStr}`);
+					await this.setState(stateName, !!value, true);
+					this.lastCommandTime = Date.now();
+				}
+			} else if (stateName === 'targetTemp') {
+				const payload = { deviceId: this.config.deviceId, cabin: { id: 'C1' }, temperature: parseFloat(value) };
+				await this.client.patch(`${this.deviceBaseUrl}/devices/target`, payload, {
+					headers: { 'Authorization': `Bearer ${this.idToken}`, 'Content-Type': 'application/json' }
+				});
+				await this.setState('targetTemp', parseFloat(value), true);
+				this.lastCommandTime = Date.now();
+			}
+		} catch (err: any) {
+			this.log.error(`Steuerungsfehler: ${err.message}`);
+		} finally {
+			this.isSendingCommand = false;
+		}
 	}
 
 	/**
 	 * Is called when adapter shuts down - callback has to be called under any circumstances!
-	 *
-	 * @param callback - Callback function
 	 */
 	private onUnload(callback: () => void): void {
 		try {
-			// Here you must clear all timeouts or intervals that may still be active
-			// clearTimeout(timeout1);
-			// clearTimeout(timeout2);
-			// ...
-			// clearInterval(interval1);
-
+			if (this.updateInterval) this.clearTimeout(this.updateInterval);
+			if (this.loginInterval) this.clearInterval(this.loginInterval);
 			callback();
 		} catch (error) {
-			this.log.error(`Error during unloading: ${(error as Error).message}`);
 			callback();
 		}
 	}
-
-	// If you need to react to object changes, uncomment the following block and the corresponding line in the constructor.
-	// You also need to subscribe to the objects with `this.subscribeObjects`, similar to `this.subscribeStates`.
-	// /**
-	//  * Is called if a subscribed object changes
-	//  */
-	// private onObjectChange(id: string, obj: ioBroker.Object | null | undefined): void {
-	// 	if (obj) {
-	// 		// The object was changed
-	// 		this.log.info(`object ${id} changed: ${JSON.stringify(obj)}`);
-	// 	} else {
-	// 		// The object was deleted
-	// 		this.log.info(`object ${id} deleted`);
-	// 	}
-	// }
 
 	/**
 	 * Is called if a subscribed state changes
-	 *
-	 * @param id - State ID
-	 * @param state - State object
 	 */
-	private onStateChange(id: string, state: ioBroker.State | null | undefined): void {
-		if (state) {
-			// The state was changed
-			this.log.info(`state ${id} changed: ${state.val} (ack = ${state.ack})`);
+	private async onStateChange(id: string, state: ioBroker.State | null | undefined): Promise<void> {
+		if (state && !state.ack) {
+			const stateId = id.split('.').pop();
 
-			if (state.ack === false) {
-				// This is a command from the user (e.g., from the UI or other adapter)
-				// and should be processed by the adapter
-				this.log.info(`User command received for ${id}: ${state.val}`);
-
-				// TODO: Add your control logic here
+			if (stateId === 'heatOn') {
+				const isRemoteReady = (await this.getStateAsync('remoteControl'))?.val;
+				if (state.val && !isRemoteReady) {
+					this.log.warn('Fernstart nicht bereit!');
+					await this.setState('heatOn', false, true);
+					await this.setState('errorMsg', 'Fernstart am Panel nicht bereit!', true);
+				} else {
+					await this.setSaunaState('heatOn', state.val);
+				}
+			} else if (stateId === 'lightOn' || stateId === 'targetTemp') {
+				await this.setSaunaState(stateId, state.val);
 			}
-		} else {
-			// The object was deleted or the state value has expired
-			this.log.info(`state ${id} deleted`);
 		}
 	}
-	// If you need to accept messages in your adapter, uncomment the following block and the corresponding line in the constructor.
-	// /**
-	//  * Some message was sent to this instance over message box. Used by email, pushover, text2speech, ...
-	//  * Using this method requires "common.messagebox" property to be set to true in io-package.json
-	//  */
-	//
-	// private onMessage(obj: ioBroker.Message): void {
-	// 	if (typeof obj === 'object' && obj.message) {
-	// 		if (obj.command === 'send') {
-	// 			// e.g. send email or pushover or whatever
-	// 			this.log.info('send command');
-	// 			// Send response in callback if required
-	// 			if (obj.callback) this.sendTo(obj.from, obj.command, 'Message received', obj.callback);
-	// 		}
-	// 	}
-	// }
 }
 if (require.main !== module) {
 	// Export the constructor in compact mode
