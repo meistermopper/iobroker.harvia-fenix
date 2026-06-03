@@ -109,10 +109,10 @@ class HarviaFenix extends utils.Adapter {
 			this.dataBaseUrl = ep.data.https;
 			this.deviceBaseUrl = ep.device.https;
 			this.authUrl = `${ep.generics.https}/auth/token`;
-			this.log.info(`API Konfiguration geladen: Data=${this.dataBaseUrl}, Device=${this.deviceBaseUrl}`);
+			this.log.info(`API configuration loaded: Data=${this.dataBaseUrl}, Device=${this.deviceBaseUrl}`);
 			return true;
 		} catch (err: any) {
-			this.log.error(`Fehler beim Laden der API-Konfiguration: ${err.message}`);
+			this.log.error(`Error loading API configuration: ${err.message}`);
 			return false;
 		}
 	}
@@ -143,7 +143,7 @@ class HarviaFenix extends utils.Adapter {
 			await this.setState('info.connection', true, true);
 			return true;
 		} catch (err: any) {
-			this.log.error(`Login fehlgeschlagen: ${err.message}`);
+			this.log.error(`Login failed: ${err.message}`);
 			await this.setState('info.connection', false, true);
 			return false;
 		} finally {
@@ -157,7 +157,7 @@ class HarviaFenix extends utils.Adapter {
 			this.updateStatus(); // Ersten Poll starten
 			this.loginInterval = this.setInterval(() => this.login(), 50 * 60 * 1000);
 		} else {
-			this.log.warn('Erster Login fehlgeschlagen. Versuche es in 5 Minuten erneut...');
+			this.log.warn('Initial login failed. Retrying in 5 minutes...');
 			this.updateInterval = this.setTimeout(() => this.startCloudConnection(), 5 * 60 * 1000);
 		}
 	}
@@ -170,7 +170,7 @@ class HarviaFenix extends utils.Adapter {
 			// Wir versuchen die Liste der Geräte abzurufen
 			const url = baseUrl.endsWith('/devices') ? baseUrl : `${baseUrl}/devices`;
 
-			this.log.info(`Suche nach Geräten unter: ${url}`);
+			this.log.info(`Searching for devices at: ${url}`);
 
 			const response = await this.client.get(url, {
 				headers: {
@@ -184,17 +184,17 @@ class HarviaFenix extends utils.Adapter {
 				this.log.info(`Harvia Cloud: ${devices.length} Gerät(e) gefunden.`);
 				for (const d of devices) {
 					const actualId = d.deviceId || d.id || d.name;
-					this.log.info(`Gefundenes Gerät: ${d.name} (ID: ${actualId}, Typ: ${d.type || 'Fenix'})`);
+					this.log.info(`Found device: ${d.name} (ID: ${actualId}, Type: ${d.type || 'Fenix'})`);
 
 					// Wenn die konfigurierte Device-ID nicht gesetzt ist, verwenden wir die erste gefundene
 					if (!this.config.deviceId && actualId) {
-						this.log.warn(`Device ID in Adapter-Konfiguration nicht gesetzt. Verwende gefundene ID: ${actualId}`);
+						this.log.warn(`Device ID not set in adapter configuration. Using found ID: ${actualId}`);
 						// Hier könnten wir die Konfiguration aktualisieren, aber das ist komplexer
 						// und erfordert einen Adapter-Neustart. Besser ist es, den Benutzer zu informieren.
 						// Für den aktuellen Lauf verwenden wir die gefundene ID.
 						this.config.deviceId = actualId;
 					} else if (this.config.deviceId !== actualId) {
-						this.log.warn(`Konfigurierte Device ID (${this.config.deviceId}) stimmt nicht mit gefundener ID (${actualId}) überein. Bitte prüfen Sie die Einstellungen.`);
+						this.log.warn(`Configured Device ID (${this.config.deviceId}) does not match found ID (${actualId}). Please check settings.`);
 					}
 
 					// Statische Attribute direkt beim Start auslesen
@@ -226,10 +226,10 @@ class HarviaFenix extends utils.Adapter {
 					}
 				}
 			} else {
-				this.log.warn('Login erfolgreich, aber keine Geräte im Harvia-Account gefunden.');
+				this.log.warn('Login successful, but no devices found in Harvia account.');
 			}
 		} catch (err: any) {
-			this.log.error(`Fehler bei der Gerätesuche: ${err.message}`);
+			this.log.error(`Error during device discovery: ${err.message}`);
 		}
 	}
 
@@ -278,9 +278,9 @@ class HarviaFenix extends utils.Adapter {
 					const isHeatingExpected = (actualHeat === 1 || actualHeat === true || actualHeat === 'on');
 
 					if (isHeatingExpected && !currentHeatOnState) {
-						this.log.warn(`Erwartet heatOn=true, aber ioBroker-Status ist false. Rohdaten: ${JSON.stringify(p)}`);
+						this.log.warn(`Expected heatOn=true, but ioBroker state is false. Raw data: ${JSON.stringify(p)}`);
 					} else if (actualHeat === undefined) {
-						this.log.warn(`Heat-Status in API-Antwort undefiniert, aber online. Rohdaten: ${JSON.stringify(p)}`);
+						this.log.warn(`Heat status undefined in API response, but device is online. Raw data: ${JSON.stringify(p)}`);
 					}
 				}
 
@@ -327,13 +327,13 @@ class HarviaFenix extends utils.Adapter {
 				await this.setState('doorSafety', p.doorSafetyState === 1, true); // 1 = Sicher/Zu
 				await this.setState('online', true, true);
 			} else if (!p || typeof p !== 'object') {
-				this.log.warn(`Unerwartete Datenstruktur beim Status-Abruf: ${JSON.stringify(response.data)}`);
+				this.log.warn(`Unexpected data structure during status poll: ${JSON.stringify(response.data)}`);
 			}
 		} catch (err: any) {
 			if (err.response?.status === 401) {
 				this.login();
 			} else {
-				this.log.error(`Status-Abruf fehlgeschlagen (${err.response?.status}): ${err.message}. Response Data: ${JSON.stringify(err.response?.data)}`);
+				this.log.error(`Status poll failed (${err.response?.status}): ${err.message}. Response Data: ${JSON.stringify(err.response?.data)}`);
 				await this.setState('online', false, true);
 			}
 		} finally {
@@ -378,8 +378,8 @@ class HarviaFenix extends utils.Adapter {
 					if (stateName === 'heatOn') await this.setState('errorMsg', '', true);
 				} else {
 					const reason = resp.data ? resp.data.failureReason : 'Unbekannt';
-					this.log.warn(`Cloud lehnt Befehl ab: ${reason}`);
-					await this.setState('errorMsg', `Cloud-Fehler: ${reason}`, true);
+					this.log.warn(`Cloud rejected command: ${reason}`);
+					await this.setState('errorMsg', `Cloud error: ${reason}`, true);
 				}
 			} else if (stateName === 'targetTemp') {
 				const payload = {
@@ -397,7 +397,7 @@ class HarviaFenix extends utils.Adapter {
 						'x-harvia-app-id': CLIENT_ID
 					}
 				});
-				this.log.info(`Temp-Soll -> ${value}°C`);
+				this.log.info(`Target temperature -> ${value}°C`);
 				// Sofortige Bestätigung im ioBroker
 				await this.setState('targetTemp', parseFloat(value), true);
 				this.lastCommandTime = Date.now();
@@ -408,16 +408,16 @@ class HarviaFenix extends utils.Adapter {
 			// "Device unavailable" ist ein Cloud-Sperr-Effekt bei schnellen Klicks.
 			// Wir loggen das nur noch als Debug, um das Info-Log sauber zu halten.
 			if (detail.includes('Device unavailable')) {
-				this.log.debug(`Cloud-Sperre: Gerät belegt, Befehl wird verworfen.`);
+				this.log.debug(`Cloud lock: Device busy, command discarded.`);
 			} else {
-				this.log.error(`Fehler bei der Steuerung: ${detail}`);
-				await this.setState('errorMsg', `Fehler: ${err.message}`, true);
+				this.log.error(`Control error: ${detail}`);
+				await this.setState('errorMsg', `Error: ${err.message}`, true);
 			}
 
 			// RE-LOGIN LOGIK: Falls der Token während der Laufzeit ungültig wurde
 			// Automatischer Re-Login bei abgelaufenem Token (HTTP 401)
 			if (err.response && err.response.status === 401) {
-				this.log.warn('Token abgelaufen bei Steuerung, löse Re-Login aus...');
+				this.log.warn('Token expired during control, triggering re-login...');
 				this.isSendingCommand = false; // Lock kurz lösen für den Login
 				if (await this.login()) {
 					// Nach erfolgreichem Login Befehl einmal wiederholen
@@ -469,9 +469,9 @@ class HarviaFenix extends utils.Adapter {
 
 				const isRemoteReady = (await this.getStateAsync('remoteControl'))?.val;
 				if (val && !isRemoteReady) {
-					this.log.warn('Fernstart nicht bereit!');
+					this.log.warn('Remote start not ready!');
 					await this.setState('heatOn', false, true);
-					await this.setState('errorMsg', 'Fernstart am Panel nicht bereit!', true);
+					await this.setState('errorMsg', 'Remote start not ready at panel!', true);
 				} else {
 					await this.setSaunaState('heatOn', val);
 				}
@@ -482,9 +482,9 @@ class HarviaFenix extends utils.Adapter {
 				if (stateId === 'targetTemp') {
 					val = parseFloat(state.val as string);
 					if (isNaN(val) || val < MIN_TARGET_TEMP || val > MAX_TARGET_TEMP) {
-						this.log.warn(`Ungültige Zieltemperatur (${state.val}°C) empfangen. Erlaubter Bereich: ${MIN_TARGET_TEMP}-${MAX_TARGET_TEMP}°C. Setze auf Standard (${MAX_TARGET_TEMP}°C).`);
+						this.log.warn(`Invalid target temperature (${state.val}°C) received. Allowed range: ${MIN_TARGET_TEMP}-${MAX_TARGET_TEMP}°C. Resetting to default (${MAX_TARGET_TEMP}°C).`);
 						await this.setState('targetTemp', MAX_TARGET_TEMP, true); // Reset to default or max
-						await this.setState('errorMsg', `Ungültige Zieltemperatur: ${state.val}°C`, true);
+						await this.setState('errorMsg', `Invalid target temperature: ${state.val}°C`, true);
 						return;
 					}
 				} else {
