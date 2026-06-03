@@ -19,7 +19,7 @@
 					"type": "text",
 					"label": "Device ID",
 					"sm": 12,
-					"help": "Lass dieses Feld leer und starte den Adapter, um die ID automatisch im ioBroker-Log zu finden (Discovery)."
+					"help": "Leave this field empty and start the adapter to find the ID automatically in the ioBroker log (Discovery)."
 				}
 			}
 		}
