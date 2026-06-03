@@ -1,4 +1,4 @@
-![Logo](admin/harvia-fenix.png)
+![Logo](admin/harvia.png)
 # ioBroker.harvia-fenix
 
 [![NPM version](https://img.shields.io/npm/v/iobroker.harvia-fenix.svg)](https://www.npmjs.com/package/iobroker.harvia-fenix)
@@ -120,7 +120,7 @@ Please refer to the [`dev-server` documentation](https://github.com/ioBroker/dev
 
 ### **WORK IN PROGRESS**
 * (meistermopper) initial release
-
+* (meistermopper) Added support for Harvia Xenio WiFi control units and updated adapter naming to Harvia MyHarvia.
 ## License
 MIT License
 

@@ -2,8 +2,8 @@
 
 systemDictionary = {
 	"harvia-fenix adapter settings": {
-		en: "Adapter settings for Harvia Fenix",
-		de: "Adaptereinstellungen für Harvia Fenix",
+		en: "Adapter settings for Harvia MyHarvia (Fenix & Xenio)",
+		de: "Adaptereinstellungen für Harvia MyHarvia (Fenix & Xenio)",
 	},
 	"Username / Email": {
 		en: "Username / Email",
