@@ -157,12 +157,12 @@ class HarviaFenix extends utils.Adapter {
 
 			const devices = response.data?.devices || [];
 			if (devices.length > 0) {
-				this.log.info(`Gefundene Geräte: ${devices.length}`);
+				this.log.info(`Harvia Cloud: ${devices.length} Gerät(e) gefunden.`);
 				for (const d of devices) {
 					const actualId = d.deviceId || d.id || d.name;
-					this.log.info(`Gerät gefunden: ${d.name} (ID: ${actualId})`);
+					this.log.info(`Verarbeite Gerät: ${d.name} (Typ: ${d.type || 'Fenix'})`);
 
-					// Verarbeite Attribute (Sessions, Betriebsstunden, Online-Status)
+					// Statische Attribute direkt beim Start auslesen
 					if (Array.isArray(d.attr)) {
 						for (const a of d.attr) {
 							switch (a.key) {
@@ -181,7 +181,6 @@ class HarviaFenix extends utils.Adapter {
 							}
 						}
 					}
-					this.log.info(`Vorschlag für Device-ID in den Einstellungen: ${actualId}`);
 				}
 			} else {
 				this.log.warn('Login erfolgreich, aber keine Geräte im Harvia-Account gefunden.');
@@ -195,19 +194,18 @@ class HarviaFenix extends utils.Adapter {
 		try {
 			if (!this.idToken || !this.dataBaseUrl) return;
 
+			// Wir versuchen den Status-Abruf. Falls der Standardpfad fehlschlägt,
+			// haben wir im Catch-Block eine Fallback-Logik.
 			const baseUrl = this.dataBaseUrl.replace(/\/$/, '');
-			// Wir nutzen den Pfad aus dem ursprünglichen Skript, jetzt mit der verifizierten Device-ID
 			const url = `${baseUrl}/data/latest-data`;
 
-			this.log.debug(`Frage Status ab (URL: ${url}, Device: ${this.config.deviceId})`);
+			this.log.debug(`Poll Status: ${url} (ID: ${this.config.deviceId})`);
 
 			const response = await this.client.get(url, {
 				params: { deviceId: this.config.deviceId },
 				headers: {
 					'Authorization': `Bearer ${this.idToken}`,
-					'x-harvia-partner-id': PARTNER_ID,
-					'Accept': 'application/json',
-					'x-harvia-app-id': CLIENT_ID
+					'x-harvia-partner-id': PARTNER_ID
 				}
 			});
 
@@ -237,7 +235,7 @@ class HarviaFenix extends utils.Adapter {
 			if (err.response?.status === 401) {
 				this.login();
 			} else {
-				this.log.error(`Abruf-Fehler (Status Update): ${err.message} - URL war: ${err.config?.url}`);
+				this.log.debug(`Status-Abruf fehlgeschlagen (${err.response?.status}): ${err.message}`);
 				await this.setState('online', false, true);
 			}
 		} finally {

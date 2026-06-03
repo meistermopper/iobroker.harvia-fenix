@@ -146,10 +146,10 @@ class HarviaFenix extends utils.Adapter {
       });
       const devices = ((_a = response.data) == null ? void 0 : _a.devices) || [];
       if (devices.length > 0) {
-        this.log.info(`Gefundene Ger\xE4te: ${devices.length}`);
+        this.log.info(`Harvia Cloud: ${devices.length} Ger\xE4t(e) gefunden.`);
         for (const d of devices) {
           const actualId = d.deviceId || d.id || d.name;
-          this.log.info(`Ger\xE4t gefunden: ${d.name} (ID: ${actualId})`);
+          this.log.info(`Verarbeite Ger\xE4t: ${d.name} (Typ: ${d.type || "Fenix"})`);
           if (Array.isArray(d.attr)) {
             for (const a of d.attr) {
               switch (a.key) {
@@ -168,7 +168,6 @@ class HarviaFenix extends utils.Adapter {
               }
             }
           }
-          this.log.info(`Vorschlag f\xFCr Device-ID in den Einstellungen: ${actualId}`);
         }
       } else {
         this.log.warn("Login erfolgreich, aber keine Ger\xE4te im Harvia-Account gefunden.");
@@ -183,14 +182,12 @@ class HarviaFenix extends utils.Adapter {
       if (!this.idToken || !this.dataBaseUrl) return;
       const baseUrl = this.dataBaseUrl.replace(/\/$/, "");
       const url = `${baseUrl}/data/latest-data`;
-      this.log.debug(`Frage Status ab (URL: ${url}, Device: ${this.config.deviceId})`);
+      this.log.debug(`Poll Status: ${url} (ID: ${this.config.deviceId})`);
       const response = await this.client.get(url, {
         params: { deviceId: this.config.deviceId },
         headers: {
           "Authorization": `Bearer ${this.idToken}`,
-          "x-harvia-partner-id": PARTNER_ID,
-          "Accept": "application/json",
-          "x-harvia-app-id": CLIENT_ID
+          "x-harvia-partner-id": PARTNER_ID
         }
       });
       const p = (_a = response.data) == null ? void 0 : _a.data;
@@ -214,7 +211,7 @@ class HarviaFenix extends utils.Adapter {
       if (((_b = err.response) == null ? void 0 : _b.status) === 401) {
         this.login();
       } else {
-        this.log.error(`Abruf-Fehler (Status Update): ${err.message} - URL war: ${(_c = err.config) == null ? void 0 : _c.url}`);
+        this.log.debug(`Status-Abruf fehlgeschlagen (${(_c = err.response) == null ? void 0 : _c.status}): ${err.message}`);
         await this.setState("online", false, true);
       }
     } finally {
