@@ -123,6 +123,7 @@ class HarviaFenix extends utils.Adapter {
 
 	private async startCloudConnection(): Promise<void> {
 		if (await this.login()) {
+			await this.discoverDevices();
 			this.updateStatus();
 			this.loginInterval = this.setInterval(() => this.login(), 50 * 60 * 1000);
 		} else {
@@ -131,11 +132,41 @@ class HarviaFenix extends utils.Adapter {
 		}
 	}
 
+	private async discoverDevices(): Promise<void> {
+		try {
+			if (!this.idToken || !this.deviceBaseUrl) return;
+
+			// Liste alle Geräte ab, die mit dem Account verknüpft sind
+			const baseUrl = this.deviceBaseUrl.replace(/\/$/, '');
+			const url = baseUrl.endsWith('/devices') ? baseUrl : `${baseUrl}/devices`;
+
+			this.log.debug(`Frage Geräte-Liste ab: ${url}`);
+
+			const response = await this.client.get(url, {
+				headers: {
+					'Authorization': `Bearer ${this.idToken}`,
+					'x-harvia-partner-id': PARTNER_ID
+				}
+			});
+
+			const devices = response.data?.devices || [];
+			if (devices.length > 0) {
+				this.log.info(`Gefundene Geräte im Account: ${devices.map((d: any) => `${d.name || 'Sauna'} (ID: ${d.deviceId})`).join(', ')}`);
+			} else {
+				this.log.warn('Keine Geräte in diesem Harvia-Account gefunden. Bitte Zugangsdaten oder Account-Zuweisung prüfen.');
+			}
+		} catch (err: any) {
+			this.log.debug(`Fehler bei der Gerätesuche: ${err.message}`);
+		}
+	}
+
 	private async updateStatus(): Promise<void> {
 		try {
 			if (!this.idToken || !this.dataBaseUrl) return;
 
-			const url = `${this.dataBaseUrl.replace(/\/$/, '')}/data/latest-data`;
+			// Korrektur: Falls die Basis-URL bereits /data enthält, hängen wir nur /latest-data an
+			const baseUrl = this.dataBaseUrl.replace(/\/$/, '');
+			const url = baseUrl.endsWith('/data') ? `${baseUrl}/latest-data` : `${baseUrl}/data/latest-data`;
 
 			const response = await this.client.get(url, {
 				params: { deviceId: this.config.deviceId },
@@ -183,6 +214,9 @@ class HarviaFenix extends utils.Adapter {
 		if (!this.idToken || !this.deviceBaseUrl) return;
 		if (this.isSendingCommand) return;
 
+		const baseUrl = this.deviceBaseUrl.replace(/\/$/, '');
+		const devicesUrl = baseUrl.endsWith('/devices') ? baseUrl : `${baseUrl}/devices`;
+
 		this.isSendingCommand = true;
 		try {
 			if (stateName === 'heatOn' || stateName === 'lightOn') {
@@ -190,7 +224,9 @@ class HarviaFenix extends utils.Adapter {
 				const stateStr = value ? 'on' : 'off';
 				const payload = { deviceId: this.config.deviceId, cabin: { id: 'C1' }, command: { type: commandType, state: stateStr } };
 
-				const resp = await this.client.post(`${this.deviceBaseUrl}/devices/command`, payload, {
+				const url = `${devicesUrl}/command`;
+
+				const resp = await this.client.post(url, payload, {
 					headers: { 'Authorization': `Bearer ${this.idToken}`, 'Content-Type': 'application/json' }
 				});
 
@@ -201,7 +237,9 @@ class HarviaFenix extends utils.Adapter {
 				}
 			} else if (stateName === 'targetTemp') {
 				const payload = { deviceId: this.config.deviceId, cabin: { id: 'C1' }, temperature: parseFloat(value) };
-				await this.client.patch(`${this.deviceBaseUrl}/devices/target`, payload, {
+				const url = `${devicesUrl}/target`;
+
+				await this.client.patch(url, payload, {
 					headers: { 'Authorization': `Bearer ${this.idToken}`, 'Content-Type': 'application/json' }
 				});
 				await this.setState('targetTemp', parseFloat(value), true);
