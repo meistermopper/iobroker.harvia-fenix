@@ -140,7 +140,7 @@ class HarviaFenix extends utils.Adapter {
       });
       const devices = ((_a = response.data) == null ? void 0 : _a.devices) || [];
       if (devices.length > 0) {
-        this.log.info(`Erfolgreich! Gefundene Ger\xE4te im Account: ${devices.map((d) => `${d.name || "Sauna"} (ID: ${d.deviceId})`).join(", ")}`);
+        this.log.info(`Erfolgreich! Gefundene Ger\xE4te im Account: ${devices.map((d) => `${d.name || "Sauna"} -> ID: ${d.deviceId || d.id || "nicht gefunden"}`).join(", ")}`);
       } else {
         this.log.warn("Login erfolgreich, aber keine Ger\xE4te im Harvia-Account gefunden.");
       }
@@ -152,8 +152,7 @@ class HarviaFenix extends utils.Adapter {
     var _a, _b, _c;
     try {
       if (!this.idToken || !this.dataBaseUrl) return;
-      const baseUrl = this.dataBaseUrl.replace(/\/$/, "");
-      const url = baseUrl.endsWith("/data") ? `${baseUrl}/latest-data` : `${baseUrl}/data/latest-data`;
+      const url = `${this.dataBaseUrl.replace(/\/$/, "")}/latest-data`;
       this.log.debug(`Frage Status ab (URL: ${url}, Device: ${this.config.deviceId})`);
       const response = await this.client.get(url, {
         params: { deviceId: this.config.deviceId },

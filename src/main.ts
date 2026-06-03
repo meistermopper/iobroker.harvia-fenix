@@ -151,7 +151,8 @@ class HarviaFenix extends utils.Adapter {
 
 			const devices = response.data?.devices || [];
 			if (devices.length > 0) {
-				this.log.info(`Erfolgreich! Gefundene Geräte im Account: ${devices.map((d: any) => `${d.name || 'Sauna'} (ID: ${d.deviceId})`).join(', ')}`);
+				// Wir loggen das ganze Objekt, falls die ID in einem anderen Feld steckt (z.B. "id")
+				this.log.info(`Erfolgreich! Gefundene Geräte im Account: ${devices.map((d: any) => `${d.name || 'Sauna'} -> ID: ${d.deviceId || d.id || 'nicht gefunden'}`).join(', ')}`);
 			} else {
 				this.log.warn('Login erfolgreich, aber keine Geräte im Harvia-Account gefunden.');
 			}
@@ -164,8 +165,8 @@ class HarviaFenix extends utils.Adapter {
 		try {
 			if (!this.idToken || !this.dataBaseUrl) return;
 
-			const baseUrl = this.dataBaseUrl.replace(/\/$/, '');
-			const url = baseUrl.endsWith('/data') ? `${baseUrl}/latest-data` : `${baseUrl}/data/latest-data`;
+			// Wir vereinfachen die URL: Die meisten Endpunkte hängen direkt an der Basis
+			const url = `${this.dataBaseUrl.replace(/\/$/, '')}/latest-data`;
 
 			this.log.debug(`Frage Status ab (URL: ${url}, Device: ${this.config.deviceId})`);
 
