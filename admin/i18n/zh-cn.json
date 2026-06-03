@@ -1,4 +1,11 @@
 {
+	"Device ID": "设备ID",
+	"Harvia Fenix Sauna Control": "Harvia Fenix 桑拿控制",
+	"Leave this field empty and start the adapter to find the ID automatically in the ioBroker log (Discovery).": "将此字段留空并启动适配器以在 ioBroker 日志（发现）中自动查找 ID。",
+	"Login Settings": "登录设置",
+	"Password": "密码",
+	"Polling Interval (seconds)": "轮询间隔（秒）",
+	"Username / Email": "用户名/电子邮件",
 	"harvia-fenix adapter settings": "harvia-fenix的适配器设置",
 	"option1": "选项1",
 	"option2": "选项2"

@@ -25,6 +25,8 @@ var utils = __toESM(require("@iobroker/adapter-core"));
 var import_axios = __toESM(require("axios"));
 const CLIENT_ID = "24emhb2mm0v4sscqhbdev86b2v";
 const PARTNER_ID = "ORG/prod:0:6656:0";
+const MIN_TARGET_TEMP = 40;
+const MAX_TARGET_TEMP = 110;
 const LATENCY_MS = 5e3;
 class HarviaFenix extends utils.Adapter {
   client;
@@ -398,7 +400,18 @@ class HarviaFenix extends utils.Adapter {
         }
       } else if (stateId === "lightOn" || stateId === "targetTemp") {
         if (!this.shouldProcess(id)) return;
-        const val = state.val === true || state.val === "true" || state.val === 1 || typeof state.val === "number" ? state.val : false;
+        let val = state.val;
+        if (stateId === "targetTemp") {
+          val = parseFloat(state.val);
+          if (isNaN(val) || val < MIN_TARGET_TEMP || val > MAX_TARGET_TEMP) {
+            this.log.warn(`Ung\xFCltige Zieltemperatur (${state.val}\xB0C) empfangen. Erlaubter Bereich: ${MIN_TARGET_TEMP}-${MAX_TARGET_TEMP}\xB0C. Setze auf Standard (${MAX_TARGET_TEMP}\xB0C).`);
+            await this.setState("targetTemp", MAX_TARGET_TEMP, true);
+            await this.setState("errorMsg", `Ung\xFCltige Zieltemperatur: ${state.val}\xB0C`, true);
+            return;
+          }
+        } else {
+          val = state.val === true || state.val === "true" || state.val === 1;
+        }
         await this.setSaunaState(stateId, val);
       }
     }

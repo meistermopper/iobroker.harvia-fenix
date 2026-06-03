@@ -10,6 +10,9 @@ import axios, { AxiosInstance } from 'axios';
 // Harvia API Konstanten
 const CLIENT_ID = '24emhb2mm0v4sscqhbdev86b2v';
 const PARTNER_ID = 'ORG/prod:0:6656:0';
+
+const MIN_TARGET_TEMP = 40; // Minimum allowed target temperature in °C
+const MAX_TARGET_TEMP = 110; // Maximum allowed target temperature in °C
 const LATENCY_MS = 5000;
 
 class HarviaFenix extends utils.Adapter {
@@ -475,7 +478,18 @@ class HarviaFenix extends utils.Adapter {
 			} else if (stateId === 'lightOn' || stateId === 'targetTemp') {
 				if (!this.shouldProcess(id)) return;
 				// Konvertierung sicherstellen (VIS sendet oft Strings)
-				const val = state.val === true || state.val === 'true' || state.val === 1 || typeof state.val === 'number' ? state.val : false;
+				let val: any = state.val;
+				if (stateId === 'targetTemp') {
+					val = parseFloat(state.val as string);
+					if (isNaN(val) || val < MIN_TARGET_TEMP || val > MAX_TARGET_TEMP) {
+						this.log.warn(`Ungültige Zieltemperatur (${state.val}°C) empfangen. Erlaubter Bereich: ${MIN_TARGET_TEMP}-${MAX_TARGET_TEMP}°C. Setze auf Standard (${MAX_TARGET_TEMP}°C).`);
+						await this.setState('targetTemp', MAX_TARGET_TEMP, true); // Reset to default or max
+						await this.setState('errorMsg', `Ungültige Zieltemperatur: ${state.val}°C`, true);
+						return;
+					}
+				} else {
+					val = state.val === true || state.val === 'true' || state.val === 1;
+				}
 				await this.setSaunaState(stateId, val);
 			}
 		}

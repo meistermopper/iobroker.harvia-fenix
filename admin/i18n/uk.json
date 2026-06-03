@@ -1,4 +1,11 @@
 {
+	"Device ID": "ID пристрою",
+	"Harvia Fenix Sauna Control": "Керування сауною Harvia Fenix",
+	"Leave this field empty and start the adapter to find the ID automatically in the ioBroker log (Discovery).": "Залиште це поле порожнім і запустіть адаптер, щоб автоматично знайти ідентифікатор у журналі ioBroker (Discovery).",
+	"Login Settings": "Налаштування входу",
+	"Password": "Пароль",
+	"Polling Interval (seconds)": "Інтервал опитування (секунди)",
+	"Username / Email": "Ім'я користувача/Електронна пошта",
 	"harvia-fenix adapter settings": "Налаштування адаптера для harvia-fenix",
 	"option1": "варіант1",
 	"option2": "варіант2"
