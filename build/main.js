@@ -76,7 +76,7 @@ class HarviaFenix extends utils.Adapter {
       { id: "lightOn", type: "boolean", role: "switch.light", def: false },
       { id: "temp", type: "number", role: "value.temperature", unit: "\xB0C", def: 0 },
       { id: "targetTemp", type: "number", role: "level.temperature", unit: "\xB0C", def: 90 },
-      { id: "heaterPower", type: "number", role: "value.power", unit: "W", def: 0 },
+      { id: "heaterPower", type: "number", role: "value.power", unit: "kW", def: 0 },
       { id: "doorSafety", type: "boolean", role: "indicator.safety", def: false },
       { id: "remoteControl", type: "boolean", role: "indicator.state", def: false },
       { id: "errorMsg", type: "string", role: "text", def: "" },
@@ -166,7 +166,7 @@ class HarviaFenix extends utils.Adapter {
         this.log.info(`Harvia Cloud: ${devices.length} Ger\xE4t(e) gefunden.`);
         for (const d of devices) {
           const actualId = d.deviceId || d.id || d.name;
-          this.log.info(`Ger\xE4t gefunden: ${d.name} (ID: ${actualId}, Typ: ${d.type || "Fenix"})`);
+          this.log.info(`Gefundenes Ger\xE4t: ${d.name} (ID: ${actualId}, Typ: ${d.type || "Fenix"})`);
           if (!this.config.deviceId && actualId) {
             this.log.warn(`Device ID in Adapter-Konfiguration nicht gesetzt. Verwende gefundene ID: ${actualId}`);
             this.config.deviceId = actualId;
@@ -183,13 +183,13 @@ class HarviaFenix extends utils.Adapter {
                   await this.setState("online", a.value === "true", true);
                   break;
                 case "stats.totalSessions.C1":
-                  await this.setState("totalSessions", parseInt(a.value), true);
+                  await this.setState("totalSessions", Math.round(parseInt(a.value)), true);
                   break;
                 case "stats.totalBathingHours.C1":
-                  await this.setState("totalBathingHours", parseFloat(a.value), true);
+                  await this.setState("totalBathingHours", Math.round(parseFloat(a.value) * 100) / 100, true);
                   break;
                 case "stats.totalOperatingHours.C1":
-                  await this.setState("totalOperatingHours", parseFloat(a.value), true);
+                  await this.setState("totalOperatingHours", Math.round(parseFloat(a.value) * 100) / 100, true);
                   break;
                 case "BT_MAC":
                   this.log.debug(`Bluetooth MAC: ${a.value}`);
@@ -241,14 +241,17 @@ class HarviaFenix extends utils.Adapter {
           }
         }
         const currentTemp = p.temperature !== void 0 ? p.temperature : p.temp;
-        if (currentTemp !== void 0) await this.setState("temp", parseFloat(currentTemp), true);
+        if (currentTemp !== void 0) await this.setState("temp", Math.round(parseFloat(currentTemp) * 10) / 10, true);
         const pPanelTemp = p.panelTemp !== void 0 ? p.panelTemp : p.panelTemperature;
-        if (pPanelTemp !== void 0) await this.setState("panelTemp", parseFloat(pPanelTemp), true);
-        const currentPower = p.heaterPower !== void 0 ? p.heaterPower : p.power;
-        if (currentPower !== void 0) await this.setState("heaterPower", parseFloat(currentPower), true);
-        if (p.totalBathingHours !== void 0) await this.setState("totalBathingHours", parseFloat(p.totalBathingHours), true);
-        if (p.totalSessions !== void 0) await this.setState("totalSessions", parseInt(p.totalSessions), true);
-        if (p.totalHours !== void 0) await this.setState("totalOperatingHours", parseFloat(p.totalHours), true);
+        if (pPanelTemp !== void 0) await this.setState("panelTemp", Math.round(parseFloat(pPanelTemp) * 10) / 10, true);
+        let currentPower = p.heaterPower !== void 0 ? p.heaterPower : p.power;
+        if (currentPower !== void 0) {
+          currentPower = Math.round(parseFloat(currentPower) / 1e3 * 100) / 100;
+          await this.setState("heaterPower", currentPower, true);
+        }
+        if (p.totalBathingHours !== void 0) await this.setState("totalBathingHours", Math.round(parseFloat(p.totalBathingHours) * 100) / 100, true);
+        if (p.totalSessions !== void 0) await this.setState("totalSessions", Math.round(parseInt(p.totalSessions)), true);
+        if (p.totalHours !== void 0) await this.setState("totalOperatingHours", Math.round(parseFloat(p.totalHours) * 100) / 100, true);
         const tTemp = p.targetTemperature !== void 0 ? p.targetTemperature : p.targetTemp;
         if (tTemp !== void 0) await this.setState("targetTemp", parseFloat(tTemp), true);
         const actualHeat = p.heatOn !== void 0 ? p.heatOn : p.heatState !== void 0 ? p.heatState : p.heat;

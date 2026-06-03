@@ -19,7 +19,7 @@
 					"type": "text",
 					"label": "Device ID",
 					"sm": 12,
-					"help": "Die Device-ID findest du in der Harvia App oder im API-Log"
+					"help": "Lass dieses Feld leer und starte den Adapter, um die ID automatisch im ioBroker-Log zu finden (Discovery)."
 				}
 			}
 		}
