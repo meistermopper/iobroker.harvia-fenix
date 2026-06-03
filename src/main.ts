@@ -90,6 +90,7 @@ class HarviaFenix extends utils.Adapter {
 			this.dataBaseUrl = ep.data.https;
 			this.deviceBaseUrl = ep.device.https;
 			this.authUrl = `${ep.generics.https}/auth/token`;
+			this.log.debug(`API Konfiguration geladen: Data=${this.dataBaseUrl}, Device=${this.deviceBaseUrl}`);
 			return true;
 		} catch (err: any) {
 			this.log.error(`Fehler beim Laden der API-Konfiguration: ${err.message}`);
@@ -134,8 +135,14 @@ class HarviaFenix extends utils.Adapter {
 		try {
 			if (!this.idToken || !this.dataBaseUrl) return;
 
-			const response = await this.client.get(`${this.dataBaseUrl}/data/latest-data?deviceId=${this.config.deviceId}`, {
-				headers: { 'Authorization': `Bearer ${this.idToken}`, 'x-harvia-partner-id': PARTNER_ID }
+			const url = `${this.dataBaseUrl.replace(/\/$/, '')}/data/latest-data`;
+
+			const response = await this.client.get(url, {
+				params: { deviceId: this.config.deviceId },
+				headers: {
+					'Authorization': `Bearer ${this.idToken}`,
+					'x-harvia-partner-id': PARTNER_ID
+				}
 			});
 
 			const p = response.data?.data;
