@@ -242,7 +242,8 @@ class HarviaFenix extends utils.Adapter {
         }
         const currentTemp = p.temperature !== void 0 ? p.temperature : p.temp;
         if (currentTemp !== void 0) await this.setState("temp", parseFloat(currentTemp), true);
-        if (p.panelTemperature !== void 0) await this.setState("panelTemp", parseFloat(p.panelTemperature), true);
+        const pPanelTemp = p.panelTemp !== void 0 ? p.panelTemp : p.panelTemperature;
+        if (pPanelTemp !== void 0) await this.setState("panelTemp", parseFloat(pPanelTemp), true);
         const currentPower = p.heaterPower !== void 0 ? p.heaterPower : p.power;
         if (currentPower !== void 0) await this.setState("heaterPower", parseFloat(currentPower), true);
         if (p.totalBathingHours !== void 0) await this.setState("totalBathingHours", parseFloat(p.totalBathingHours), true);
@@ -250,17 +251,13 @@ class HarviaFenix extends utils.Adapter {
         if (p.totalHours !== void 0) await this.setState("totalOperatingHours", parseFloat(p.totalHours), true);
         const tTemp = p.targetTemperature !== void 0 ? p.targetTemperature : p.targetTemp;
         if (tTemp !== void 0) await this.setState("targetTemp", parseFloat(tTemp), true);
-        const actualHeat = p.heatState !== void 0 ? p.heatState : p.heat;
-        const actualLight = p.lightState !== void 0 ? p.lightState : p.light;
+        const actualHeat = p.heatOn !== void 0 ? p.heatOn : p.heatState !== void 0 ? p.heatState : p.heat;
+        const actualLight = p.lightOn !== void 0 ? p.lightOn : p.lightState !== void 0 ? p.lightState : p.light;
         if (actualHeat !== void 0 && actualHeat !== null) {
           await this.setState("heatOn", !!(actualHeat === 1 || actualHeat === true || actualHeat === "on"), true);
-        } else if (p.online) {
-          await this.setState("heatOn", false, true);
         }
         if (actualLight !== void 0 && actualLight !== null) {
           await this.setState("lightOn", !!(actualLight === 1 || actualLight === true || actualLight === "on"), true);
-        } else if (p.online) {
-          await this.setState("lightOn", false, true);
         }
         if (p.remoteControlState !== void 0) {
           await this.setState("remoteControl", p.remoteControlState === 1, true);

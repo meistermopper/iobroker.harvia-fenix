@@ -285,7 +285,8 @@ class HarviaFenix extends utils.Adapter {
 				const currentTemp = p.temperature !== undefined ? p.temperature : p.temp;
 				if (currentTemp !== undefined) await this.setState('temp', parseFloat(currentTemp), true);
 
-				if (p.panelTemperature !== undefined) await this.setState('panelTemp', parseFloat(p.panelTemperature), true);
+				const pPanelTemp = p.panelTemp !== undefined ? p.panelTemp : p.panelTemperature;
+				if (pPanelTemp !== undefined) await this.setState('panelTemp', parseFloat(pPanelTemp), true);
 
 				// Normalisierung der Heizleistung (heaterPower vs power)
 				const currentPower = p.heaterPower !== undefined ? p.heaterPower : p.power;
@@ -300,20 +301,16 @@ class HarviaFenix extends utils.Adapter {
 
 				// STATUS-FIX (Licht/Heizung): Robuste Abfrage durch Prüfung von State-Feldern und Basis-Feldern.
 				// Manche Cloud-Versionen lassen Felder bei 'off' komplett weg oder nutzen alternative Namen.
-				const actualHeat = p.heatState !== undefined ? p.heatState : p.heat;
-				const actualLight = p.lightState !== undefined ? p.lightState : p.light;
+				const actualHeat = p.heatOn !== undefined ? p.heatOn : (p.heatState !== undefined ? p.heatState : p.heat);
+				const actualLight = p.lightOn !== undefined ? p.lightOn : (p.lightState !== undefined ? p.lightState : p.light);
 
 				// Umrechnung von 0/1 oder "on"/"off" in echtes Boolean für ioBroker
 				if (actualHeat !== undefined && actualHeat !== null) {
 					await this.setState('heatOn', !!(actualHeat === 1 || actualHeat === true || actualHeat === 'on'), true);
-				} else if (p.online) {
-					await this.setState('heatOn', false, true);
 				}
 
 				if (actualLight !== undefined && actualLight !== null) {
 					await this.setState('lightOn', !!(actualLight === 1 || actualLight === true || actualLight === 'on'), true);
-				} else if (p.online) {
-					await this.setState('lightOn', false, true);
 				}
 
 				// Fernstart-Bereitschaft (Wurde die Sicherheitskette am Panel quittiert?)
