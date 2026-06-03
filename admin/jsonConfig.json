@@ -20,6 +20,14 @@
 					"label": "Device ID",
 					"sm": 12,
 					"help": "Leave this field empty and start the adapter to find the ID automatically in the ioBroker log (Discovery)."
+				},
+				"pollInterval": {
+					"type": "number",
+					"label": "Polling Interval (seconds)",
+					"min": 30,
+					"max": 600,
+					"def": 60,
+					"sm": 6
 				}
 			}
 		}

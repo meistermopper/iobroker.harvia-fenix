@@ -278,7 +278,8 @@ class HarviaFenix extends utils.Adapter {
         await this.setState("online", false, true);
       }
     } finally {
-      this.updateInterval = this.setTimeout(() => this.updateStatus(), 60 * 1e3);
+      const interval = (this.config.pollInterval || 60) * 1e3;
+      this.updateInterval = this.setTimeout(() => this.updateStatus(), interval);
     }
   }
   async setSaunaState(stateName, value, isRetry = false) {

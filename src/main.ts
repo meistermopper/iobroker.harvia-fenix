@@ -334,7 +334,8 @@ class HarviaFenix extends utils.Adapter {
 				await this.setState('online', false, true);
 			}
 		} finally {
-			this.updateInterval = this.setTimeout(() => this.updateStatus(), 60 * 1000);
+			const interval = (this.config.pollInterval || 60) * 1000;
+			this.updateInterval = this.setTimeout(() => this.updateStatus(), interval);
 		}
 	}
 

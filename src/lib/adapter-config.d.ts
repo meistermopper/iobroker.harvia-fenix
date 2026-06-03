@@ -7,6 +7,7 @@ declare global {
 			username: string;
 			password: string;
 			deviceId: string;
+			pollInterval: number;
 		}
 	}
 }
