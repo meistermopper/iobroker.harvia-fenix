@@ -5,7 +5,8 @@
 // The adapter-core module gives you access to the core ioBroker functions
 // you need to create an adapter
 import * as utils from '@iobroker/adapter-core';
-import axios, { AxiosInstance } from 'axios';
+import axios from 'axios';
+import type { AxiosInstance } from 'axios';
 
 // Harvia API Konstanten
 const CLIENT_ID = '24emhb2mm0v4sscqhbdev86b2v';
@@ -42,8 +43,8 @@ class HarviaFenix extends utils.Adapter {
 		this.client = axios.create({
 			timeout: 20000,
 			headers: {
-				'User-Agent': 'ioBroker.harvia-fenix/0.0.1'
-			}
+				'User-Agent': 'ioBroker.harvia-fenix/0.0.1',
+			},
 		});
 	}
 
@@ -109,7 +110,7 @@ class HarviaFenix extends utils.Adapter {
 			this.dataBaseUrl = ep.data.https;
 			this.deviceBaseUrl = ep.device.https;
 			this.authUrl = `${ep.generics.https}/auth/token`;
-			this.log.info(`API configuration loaded: Data=${this.dataBaseUrl}, Device=${this.deviceBaseUrl}`);
+			this.log.info(`API configuration loaded: Data=${this.dataBaseUrl}, Device=${this.deviceBaseUrl}`,);
 			return true;
 		} catch (err: any) {
 			this.log.error(`Error loading API configuration: ${err.message}`);
@@ -126,18 +127,24 @@ class HarviaFenix extends utils.Adapter {
 				await this.wait(500);
 				checks++;
 			}
-			if (this.idToken) return true;
+			if (this.idToken) {
+				return true;
+			}
 		}
-		if (this.isLoggingIn) return false;
+		if (this.isLoggingIn) {
+			return false;
+		}
 		this.isLoggingIn = true;
 
 		try {
-			if (!this.authUrl && !(await this.fetchConfig())) return false;
+			if (!this.authUrl && !(await this.fetchConfig())) {
+				return false;
+			}
 
 			const response = await this.client.post(this.authUrl, {
 				username: this.config.username,
 				password: this.config.password,
-				client_id: CLIENT_ID
+				client_id: CLIENT_ID,
 			});
 			this.idToken = response.data.idToken; // JWT-Token
 			await this.setState('info.connection', true, true);
@@ -154,7 +161,7 @@ class HarviaFenix extends utils.Adapter {
 	private async startCloudConnection(): Promise<void> {
 		if (await this.login()) {
 			await this.discoverDevices();
-			this.updateStatus(); // Ersten Poll starten
+			void this.updateStatus(); // Ersten Poll starten
 			this.loginInterval = this.setInterval(() => this.login(), 50 * 60 * 1000);
 		} else {
 			this.log.warn('Initial login failed. Retrying in 5 minutes...');
@@ -164,7 +171,9 @@ class HarviaFenix extends utils.Adapter {
 
 	private async discoverDevices(): Promise<void> {
 		try {
-			if (!this.idToken || !this.deviceBaseUrl) return;
+			if (!this.idToken || !this.deviceBaseUrl) {
+				return;
+			}
 
 			const baseUrl = this.deviceBaseUrl.replace(/\/$/, '');
 			// Wir versuchen die Liste der Geräte abzurufen
@@ -174,8 +183,8 @@ class HarviaFenix extends utils.Adapter {
 
 			const response = await this.client.get(url, {
 				headers: {
-					'Authorization': `Bearer ${this.idToken}`,
-					'x-harvia-partner-id': PARTNER_ID
+					Authorization: `Bearer ${this.idToken}`,
+					'x-harvia-partner-id': PARTNER_ID,
 				}
 			});
 
@@ -194,7 +203,9 @@ class HarviaFenix extends utils.Adapter {
 						// Für den aktuellen Lauf verwenden wir die gefundene ID.
 						this.config.deviceId = actualId;
 					} else if (this.config.deviceId !== actualId) {
-						this.log.warn(`Configured Device ID (${this.config.deviceId}) does not match found ID (${actualId}). Please check settings.`);
+						this.log.warn(
+							`Configured Device ID (${this.config.deviceId}) does not match found ID (${actualId}). Please check settings.`,
+						);
 					}
 
 					// Statische Attribute direkt beim Start auslesen
@@ -213,10 +224,10 @@ class HarviaFenix extends utils.Adapter {
 									await this.setState('totalSessions', Math.round(parseInt(a.value)), true);
 									break;
 								case 'stats.totalBathingHours.C1': // Im Skript war es totalBathingHours
-									await this.setState('totalBathingHours', Math.round(parseFloat(a.value) * 100) / 100, true);
+									await this.setState('totalBathingHours', Math.round(parseFloat(a.value) * 100) / 100, true,);
 									break;
 								case 'stats.totalOperatingHours.C1':
-									await this.setState('totalOperatingHours', Math.round(parseFloat(a.value) * 100) / 100, true);
+									await this.setState('totalOperatingHours', Math.round(parseFloat(a.value) * 100) / 100, true,);
 									break;
 								case 'BT_MAC':
 									this.log.debug(`Bluetooth MAC: ${a.value}`);
@@ -235,7 +246,9 @@ class HarviaFenix extends utils.Adapter {
 
 	private async updateStatus(): Promise<void> {
 		try {
-			if (!this.idToken || !this.dataBaseUrl) return;
+			if (!this.idToken || !this.dataBaseUrl) {
+				return;
+			}
 
 			const url = `${this.dataBaseUrl.replace(/\/$/, '')}/data/latest-data`; // Der Pfad aus dem JS-Skript
 
@@ -245,10 +258,10 @@ class HarviaFenix extends utils.Adapter {
 				params: { deviceId: this.config.deviceId },
 				headers: {
 					// Header aus dem JS-Skript und den erfolgreichen Aufrufen
-					'Accept': 'application/json',
+					Accept: 'application/json',
 					'x-harvia-app-id': CLIENT_ID,
 					'x-harvia-partner-id': PARTNER_ID,
-					'Authorization': `Bearer ${this.idToken}`,
+					Authorization: `Bearer ${this.idToken}`,
 				}
 			});
 
@@ -262,7 +275,9 @@ class HarviaFenix extends utils.Adapter {
 				// LATENZ-SCHUTZ: Wenn wir vor weniger als LATENCY_MS einen Befehl gesendet haben,
 				// ignorieren wir dieses Update, um UI-Springen zu verhindern.
 				if (Date.now() - this.lastCommandTime < LATENCY_MS) {
-					this.log.debug(`Polling ignoriert wegen Latency-Schutz (${LATENCY_MS}ms). Letzter Befehl vor ${Date.now() - this.lastCommandTime}ms.`);
+					this.log.debug(
+						`Polling ignoriert wegen Latency-Schutz (${LATENCY_MS}ms). Letzter Befehl vor ${Date.now() - this.lastCommandTime}ms.`,
+					);
 					return;
 				}
 
@@ -275,21 +290,25 @@ class HarviaFenix extends utils.Adapter {
 				if (p.online) {
 					const actualHeat = p.heatState !== undefined ? p.heatState : p.heat;
 					const currentHeatOnState = (await this.getStateAsync('heatOn'))?.val;
-					const isHeatingExpected = (actualHeat === 1 || actualHeat === true || actualHeat === 'on');
+					const isHeatingExpected = actualHeat === 1 || actualHeat === true || actualHeat === 'on';
 
 					if (isHeatingExpected && !currentHeatOnState) {
-						this.log.warn(`Expected heatOn=true, but ioBroker state is false. Raw data: ${JSON.stringify(p)}`);
+						this.log.warn(`Expected heatOn=true, but ioBroker state is false. Raw data: ${JSON.stringify(p)}`,);
 					} else if (actualHeat === undefined) {
-						this.log.warn(`Heat status undefined in API response, but device is online. Raw data: ${JSON.stringify(p)}`);
+						this.log.warn(`Heat status undefined in API response, but device is online. Raw data: ${JSON.stringify(p)}`,);
 					}
 				}
 
 				// NORMALISIERUNG: Harvia nutzt je nach Modell 'temp' oder 'temperature'.
 				const currentTemp = p.temperature !== undefined ? p.temperature : p.temp;
-				if (currentTemp !== undefined) await this.setState('temp', Math.round(parseFloat(currentTemp) * 10) / 10, true);
+				if (currentTemp !== undefined) {
+					await this.setState('temp', Math.round(parseFloat(currentTemp) * 10) / 10, true);
+				}
 
 				const pPanelTemp = p.panelTemp !== undefined ? p.panelTemp : p.panelTemperature;
-				if (pPanelTemp !== undefined) await this.setState('panelTemp', Math.round(parseFloat(pPanelTemp) * 10) / 10, true);
+				if (pPanelTemp !== undefined) {
+					await this.setState('panelTemp', Math.round(parseFloat(pPanelTemp) * 10) / 10, true);
+				}
 
 				// Normalisierung der Heizleistung (heaterPower vs power)
 				let currentPower = p.heaterPower !== undefined ? p.heaterPower : p.power;
@@ -298,25 +317,34 @@ class HarviaFenix extends utils.Adapter {
 					await this.setState('heaterPower', currentPower, true);
 				}
 
-				if (p.totalBathingHours !== undefined) await this.setState('totalBathingHours', Math.round(parseFloat(p.totalBathingHours) * 100) / 100, true);
-				if (p.totalSessions !== undefined) await this.setState('totalSessions', Math.round(parseInt(p.totalSessions)), true);
-				if (p.totalHours !== undefined) await this.setState('totalOperatingHours', Math.round(parseFloat(p.totalHours) * 100) / 100, true);
+				if (p.totalBathingHours !== undefined) {
+					await this.setState('totalBathingHours', Math.round(parseFloat(p.totalBathingHours) * 100) / 100, true);
+				}
+				if (p.totalSessions !== undefined) {
+					await this.setState('totalSessions', Math.round(parseInt(p.totalSessions)), true);
+				}
+				if (p.totalHours !== undefined) {
+					await this.setState('totalOperatingHours', Math.round(parseFloat(p.totalHours) * 100) / 100, true);
+				}
 
 				const tTemp = p.targetTemperature !== undefined ? p.targetTemperature : p.targetTemp;
-				if (tTemp !== undefined) await this.setState('targetTemp', parseFloat(tTemp), true);
+				if (tTemp !== undefined) {
+					await this.setState('targetTemp', parseFloat(tTemp), true);
+				}
 
 				// STATUS-FIX (Licht/Heizung): Robuste Abfrage durch Prüfung von State-Feldern und Basis-Feldern.
 				// Manche Cloud-Versionen lassen Felder bei 'off' komplett weg oder nutzen alternative Namen.
-				const actualHeat = p.heatOn !== undefined ? p.heatOn : (p.heatState !== undefined ? p.heatState : p.heat);
-				const actualLight = p.lightOn !== undefined ? p.lightOn : (p.lightState !== undefined ? p.lightState : p.light);
+				const actualHeat = p.heatOn !== undefined ? p.heatOn : p.heatState !== undefined ? p.heatState : p.heat;
+				const actualLight =
+					p.lightOn !== undefined ? p.lightOn : p.lightState !== undefined ? p.lightState : p.light;
 
 				// Umrechnung von 0/1 oder "on"/"off" in echtes Boolean für ioBroker
 				if (actualHeat !== undefined && actualHeat !== null) {
-					await this.setState('heatOn', !!(actualHeat === 1 || actualHeat === true || actualHeat === 'on'), true);
+					await this.setState('heatOn', !!(actualHeat === 1 || actualHeat === true || actualHeat === 'on'), true,);
 				}
 
 				if (actualLight !== undefined && actualLight !== null) {
-					await this.setState('lightOn', !!(actualLight === 1 || actualLight === true || actualLight === 'on'), true);
+					await this.setState('lightOn', !!(actualLight === 1 || actualLight === true || actualLight === 'on'), true,);
 				}
 
 				// Fernstart-Bereitschaft (Wurde die Sicherheitskette am Panel quittiert?)
@@ -331,9 +359,11 @@ class HarviaFenix extends utils.Adapter {
 			}
 		} catch (err: any) {
 			if (err.response?.status === 401) {
-				this.login();
+				void this.login();
 			} else {
-				this.log.error(`Status poll failed (${err.response?.status}): ${err.message}. Response Data: ${JSON.stringify(err.response?.data)}`);
+				this.log.error(
+					`Status poll failed (${err.response?.status}): ${err.message}. Response Data: ${JSON.stringify(err.response?.data)}`,
+				);
 				await this.setState('online', false, true);
 			}
 		} finally {
@@ -343,9 +373,13 @@ class HarviaFenix extends utils.Adapter {
 	}
 
 	private async setSaunaState(stateName: string, value: any, isRetry: boolean = false): Promise<void> {
-		if (!this.idToken || !this.deviceBaseUrl) return;
+		if (!this.idToken || !this.deviceBaseUrl) {
+			return;
+		}
 		// Lock-Check: Nur blockieren, wenn es kein interner Retry ist
-		if (this.isSendingCommand && !isRetry) return;
+		if (this.isSendingCommand && !isRetry) {
+			return;
+		}
 		// RACE-CONDITION-SCHUTZ:
 		const baseUrl = this.deviceBaseUrl.replace(/\/$/, '');
 		const devicesUrl = baseUrl.endsWith('/devices') ? baseUrl : `${baseUrl}/devices`;
@@ -355,18 +389,22 @@ class HarviaFenix extends utils.Adapter {
 			if (stateName === 'heatOn' || stateName === 'lightOn') {
 				const commandType = stateName === 'heatOn' ? 'SAUNA' : 'LIGHTS';
 				const stateStr = value ? 'on' : 'off';
-				const payload = { deviceId: this.config.deviceId, cabin: { id: 'C1' }, command: { type: commandType, state: stateStr } };
+				const payload = {
+					deviceId: this.config.deviceId,
+					cabin: { id: 'C1' },
+					command: { type: commandType, state: stateStr },
+				};
 
 				const url = `${devicesUrl}/command`;
 
 				const resp = await this.client.post(url, payload, {
 					// Header aus dem JS-Skript und den erfolgreichen Aufrufen
 					headers: {
-						'Authorization': `Bearer ${this.idToken.trim()}`, // .trim() aus JS-Skript
+						Authorization: `Bearer ${this.idToken.trim()}`, // .trim() aus JS-Skript
 						'Content-Type': 'application/json',
 						'x-harvia-partner-id': PARTNER_ID,
-						'x-harvia-app-id': CLIENT_ID
-					}
+						'x-harvia-app-id': CLIENT_ID,
+					},
 				});
 
 				if (resp.data && resp.data.handled) {
@@ -391,11 +429,11 @@ class HarviaFenix extends utils.Adapter {
 
 				await this.client.patch(url, payload, {
 					headers: {
-						'Authorization': `Bearer ${this.idToken.trim()}`, // .trim() aus JS-Skript
+						Authorization: `Bearer ${this.idToken.trim()}`, // .trim() aus JS-Skript
 						'Content-Type': 'application/json',
 						'x-harvia-partner-id': PARTNER_ID,
-						'x-harvia-app-id': CLIENT_ID
-					}
+						'x-harvia-app-id': CLIENT_ID,
+					},
 				});
 				this.log.info(`Target temperature -> ${value}°C`);
 				// Sofortige Bestätigung im ioBroker
@@ -431,6 +469,8 @@ class HarviaFenix extends utils.Adapter {
 
 	/**
 	 * Is called when adapter shuts down - callback has to be called under any circumstances!
+	 *
+	 * @param callback - Callback to be called after shutdown logic
 	 */
 	private onUnload(callback: () => void): void {
 		try {
@@ -447,12 +487,12 @@ class HarviaFenix extends utils.Adapter {
 	 */
 	private lastEventTime: { [id: string]: number } = {}; // Für Entprellung
 
-	private wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+	private wait = (ms: number): Promise<void> => new Promise((resolve) => setTimeout(resolve, ms));
 
 	// Interne Hilfsfunktion zur Entprellung von ioBroker-Events (Race Condition Schutz)
 	private shouldProcess(id: string): boolean {
 		const now = Date.now();
-		if (this.lastEventTime[id] && (now - this.lastEventTime[id] < 1500)) {
+		if (this.lastEventTime[id] && now - this.lastEventTime[id] < 1500) {
 			return false; // Ignoriere Events innerhalb von 1500ms (VIS-Prellen)
 		}
 		this.lastEventTime[id] = now;
@@ -463,7 +503,9 @@ class HarviaFenix extends utils.Adapter {
 		if (state && !state.ack) {
 			const stateId = id.split('.').pop();
 			if (stateId === 'heatOn') {
-				if (!this.shouldProcess(id)) return;
+				if (!this.shouldProcess(id)) {
+					return;
+				}
 				// Konvertierung sicherstellen (VIS sendet oft Strings)
 				const val = state.val === true || state.val === 'true' || state.val === 1;
 
@@ -476,13 +518,17 @@ class HarviaFenix extends utils.Adapter {
 					await this.setSaunaState('heatOn', val);
 				}
 			} else if (stateId === 'lightOn' || stateId === 'targetTemp') {
-				if (!this.shouldProcess(id)) return;
+				if (!this.shouldProcess(id)) {
+					return;
+				}
 				// Konvertierung sicherstellen (VIS sendet oft Strings)
 				let val: any = state.val;
 				if (stateId === 'targetTemp') {
 					val = parseFloat(state.val as string);
 					if (isNaN(val) || val < MIN_TARGET_TEMP || val > MAX_TARGET_TEMP) {
-						this.log.warn(`Invalid target temperature (${state.val}°C) received. Allowed range: ${MIN_TARGET_TEMP}-${MAX_TARGET_TEMP}°C. Resetting to default (${MAX_TARGET_TEMP}°C).`);
+						this.log.warn(
+							`Invalid target temperature (${state.val}°C) received. Allowed range: ${MIN_TARGET_TEMP}-${MAX_TARGET_TEMP}°C. Resetting to default (${MAX_TARGET_TEMP}°C).`,
+						);
 						await this.setState('targetTemp', MAX_TARGET_TEMP, true); // Reset to default or max
 						await this.setState('errorMsg', `Invalid target temperature: ${state.val}°C`, true);
 						return;

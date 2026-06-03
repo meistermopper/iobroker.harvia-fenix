@@ -118,12 +118,18 @@ class HarviaFenix extends utils.Adapter {
         await this.wait(500);
         checks++;
       }
-      if (this.idToken) return true;
+      if (this.idToken) {
+        return true;
+      }
     }
-    if (this.isLoggingIn) return false;
+    if (this.isLoggingIn) {
+      return false;
+    }
     this.isLoggingIn = true;
     try {
-      if (!this.authUrl && !await this.fetchConfig()) return false;
+      if (!this.authUrl && !await this.fetchConfig()) {
+        return false;
+      }
       const response = await this.client.post(this.authUrl, {
         username: this.config.username,
         password: this.config.password,
@@ -143,7 +149,7 @@ class HarviaFenix extends utils.Adapter {
   async startCloudConnection() {
     if (await this.login()) {
       await this.discoverDevices();
-      this.updateStatus();
+      void this.updateStatus();
       this.loginInterval = this.setInterval(() => this.login(), 50 * 60 * 1e3);
     } else {
       this.log.warn("Initial login failed. Retrying in 5 minutes...");
@@ -153,13 +159,15 @@ class HarviaFenix extends utils.Adapter {
   async discoverDevices() {
     var _a;
     try {
-      if (!this.idToken || !this.deviceBaseUrl) return;
+      if (!this.idToken || !this.deviceBaseUrl) {
+        return;
+      }
       const baseUrl = this.deviceBaseUrl.replace(/\/$/, "");
       const url = baseUrl.endsWith("/devices") ? baseUrl : `${baseUrl}/devices`;
       this.log.info(`Searching for devices at: ${url}`);
       const response = await this.client.get(url, {
         headers: {
-          "Authorization": `Bearer ${this.idToken}`,
+          Authorization: `Bearer ${this.idToken}`,
           "x-harvia-partner-id": PARTNER_ID
         }
       });
@@ -173,7 +181,9 @@ class HarviaFenix extends utils.Adapter {
             this.log.warn(`Device ID not set in adapter configuration. Using found ID: ${actualId}`);
             this.config.deviceId = actualId;
           } else if (this.config.deviceId !== actualId) {
-            this.log.warn(`Configured Device ID (${this.config.deviceId}) does not match found ID (${actualId}). Please check settings.`);
+            this.log.warn(
+              `Configured Device ID (${this.config.deviceId}) does not match found ID (${actualId}). Please check settings.`
+            );
           }
           if (Array.isArray(d.attr)) {
             for (const a of d.attr) {
@@ -210,17 +220,19 @@ class HarviaFenix extends utils.Adapter {
   async updateStatus() {
     var _a, _b, _c, _d, _e;
     try {
-      if (!this.idToken || !this.dataBaseUrl) return;
+      if (!this.idToken || !this.dataBaseUrl) {
+        return;
+      }
       const url = `${this.dataBaseUrl.replace(/\/$/, "")}/data/latest-data`;
       this.log.debug(`Poll Status: ${url} (ID: ${this.config.deviceId})`);
       const response = await this.client.get(url, {
         params: { deviceId: this.config.deviceId },
         headers: {
           // Header aus dem JS-Skript und den erfolgreichen Aufrufen
-          "Accept": "application/json",
+          Accept: "application/json",
           "x-harvia-app-id": CLIENT_ID,
           "x-harvia-partner-id": PARTNER_ID,
-          "Authorization": `Bearer ${this.idToken}`
+          Authorization: `Bearer ${this.idToken}`
         }
       });
       if (response.data) {
@@ -229,7 +241,9 @@ class HarviaFenix extends utils.Adapter {
       const p = ((_a = response.data) == null ? void 0 : _a.data) || response.data;
       if (p && typeof p === "object") {
         if (Date.now() - this.lastCommandTime < LATENCY_MS) {
-          this.log.debug(`Polling ignoriert wegen Latency-Schutz (${LATENCY_MS}ms). Letzter Befehl vor ${Date.now() - this.lastCommandTime}ms.`);
+          this.log.debug(
+            `Polling ignoriert wegen Latency-Schutz (${LATENCY_MS}ms). Letzter Befehl vor ${Date.now() - this.lastCommandTime}ms.`
+          );
           return;
         }
         if (p.online) {
@@ -243,19 +257,31 @@ class HarviaFenix extends utils.Adapter {
           }
         }
         const currentTemp = p.temperature !== void 0 ? p.temperature : p.temp;
-        if (currentTemp !== void 0) await this.setState("temp", Math.round(parseFloat(currentTemp) * 10) / 10, true);
+        if (currentTemp !== void 0) {
+          await this.setState("temp", Math.round(parseFloat(currentTemp) * 10) / 10, true);
+        }
         const pPanelTemp = p.panelTemp !== void 0 ? p.panelTemp : p.panelTemperature;
-        if (pPanelTemp !== void 0) await this.setState("panelTemp", Math.round(parseFloat(pPanelTemp) * 10) / 10, true);
+        if (pPanelTemp !== void 0) {
+          await this.setState("panelTemp", Math.round(parseFloat(pPanelTemp) * 10) / 10, true);
+        }
         let currentPower = p.heaterPower !== void 0 ? p.heaterPower : p.power;
         if (currentPower !== void 0) {
           currentPower = Math.round(parseFloat(currentPower) / 1e3 * 100) / 100;
           await this.setState("heaterPower", currentPower, true);
         }
-        if (p.totalBathingHours !== void 0) await this.setState("totalBathingHours", Math.round(parseFloat(p.totalBathingHours) * 100) / 100, true);
-        if (p.totalSessions !== void 0) await this.setState("totalSessions", Math.round(parseInt(p.totalSessions)), true);
-        if (p.totalHours !== void 0) await this.setState("totalOperatingHours", Math.round(parseFloat(p.totalHours) * 100) / 100, true);
+        if (p.totalBathingHours !== void 0) {
+          await this.setState("totalBathingHours", Math.round(parseFloat(p.totalBathingHours) * 100) / 100, true);
+        }
+        if (p.totalSessions !== void 0) {
+          await this.setState("totalSessions", Math.round(parseInt(p.totalSessions)), true);
+        }
+        if (p.totalHours !== void 0) {
+          await this.setState("totalOperatingHours", Math.round(parseFloat(p.totalHours) * 100) / 100, true);
+        }
         const tTemp = p.targetTemperature !== void 0 ? p.targetTemperature : p.targetTemp;
-        if (tTemp !== void 0) await this.setState("targetTemp", parseFloat(tTemp), true);
+        if (tTemp !== void 0) {
+          await this.setState("targetTemp", parseFloat(tTemp), true);
+        }
         const actualHeat = p.heatOn !== void 0 ? p.heatOn : p.heatState !== void 0 ? p.heatState : p.heat;
         const actualLight = p.lightOn !== void 0 ? p.lightOn : p.lightState !== void 0 ? p.lightState : p.light;
         if (actualHeat !== void 0 && actualHeat !== null) {
@@ -274,9 +300,11 @@ class HarviaFenix extends utils.Adapter {
       }
     } catch (err) {
       if (((_c = err.response) == null ? void 0 : _c.status) === 401) {
-        this.login();
+        void this.login();
       } else {
-        this.log.error(`Status poll failed (${(_d = err.response) == null ? void 0 : _d.status}): ${err.message}. Response Data: ${JSON.stringify((_e = err.response) == null ? void 0 : _e.data)}`);
+        this.log.error(
+          `Status poll failed (${(_d = err.response) == null ? void 0 : _d.status}): ${err.message}. Response Data: ${JSON.stringify((_e = err.response) == null ? void 0 : _e.data)}`
+        );
         await this.setState("online", false, true);
       }
     } finally {
@@ -285,8 +313,12 @@ class HarviaFenix extends utils.Adapter {
     }
   }
   async setSaunaState(stateName, value, isRetry = false) {
-    if (!this.idToken || !this.deviceBaseUrl) return;
-    if (this.isSendingCommand && !isRetry) return;
+    if (!this.idToken || !this.deviceBaseUrl) {
+      return;
+    }
+    if (this.isSendingCommand && !isRetry) {
+      return;
+    }
     const baseUrl = this.deviceBaseUrl.replace(/\/$/, "");
     const devicesUrl = baseUrl.endsWith("/devices") ? baseUrl : `${baseUrl}/devices`;
     this.isSendingCommand = true;
@@ -294,12 +326,16 @@ class HarviaFenix extends utils.Adapter {
       if (stateName === "heatOn" || stateName === "lightOn") {
         const commandType = stateName === "heatOn" ? "SAUNA" : "LIGHTS";
         const stateStr = value ? "on" : "off";
-        const payload = { deviceId: this.config.deviceId, cabin: { id: "C1" }, command: { type: commandType, state: stateStr } };
+        const payload = {
+          deviceId: this.config.deviceId,
+          cabin: { id: "C1" },
+          command: { type: commandType, state: stateStr }
+        };
         const url = `${devicesUrl}/command`;
         const resp = await this.client.post(url, payload, {
           // Header aus dem JS-Skript und den erfolgreichen Aufrufen
           headers: {
-            "Authorization": `Bearer ${this.idToken.trim()}`,
+            Authorization: `Bearer ${this.idToken.trim()}`,
             // .trim() aus JS-Skript
             "Content-Type": "application/json",
             "x-harvia-partner-id": PARTNER_ID,
@@ -326,7 +362,7 @@ class HarviaFenix extends utils.Adapter {
         const url = `${devicesUrl}/target`;
         await this.client.patch(url, payload, {
           headers: {
-            "Authorization": `Bearer ${this.idToken.trim()}`,
+            Authorization: `Bearer ${this.idToken.trim()}`,
             // .trim() aus JS-Skript
             "Content-Type": "application/json",
             "x-harvia-partner-id": PARTNER_ID,
@@ -358,6 +394,8 @@ class HarviaFenix extends utils.Adapter {
   }
   /**
    * Is called when adapter shuts down - callback has to be called under any circumstances!
+   *
+   * @param callback - Callback to be called after shutdown logic
    */
   onUnload(callback) {
     try {
@@ -388,7 +426,9 @@ class HarviaFenix extends utils.Adapter {
     if (state && !state.ack) {
       const stateId = id.split(".").pop();
       if (stateId === "heatOn") {
-        if (!this.shouldProcess(id)) return;
+        if (!this.shouldProcess(id)) {
+          return;
+        }
         const val = state.val === true || state.val === "true" || state.val === 1;
         const isRemoteReady = (_a = await this.getStateAsync("remoteControl")) == null ? void 0 : _a.val;
         if (val && !isRemoteReady) {
@@ -399,12 +439,16 @@ class HarviaFenix extends utils.Adapter {
           await this.setSaunaState("heatOn", val);
         }
       } else if (stateId === "lightOn" || stateId === "targetTemp") {
-        if (!this.shouldProcess(id)) return;
+        if (!this.shouldProcess(id)) {
+          return;
+        }
         let val = state.val;
         if (stateId === "targetTemp") {
           val = parseFloat(state.val);
           if (isNaN(val) || val < MIN_TARGET_TEMP || val > MAX_TARGET_TEMP) {
-            this.log.warn(`Invalid target temperature (${state.val}\xB0C) received. Allowed range: ${MIN_TARGET_TEMP}-${MAX_TARGET_TEMP}\xB0C. Resetting to default (${MAX_TARGET_TEMP}\xB0C).`);
+            this.log.warn(
+              `Invalid target temperature (${state.val}\xB0C) received. Allowed range: ${MIN_TARGET_TEMP}-${MAX_TARGET_TEMP}\xB0C. Resetting to default (${MAX_TARGET_TEMP}\xB0C).`
+            );
             await this.setState("targetTemp", MAX_TARGET_TEMP, true);
             await this.setState("errorMsg", `Invalid target temperature: ${state.val}\xB0C`, true);
             return;
