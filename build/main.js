@@ -45,7 +45,12 @@ class HarviaFenix extends utils.Adapter {
     this.on("ready", this.onReady.bind(this));
     this.on("stateChange", this.onStateChange.bind(this));
     this.on("unload", this.onUnload.bind(this));
-    this.client = import_axios.default.create({ timeout: 2e4 });
+    this.client = import_axios.default.create({
+      timeout: 2e4,
+      headers: {
+        "User-Agent": "ioBroker.harvia-fenix/0.0.1"
+      }
+    });
   }
   /**
    * Is called when databases are connected and adapter received configuration.
@@ -84,11 +89,12 @@ class HarviaFenix extends utils.Adapter {
   async fetchConfig() {
     try {
       const response = await this.client.get("https://api.harvia.io/endpoints");
+      this.log.debug(`Endpoints Response: ${JSON.stringify(response.data)}`);
       const ep = response.data.endpoints.RestApi;
       this.dataBaseUrl = ep.data.https;
       this.deviceBaseUrl = ep.device.https;
       this.authUrl = `${ep.generics.https}/auth/token`;
-      this.log.debug(`API Konfiguration geladen: Data=${this.dataBaseUrl}, Device=${this.deviceBaseUrl}`);
+      this.log.info(`API Konfiguration geladen: Data=${this.dataBaseUrl}, Device=${this.deviceBaseUrl}`);
       return true;
     } catch (err) {
       this.log.error(`Fehler beim Laden der API-Konfiguration: ${err.message}`);
@@ -140,7 +146,11 @@ class HarviaFenix extends utils.Adapter {
       });
       const devices = ((_a = response.data) == null ? void 0 : _a.devices) || [];
       if (devices.length > 0) {
-        this.log.info(`Erfolgreich! Gefundene Ger\xE4te im Account: ${devices.map((d) => `${d.name || "Sauna"} -> ID: ${d.deviceId || d.id || "nicht gefunden"}`).join(", ")}`);
+        this.log.info(`Gefundene Ger\xE4te: ${devices.length}`);
+        for (const d of devices) {
+          this.log.info(`Ger\xE4t Details: ${JSON.stringify(d)}`);
+          this.log.info(`Vorschlag f\xFCr Device-ID: ${d.deviceId || d.id || d.name || "unbekannt"}`);
+        }
       } else {
         this.log.warn("Login erfolgreich, aber keine Ger\xE4te im Harvia-Account gefunden.");
       }
@@ -152,7 +162,8 @@ class HarviaFenix extends utils.Adapter {
     var _a, _b, _c;
     try {
       if (!this.idToken || !this.dataBaseUrl) return;
-      const url = `${this.dataBaseUrl.replace(/\/$/, "")}/latest-data`;
+      const baseUrl = this.dataBaseUrl.replace(/\/$/, "");
+      const url = `${baseUrl}/data`;
       this.log.debug(`Frage Status ab (URL: ${url}, Device: ${this.config.deviceId})`);
       const response = await this.client.get(url, {
         params: { deviceId: this.config.deviceId },

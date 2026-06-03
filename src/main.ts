@@ -36,7 +36,12 @@ class HarviaFenix extends utils.Adapter {
 		// this.on('message', this.onMessage.bind(this));
 		this.on('unload', this.onUnload.bind(this));
 
-		this.client = axios.create({ timeout: 20000 });
+		this.client = axios.create({
+			timeout: 20000,
+			headers: {
+				'User-Agent': 'ioBroker.harvia-fenix/0.0.1'
+			}
+		});
 	}
 
 	/**
@@ -86,11 +91,12 @@ class HarviaFenix extends utils.Adapter {
 	private async fetchConfig(): Promise<boolean> {
 		try {
 			const response = await this.client.get('https://api.harvia.io/endpoints');
+			this.log.debug(`Endpoints Response: ${JSON.stringify(response.data)}`);
 			const ep = response.data.endpoints.RestApi;
 			this.dataBaseUrl = ep.data.https;
 			this.deviceBaseUrl = ep.device.https;
 			this.authUrl = `${ep.generics.https}/auth/token`;
-			this.log.debug(`API Konfiguration geladen: Data=${this.dataBaseUrl}, Device=${this.deviceBaseUrl}`);
+			this.log.info(`API Konfiguration geladen: Data=${this.dataBaseUrl}, Device=${this.deviceBaseUrl}`);
 			return true;
 		} catch (err: any) {
 			this.log.error(`Fehler beim Laden der API-Konfiguration: ${err.message}`);
@@ -151,8 +157,12 @@ class HarviaFenix extends utils.Adapter {
 
 			const devices = response.data?.devices || [];
 			if (devices.length > 0) {
-				// Wir loggen das ganze Objekt, falls die ID in einem anderen Feld steckt (z.B. "id")
-				this.log.info(`Erfolgreich! Gefundene Geräte im Account: ${devices.map((d: any) => `${d.name || 'Sauna'} -> ID: ${d.deviceId || d.id || 'nicht gefunden'}`).join(', ')}`);
+				this.log.info(`Gefundene Geräte: ${devices.length}`);
+				for (const d of devices) {
+					// Wir loggen das komplette Objekt als String, um die Struktur zu sehen
+					this.log.info(`Gerät Details: ${JSON.stringify(d)}`);
+					this.log.info(`Vorschlag für Device-ID: ${d.deviceId || d.id || d.name || 'unbekannt'}`);
+				}
 			} else {
 				this.log.warn('Login erfolgreich, aber keine Geräte im Harvia-Account gefunden.');
 			}
@@ -165,8 +175,13 @@ class HarviaFenix extends utils.Adapter {
 		try {
 			if (!this.idToken || !this.dataBaseUrl) return;
 
-			// Wir vereinfachen die URL: Die meisten Endpunkte hängen direkt an der Basis
-			const url = `${this.dataBaseUrl.replace(/\/$/, '')}/latest-data`;
+			const baseUrl = this.dataBaseUrl.replace(/\/$/, '');
+			/**
+			 * Bei der Harvia Cloud API ist der Status-Endpunkt oft /data?deviceId=...
+			 * Wenn /data 404/403 liefert, probieren wir /latest-data.
+			 * Wir fangen hier mit /data an.
+			 */
+			const url = `${baseUrl}/data`;
 
 			this.log.debug(`Frage Status ab (URL: ${url}, Device: ${this.config.deviceId})`);
 
