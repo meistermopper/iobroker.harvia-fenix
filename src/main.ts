@@ -194,10 +194,9 @@ class HarviaFenix extends utils.Adapter {
 		try {
 			if (!this.idToken || !this.dataBaseUrl) return;
 
-			// Wir versuchen den Status-Abruf. Falls der Standardpfad fehlschlägt,
-			// haben wir im Catch-Block eine Fallback-Logik.
 			const baseUrl = this.dataBaseUrl.replace(/\/$/, '');
-			const url = `${baseUrl}/data/latest-data`;
+			// Wir nutzen /latest-data, da /data/latest-data einen 404 lieferte.
+			const url = `${baseUrl}/latest-data`;
 
 			this.log.debug(`Poll Status: ${url} (ID: ${this.config.deviceId})`);
 
@@ -205,9 +204,13 @@ class HarviaFenix extends utils.Adapter {
 				params: { deviceId: this.config.deviceId },
 				headers: {
 					'Authorization': `Bearer ${this.idToken}`,
-					'x-harvia-partner-id': PARTNER_ID
+					'x-harvia-partner-id': PARTNER_ID,
+					'Accept': 'application/json',
+					'x-harvia-app-id': CLIENT_ID
 				}
 			});
+
+			this.log.debug(`Poll Response: ${JSON.stringify(response.data)}`);
 
 			const p = response.data?.data;
 			if (p && (Date.now() - this.lastCommandTime > LATENCY_MS)) {
@@ -260,7 +263,12 @@ class HarviaFenix extends utils.Adapter {
 				const url = `${devicesUrl}/command`;
 
 				const resp = await this.client.post(url, payload, {
-					headers: { 'Authorization': `Bearer ${this.idToken}`, 'Content-Type': 'application/json' }
+					headers: {
+						'Authorization': `Bearer ${this.idToken}`,
+						'Content-Type': 'application/json',
+						'x-harvia-partner-id': PARTNER_ID,
+						'x-harvia-app-id': CLIENT_ID
+					}
 				});
 
 				if (resp.data?.handled) {
@@ -273,7 +281,12 @@ class HarviaFenix extends utils.Adapter {
 				const url = `${devicesUrl}/target`;
 
 				await this.client.patch(url, payload, {
-					headers: { 'Authorization': `Bearer ${this.idToken}`, 'Content-Type': 'application/json' }
+					headers: {
+						'Authorization': `Bearer ${this.idToken}`,
+						'Content-Type': 'application/json',
+						'x-harvia-partner-id': PARTNER_ID,
+						'x-harvia-app-id': CLIENT_ID
+					}
 				});
 				await this.setState('targetTemp', parseFloat(value), true);
 				this.lastCommandTime = Date.now();

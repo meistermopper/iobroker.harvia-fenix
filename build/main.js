@@ -181,15 +181,18 @@ class HarviaFenix extends utils.Adapter {
     try {
       if (!this.idToken || !this.dataBaseUrl) return;
       const baseUrl = this.dataBaseUrl.replace(/\/$/, "");
-      const url = `${baseUrl}/data/latest-data`;
+      const url = `${baseUrl}/latest-data`;
       this.log.debug(`Poll Status: ${url} (ID: ${this.config.deviceId})`);
       const response = await this.client.get(url, {
         params: { deviceId: this.config.deviceId },
         headers: {
           "Authorization": `Bearer ${this.idToken}`,
-          "x-harvia-partner-id": PARTNER_ID
+          "x-harvia-partner-id": PARTNER_ID,
+          "Accept": "application/json",
+          "x-harvia-app-id": CLIENT_ID
         }
       });
+      this.log.debug(`Poll Response: ${JSON.stringify(response.data)}`);
       const p = (_a = response.data) == null ? void 0 : _a.data;
       if (p && Date.now() - this.lastCommandTime > LATENCY_MS) {
         const currentTemp = p.temperature !== void 0 ? p.temperature : p.temp;
@@ -232,7 +235,12 @@ class HarviaFenix extends utils.Adapter {
         const payload = { deviceId: this.config.deviceId, cabin: { id: "C1" }, command: { type: commandType, state: stateStr } };
         const url = `${devicesUrl}/command`;
         const resp = await this.client.post(url, payload, {
-          headers: { "Authorization": `Bearer ${this.idToken}`, "Content-Type": "application/json" }
+          headers: {
+            "Authorization": `Bearer ${this.idToken}`,
+            "Content-Type": "application/json",
+            "x-harvia-partner-id": PARTNER_ID,
+            "x-harvia-app-id": CLIENT_ID
+          }
         });
         if ((_a = resp.data) == null ? void 0 : _a.handled) {
           this.log.info(`${commandType} -> ${stateStr}`);
@@ -243,7 +251,12 @@ class HarviaFenix extends utils.Adapter {
         const payload = { deviceId: this.config.deviceId, cabin: { id: "C1" }, temperature: parseFloat(value) };
         const url = `${devicesUrl}/target`;
         await this.client.patch(url, payload, {
-          headers: { "Authorization": `Bearer ${this.idToken}`, "Content-Type": "application/json" }
+          headers: {
+            "Authorization": `Bearer ${this.idToken}`,
+            "Content-Type": "application/json",
+            "x-harvia-partner-id": PARTNER_ID,
+            "x-harvia-app-id": CLIENT_ID
+          }
         });
         await this.setState("targetTemp", parseFloat(value), true);
         this.lastCommandTime = Date.now();
