@@ -155,6 +155,7 @@ class HarviaFenix extends utils.Adapter {
 				await this.setState('remoteControl', p.remoteControlState === 1, true);
 				await this.setState('online', true, true);
 
+				if (p.heaterPower !== undefined) await this.setState('heaterPower', parseFloat(p.heaterPower), true);
 				if (p.panelTemperature !== undefined) await this.setState('panelTemp', parseFloat(p.panelTemperature), true);
 				if (p.totalSessions !== undefined) await this.setState('totalSessions', parseInt(p.totalSessions), true);
 				if (p.totalOperatingHours !== undefined) await this.setState('totalOperatingHours', parseFloat(p.totalOperatingHours), true);
@@ -163,7 +164,7 @@ class HarviaFenix extends utils.Adapter {
 			if (err.response?.status === 401) {
 				this.login();
 			} else {
-				this.log.debug(`Abruf-Fehler: ${err.message}`);
+				this.log.warn(`Abruf-Fehler (Status Update): ${err.message}`);
 				await this.setState('online', false, true);
 			}
 		} finally {
