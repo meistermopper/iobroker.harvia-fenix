@@ -88,6 +88,7 @@ class HarviaFenix extends utils.Adapter {
       this.dataBaseUrl = ep.data.https;
       this.deviceBaseUrl = ep.device.https;
       this.authUrl = `${ep.generics.https}/auth/token`;
+      this.log.debug(`API Konfiguration geladen: Data=${this.dataBaseUrl}, Device=${this.deviceBaseUrl}`);
       return true;
     } catch (err) {
       this.log.error(`Fehler beim Laden der API-Konfiguration: ${err.message}`);
@@ -116,6 +117,7 @@ class HarviaFenix extends utils.Adapter {
   }
   async startCloudConnection() {
     if (await this.login()) {
+      await this.discoverDevices();
       this.updateStatus();
       this.loginInterval = this.setInterval(() => this.login(), 50 * 60 * 1e3);
     } else {
@@ -123,12 +125,42 @@ class HarviaFenix extends utils.Adapter {
       this.updateInterval = this.setTimeout(() => this.startCloudConnection(), 5 * 60 * 1e3);
     }
   }
+  async discoverDevices() {
+    var _a;
+    try {
+      if (!this.idToken || !this.deviceBaseUrl) return;
+      const baseUrl = this.deviceBaseUrl.replace(/\/$/, "");
+      const url = baseUrl.endsWith("/devices") ? baseUrl : `${baseUrl}/devices`;
+      this.log.info(`Suche nach Ger\xE4ten unter: ${url}`);
+      const response = await this.client.get(url, {
+        headers: {
+          "Authorization": `Bearer ${this.idToken}`,
+          "x-harvia-partner-id": PARTNER_ID
+        }
+      });
+      const devices = ((_a = response.data) == null ? void 0 : _a.devices) || [];
+      if (devices.length > 0) {
+        this.log.info(`Erfolgreich! Gefundene Ger\xE4te im Account: ${devices.map((d) => `${d.name || "Sauna"} (ID: ${d.deviceId})`).join(", ")}`);
+      } else {
+        this.log.warn("Login erfolgreich, aber keine Ger\xE4te im Harvia-Account gefunden.");
+      }
+    } catch (err) {
+      this.log.error(`Fehler bei der Ger\xE4tesuche: ${err.message}`);
+    }
+  }
   async updateStatus() {
-    var _a, _b;
+    var _a, _b, _c;
     try {
       if (!this.idToken || !this.dataBaseUrl) return;
-      const response = await this.client.get(`${this.dataBaseUrl}/data/latest-data?deviceId=${this.config.deviceId}`, {
-        headers: { "Authorization": `Bearer ${this.idToken}`, "x-harvia-partner-id": PARTNER_ID }
+      const baseUrl = this.dataBaseUrl.replace(/\/$/, "");
+      const url = baseUrl.endsWith("/data") ? `${baseUrl}/latest-data` : `${baseUrl}/data/latest-data`;
+      this.log.debug(`Frage Status ab (URL: ${url}, Device: ${this.config.deviceId})`);
+      const response = await this.client.get(url, {
+        params: { deviceId: this.config.deviceId },
+        headers: {
+          "Authorization": `Bearer ${this.idToken}`,
+          "x-harvia-partner-id": PARTNER_ID
+        }
       });
       const p = (_a = response.data) == null ? void 0 : _a.data;
       if (p && Date.now() - this.lastCommandTime > LATENCY_MS) {
@@ -142,6 +174,7 @@ class HarviaFenix extends utils.Adapter {
         await this.setState("doorSafety", p.doorSafetyState === 1, true);
         await this.setState("remoteControl", p.remoteControlState === 1, true);
         await this.setState("online", true, true);
+        if (p.heaterPower !== void 0) await this.setState("heaterPower", parseFloat(p.heaterPower), true);
         if (p.panelTemperature !== void 0) await this.setState("panelTemp", parseFloat(p.panelTemperature), true);
         if (p.totalSessions !== void 0) await this.setState("totalSessions", parseInt(p.totalSessions), true);
         if (p.totalOperatingHours !== void 0) await this.setState("totalOperatingHours", parseFloat(p.totalOperatingHours), true);
@@ -150,7 +183,7 @@ class HarviaFenix extends utils.Adapter {
       if (((_b = err.response) == null ? void 0 : _b.status) === 401) {
         this.login();
       } else {
-        this.log.debug(`Abruf-Fehler: ${err.message}`);
+        this.log.error(`Abruf-Fehler (Status Update): ${err.message} - URL war: ${(_c = err.config) == null ? void 0 : _c.url}`);
         await this.setState("online", false, true);
       }
     } finally {
@@ -161,13 +194,16 @@ class HarviaFenix extends utils.Adapter {
     var _a;
     if (!this.idToken || !this.deviceBaseUrl) return;
     if (this.isSendingCommand) return;
+    const baseUrl = this.deviceBaseUrl.replace(/\/$/, "");
+    const devicesUrl = baseUrl.endsWith("/devices") ? baseUrl : `${baseUrl}/devices`;
     this.isSendingCommand = true;
     try {
       if (stateName === "heatOn" || stateName === "lightOn") {
         const commandType = stateName === "heatOn" ? "SAUNA" : "LIGHTS";
         const stateStr = value ? "on" : "off";
         const payload = { deviceId: this.config.deviceId, cabin: { id: "C1" }, command: { type: commandType, state: stateStr } };
-        const resp = await this.client.post(`${this.deviceBaseUrl}/devices/command`, payload, {
+        const url = `${devicesUrl}/command`;
+        const resp = await this.client.post(url, payload, {
           headers: { "Authorization": `Bearer ${this.idToken}`, "Content-Type": "application/json" }
         });
         if ((_a = resp.data) == null ? void 0 : _a.handled) {
@@ -177,7 +213,8 @@ class HarviaFenix extends utils.Adapter {
         }
       } else if (stateName === "targetTemp") {
         const payload = { deviceId: this.config.deviceId, cabin: { id: "C1" }, temperature: parseFloat(value) };
-        await this.client.patch(`${this.deviceBaseUrl}/devices/target`, payload, {
+        const url = `${devicesUrl}/target`;
+        await this.client.patch(url, payload, {
           headers: { "Authorization": `Bearer ${this.idToken}`, "Content-Type": "application/json" }
         });
         await this.setState("targetTemp", parseFloat(value), true);

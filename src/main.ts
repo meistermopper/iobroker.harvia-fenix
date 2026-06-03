@@ -136,11 +136,11 @@ class HarviaFenix extends utils.Adapter {
 		try {
 			if (!this.idToken || !this.deviceBaseUrl) return;
 
-			// Liste alle Geräte ab, die mit dem Account verknüpft sind
 			const baseUrl = this.deviceBaseUrl.replace(/\/$/, '');
+			// Wir versuchen die Liste der Geräte abzurufen
 			const url = baseUrl.endsWith('/devices') ? baseUrl : `${baseUrl}/devices`;
 
-			this.log.debug(`Frage Geräte-Liste ab: ${url}`);
+			this.log.info(`Suche nach Geräten unter: ${url}`);
 
 			const response = await this.client.get(url, {
 				headers: {
@@ -151,12 +151,12 @@ class HarviaFenix extends utils.Adapter {
 
 			const devices = response.data?.devices || [];
 			if (devices.length > 0) {
-				this.log.info(`Gefundene Geräte im Account: ${devices.map((d: any) => `${d.name || 'Sauna'} (ID: ${d.deviceId})`).join(', ')}`);
+				this.log.info(`Erfolgreich! Gefundene Geräte im Account: ${devices.map((d: any) => `${d.name || 'Sauna'} (ID: ${d.deviceId})`).join(', ')}`);
 			} else {
-				this.log.warn('Keine Geräte in diesem Harvia-Account gefunden. Bitte Zugangsdaten oder Account-Zuweisung prüfen.');
+				this.log.warn('Login erfolgreich, aber keine Geräte im Harvia-Account gefunden.');
 			}
 		} catch (err: any) {
-			this.log.debug(`Fehler bei der Gerätesuche: ${err.message}`);
+			this.log.error(`Fehler bei der Gerätesuche: ${err.message}`);
 		}
 	}
 
@@ -164,9 +164,10 @@ class HarviaFenix extends utils.Adapter {
 		try {
 			if (!this.idToken || !this.dataBaseUrl) return;
 
-			// Korrektur: Falls die Basis-URL bereits /data enthält, hängen wir nur /latest-data an
 			const baseUrl = this.dataBaseUrl.replace(/\/$/, '');
 			const url = baseUrl.endsWith('/data') ? `${baseUrl}/latest-data` : `${baseUrl}/data/latest-data`;
+
+			this.log.debug(`Frage Status ab (URL: ${url}, Device: ${this.config.deviceId})`);
 
 			const response = await this.client.get(url, {
 				params: { deviceId: this.config.deviceId },
@@ -202,7 +203,7 @@ class HarviaFenix extends utils.Adapter {
 			if (err.response?.status === 401) {
 				this.login();
 			} else {
-				this.log.warn(`Abruf-Fehler (Status Update): ${err.message}`);
+				this.log.error(`Abruf-Fehler (Status Update): ${err.message} - URL war: ${err.config?.url}`);
 				await this.setState('online', false, true);
 			}
 		} finally {
