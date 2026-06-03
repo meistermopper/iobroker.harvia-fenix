@@ -195,8 +195,8 @@ class HarviaFenix extends utils.Adapter {
 			if (!this.idToken || !this.dataBaseUrl) return;
 
 			const baseUrl = this.dataBaseUrl.replace(/\/$/, '');
-			// Wir nutzen /latest-data, da /data/latest-data einen 404 lieferte.
-			const url = `${baseUrl}/latest-data`;
+			// Versuchen wir den Endpunkt /data, da /latest-data einen 403 lieferte.
+			const url = `${baseUrl}/data`;
 
 			this.log.debug(`Poll Status: ${url} (ID: ${this.config.deviceId})`);
 
@@ -238,7 +238,7 @@ class HarviaFenix extends utils.Adapter {
 			if (err.response?.status === 401) {
 				this.login();
 			} else {
-				this.log.debug(`Status-Abruf fehlgeschlagen (${err.response?.status}): ${err.message}`);
+				this.log.debug(`Status-Abruf fehlgeschlagen (${err.response?.status}): ${err.message}. Response Data: ${JSON.stringify(err.response?.data)}`);
 				await this.setState('online', false, true);
 			}
 		} finally {

@@ -177,11 +177,11 @@ class HarviaFenix extends utils.Adapter {
     }
   }
   async updateStatus() {
-    var _a, _b, _c;
+    var _a, _b, _c, _d;
     try {
       if (!this.idToken || !this.dataBaseUrl) return;
       const baseUrl = this.dataBaseUrl.replace(/\/$/, "");
-      const url = `${baseUrl}/latest-data`;
+      const url = `${baseUrl}/data`;
       this.log.debug(`Poll Status: ${url} (ID: ${this.config.deviceId})`);
       const response = await this.client.get(url, {
         params: { deviceId: this.config.deviceId },
@@ -214,7 +214,7 @@ class HarviaFenix extends utils.Adapter {
       if (((_b = err.response) == null ? void 0 : _b.status) === 401) {
         this.login();
       } else {
-        this.log.debug(`Status-Abruf fehlgeschlagen (${(_c = err.response) == null ? void 0 : _c.status}): ${err.message}`);
+        this.log.debug(`Status-Abruf fehlgeschlagen (${(_c = err.response) == null ? void 0 : _c.status}): ${err.message}. Response Data: ${JSON.stringify((_d = err.response) == null ? void 0 : _d.data)}`);
         await this.setState("online", false, true);
       }
     } finally {
