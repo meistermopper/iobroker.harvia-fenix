@@ -14,9 +14,7 @@
 		"totalOperatingHours"
 	],
 	"expert": "no",
-	"features": [
-		"adapter"
-	],
+	"features": ["adapter"],
 	"adminFeatures": [],
 	"type": "household",
 	"startMode": "daemon",
@@ -26,9 +24,7 @@
 	"language": "TypeScript",
 	"nodeVersion": "20",
 	"adminUi": "json",
-	"tools": [
-		"ESLint"
-	],
+	"tools": ["ESLint"],
 	"eslintConfig": "official",
 	"releaseScript": "yes",
 	"devServer": "local",

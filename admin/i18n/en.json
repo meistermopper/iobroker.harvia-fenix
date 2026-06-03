@@ -1,10 +1,10 @@
 {
-	"harvia-fenix adapter settings": "Adapter settings for Harvia Fenix",
-	"Login Settings": "Login Settings",
-	"Username / Email": "Username / Email",
-	"Password": "Password",
 	"Device ID": "Device ID",
+	"Harvia Fenix Sauna Control": "Harvia Fenix Sauna Control",
 	"Leave this field empty and start the adapter to find the ID automatically in the ioBroker log (Discovery).": "Leave this field empty and start the adapter to find the ID automatically in the ioBroker log (Discovery).",
+	"Login Settings": "Login Settings",
+	"Password": "Password",
 	"Polling Interval (seconds)": "Polling Interval (seconds)",
-	"Harvia Fenix Sauna Control": "Harvia Fenix Sauna Control"
+	"Username / Email": "Username / Email",
+	"harvia-fenix adapter settings": "Harvia Fenix adapter settings"
 }

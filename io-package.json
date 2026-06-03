@@ -19,7 +19,7 @@
 		},
 		"titleLang": {
 			"en": "Harvia Fenix Sauna Control",
-			"de": "Harvia Fenix ​​Saunasteuerung",
+			"de": "Harvia Fenix Saunasteuerung",
 			"ru": "Управление сауной Harvia Fenix",
 			"pt": "Controle de Sauna Harvia Fenix",
 			"nl": "Harvia Fenix ​​saunabediening",
@@ -43,9 +43,7 @@
 			"uk": "iot-системи",
 			"zh-cn": "物联网系统"
 		},
-		"authors": [
-			"meistermopper <meister.mopper@gmail.com>"
-		],
+		"authors": ["meistermopper <meister.mopper@gmail.com>"],
 		"keywords": [
 			"door-safety",
 			"heatOn",
