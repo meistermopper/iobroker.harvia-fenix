@@ -59,6 +59,14 @@ class HarviaFenix extends utils.Adapter {
 		this.subscribeStates('lightOn');
 		this.subscribeStates('targetTemp');
 
+		// 2. CLEAN START: Alle Status-Werte beim Start auf 'false' setzen
+		await this.setState('online', false, true);
+		await this.setState('heatOn', false, true);
+		await this.setState('lightOn', false, true);
+		await this.setState('doorSafety', false, true);
+		await this.setState('remoteControl', false, true);
+		await this.setState('errorMsg', '', true);
+
 		// Start connection logic
 		await this.startCloudConnection();
 	}
@@ -75,7 +83,9 @@ class HarviaFenix extends utils.Adapter {
 			{ id: 'remoteControl', type: 'boolean', role: 'indicator.state', def: false },
 			{ id: 'errorMsg', type: 'string', role: 'text', def: '' },
 			{ id: 'panelTemp', type: 'number', role: 'value.temperature', unit: '°C', def: 0 },
+			{ id: 'totalBathingHours', type: 'number', role: 'value.number', unit: 'h', def: 0 },
 			{ id: 'totalSessions', type: 'number', role: 'value', def: 0 },
+			// Im Skript war es totalHours, wir behalten totalOperatingHours
 			{ id: 'totalOperatingHours', type: 'number', role: 'value', unit: 'h', def: 0 }
 		];
 
@@ -105,6 +115,16 @@ class HarviaFenix extends utils.Adapter {
 	}
 
 	private async login(): Promise<boolean> {
+		// RACE-CONDITION-SCHUTZ:
+		// Falls gerade ein Login-Prozess läuft, warten wir bis zu 5 Sekunden, ob er fertig wird.
+		if (this.isLoggingIn) {
+			let checks = 0;
+			while (this.isLoggingIn && checks < 10) {
+				await this.wait(500);
+				checks++;
+			}
+			if (this.idToken) return true;
+		}
 		if (this.isLoggingIn) return false;
 		this.isLoggingIn = true;
 
@@ -116,11 +136,12 @@ class HarviaFenix extends utils.Adapter {
 				password: this.config.password,
 				client_id: CLIENT_ID
 			});
-			this.idToken = response.data.idToken;
+			this.idToken = response.data.idToken; // JWT-Token
 			await this.setState('info.connection', true, true);
 			return true;
 		} catch (err: any) {
 			this.log.error(`Login fehlgeschlagen: ${err.message}`);
+			await this.setState('info.connection', false, true);
 			return false;
 		} finally {
 			this.isLoggingIn = false;
@@ -130,7 +151,7 @@ class HarviaFenix extends utils.Adapter {
 	private async startCloudConnection(): Promise<void> {
 		if (await this.login()) {
 			await this.discoverDevices();
-			this.updateStatus();
+			this.updateStatus(); // Ersten Poll starten
 			this.loginInterval = this.setInterval(() => this.login(), 50 * 60 * 1000);
 		} else {
 			this.log.warn('Erster Login fehlgeschlagen. Versuche es in 5 Minuten erneut...');
@@ -160,17 +181,36 @@ class HarviaFenix extends utils.Adapter {
 				this.log.info(`Harvia Cloud: ${devices.length} Gerät(e) gefunden.`);
 				for (const d of devices) {
 					const actualId = d.deviceId || d.id || d.name;
-					this.log.info(`Verarbeite Gerät: ${d.name} (Typ: ${d.type || 'Fenix'})`);
+					this.log.info(`Gerät gefunden: ${d.name} (ID: ${actualId}, Typ: ${d.type || 'Fenix'})`);
+
+					// Wenn die konfigurierte Device-ID nicht gesetzt ist, verwenden wir die erste gefundene
+					if (!this.config.deviceId && actualId) {
+						this.log.warn(`Device ID in Adapter-Konfiguration nicht gesetzt. Verwende gefundene ID: ${actualId}`);
+						// Hier könnten wir die Konfiguration aktualisieren, aber das ist komplexer
+						// und erfordert einen Adapter-Neustart. Besser ist es, den Benutzer zu informieren.
+						// Für den aktuellen Lauf verwenden wir die gefundene ID.
+						this.config.deviceId = actualId;
+					} else if (this.config.deviceId !== actualId) {
+						this.log.warn(`Konfigurierte Device ID (${this.config.deviceId}) stimmt nicht mit gefundener ID (${actualId}) überein. Bitte prüfen Sie die Einstellungen.`);
+					}
 
 					// Statische Attribute direkt beim Start auslesen
 					if (Array.isArray(d.attr)) {
 						for (const a of d.attr) {
+							// Sicherstellen, dass der Wert existiert, bevor wir ihn parsen
+							if (a.value === undefined || a.value === null) {
+								continue;
+							}
+
 							switch (a.key) {
 								case 'connected':
 									await this.setState('online', a.value === 'true', true);
 									break;
 								case 'stats.totalSessions.C1':
 									await this.setState('totalSessions', parseInt(a.value), true);
+									break;
+								case 'stats.totalBathingHours.C1': // Im Skript war es totalBathingHours
+									await this.setState('totalBathingHours', parseFloat(a.value), true);
 									break;
 								case 'stats.totalOperatingHours.C1':
 									await this.setState('totalOperatingHours', parseFloat(a.value), true);
@@ -194,51 +234,103 @@ class HarviaFenix extends utils.Adapter {
 		try {
 			if (!this.idToken || !this.dataBaseUrl) return;
 
-			const baseUrl = this.dataBaseUrl.replace(/\/$/, '');
-			// Versuchen wir den Endpunkt /data, da /latest-data einen 403 lieferte.
-			const url = `${baseUrl}/data`;
+			const url = `${this.dataBaseUrl.replace(/\/$/, '')}/data/latest-data`; // Der Pfad aus dem JS-Skript
 
 			this.log.debug(`Poll Status: ${url} (ID: ${this.config.deviceId})`);
 
 			const response = await this.client.get(url, {
 				params: { deviceId: this.config.deviceId },
 				headers: {
-					'Authorization': `Bearer ${this.idToken}`,
-					'x-harvia-partner-id': PARTNER_ID,
+					// Header aus dem JS-Skript und den erfolgreichen Aufrufen
 					'Accept': 'application/json',
-					'x-harvia-app-id': CLIENT_ID
+					'x-harvia-app-id': CLIENT_ID,
+					'x-harvia-partner-id': PARTNER_ID,
+					'Authorization': `Bearer ${this.idToken}`,
 				}
 			});
 
-			this.log.debug(`Poll Response: ${JSON.stringify(response.data)}`);
+			if (response.data) {
+				this.log.debug(`Poll Response: ${JSON.stringify(response.data)}`);
+			}
 
-			const p = response.data?.data;
-			if (p && (Date.now() - this.lastCommandTime > LATENCY_MS)) {
+			const p = response.data?.data || response.data; // Daten können direkt oder in .data liegen
+
+			if (p && typeof p === 'object') {
+				// LATENZ-SCHUTZ: Wenn wir vor weniger als LATENCY_MS einen Befehl gesendet haben,
+				// ignorieren wir dieses Update, um UI-Springen zu verhindern.
+				if (Date.now() - this.lastCommandTime < LATENCY_MS) {
+					this.log.debug(`Polling ignoriert wegen Latency-Schutz (${LATENCY_MS}ms). Letzter Befehl vor ${Date.now() - this.lastCommandTime}ms.`);
+					return;
+				}
+
+				// DEBUG-LOG: Einmalig aktivieren, um alle verfügbaren API-Felder im Log zu sehen
+				// if (p.heatState === 1 || p.heat === 'on') {
+				//     this.log.debug(`[Harvia] API Rohdaten bei Heizung AN: ${JSON.stringify(p)}`);
+				// }
+
+				// --&gt; NEUES DEBUG-LOGGING FÜR HEATON &lt;--
+				if (p.online) {
+					const actualHeat = p.heatState !== undefined ? p.heatState : p.heat;
+					const currentHeatOnState = (await this.getStateAsync('heatOn'))?.val;
+					const isHeatingExpected = (actualHeat === 1 || actualHeat === true || actualHeat === 'on');
+
+					if (isHeatingExpected && !currentHeatOnState) {
+						this.log.warn(`Erwartet heatOn=true, aber ioBroker-Status ist false. Rohdaten: ${JSON.stringify(p)}`);
+					} else if (actualHeat === undefined) {
+						this.log.warn(`Heat-Status in API-Antwort undefiniert, aber online. Rohdaten: ${JSON.stringify(p)}`);
+					}
+				}
+
+				// NORMALISIERUNG: Harvia nutzt je nach Modell 'temp' oder 'temperature'.
 				const currentTemp = p.temperature !== undefined ? p.temperature : p.temp;
 				if (currentTemp !== undefined) await this.setState('temp', parseFloat(currentTemp), true);
 
-				const actualHeat = p.heatState !== undefined ? p.heatState : p.heat;
-				await this.setState('heatOn', !!(actualHeat === 1 || actualHeat === true || actualHeat === 'on'), true);
-
-				const actualLight = p.lightState !== undefined ? p.lightState : p.light;
-				await this.setState('lightOn', !!(actualLight === 1 || actualLight === true || actualLight === 'on'), true);
-
-				if (p.targetTemperature !== undefined) await this.setState('targetTemp', parseFloat(p.targetTemperature), true);
-
-				await this.setState('doorSafety', p.doorSafetyState === 1, true);
-				await this.setState('remoteControl', p.remoteControlState === 1, true);
-				await this.setState('online', true, true);
-
-				if (p.heaterPower !== undefined) await this.setState('heaterPower', parseFloat(p.heaterPower), true);
 				if (p.panelTemperature !== undefined) await this.setState('panelTemp', parseFloat(p.panelTemperature), true);
+
+				// Normalisierung der Heizleistung (heaterPower vs power)
+				const currentPower = p.heaterPower !== undefined ? p.heaterPower : p.power;
+				if (currentPower !== undefined) await this.setState('heaterPower', parseFloat(currentPower), true);
+
+				if (p.totalBathingHours !== undefined) await this.setState('totalBathingHours', parseFloat(p.totalBathingHours), true);
 				if (p.totalSessions !== undefined) await this.setState('totalSessions', parseInt(p.totalSessions), true);
-				if (p.totalOperatingHours !== undefined) await this.setState('totalOperatingHours', parseFloat(p.totalOperatingHours), true);
+				if (p.totalHours !== undefined) await this.setState('totalOperatingHours', parseFloat(p.totalHours), true);
+
+				const tTemp = p.targetTemperature !== undefined ? p.targetTemperature : p.targetTemp;
+				if (tTemp !== undefined) await this.setState('targetTemp', parseFloat(tTemp), true);
+
+				// STATUS-FIX (Licht/Heizung): Robuste Abfrage durch Prüfung von State-Feldern und Basis-Feldern.
+				// Manche Cloud-Versionen lassen Felder bei 'off' komplett weg oder nutzen alternative Namen.
+				const actualHeat = p.heatState !== undefined ? p.heatState : p.heat;
+				const actualLight = p.lightState !== undefined ? p.lightState : p.light;
+
+				// Umrechnung von 0/1 oder "on"/"off" in echtes Boolean für ioBroker
+				if (actualHeat !== undefined && actualHeat !== null) {
+					await this.setState('heatOn', !!(actualHeat === 1 || actualHeat === true || actualHeat === 'on'), true);
+				} else if (p.online) {
+					await this.setState('heatOn', false, true);
+				}
+
+				if (actualLight !== undefined && actualLight !== null) {
+					await this.setState('lightOn', !!(actualLight === 1 || actualLight === true || actualLight === 'on'), true);
+				} else if (p.online) {
+					await this.setState('lightOn', false, true);
+				}
+
+				// Fernstart-Bereitschaft (Wurde die Sicherheitskette am Panel quittiert?)
+				if (p.remoteControlState !== undefined) {
+					await this.setState('remoteControl', p.remoteControlState === 1, true);
+				}
+
+				await this.setState('doorSafety', p.doorSafetyState === 1, true); // 1 = Sicher/Zu
+				await this.setState('online', true, true);
+			} else if (!p || typeof p !== 'object') {
+				this.log.warn(`Unerwartete Datenstruktur beim Status-Abruf: ${JSON.stringify(response.data)}`);
 			}
 		} catch (err: any) {
 			if (err.response?.status === 401) {
 				this.login();
 			} else {
-				this.log.debug(`Status-Abruf fehlgeschlagen (${err.response?.status}): ${err.message}. Response Data: ${JSON.stringify(err.response?.data)}`);
+				this.log.error(`Status-Abruf fehlgeschlagen (${err.response?.status}): ${err.message}. Response Data: ${JSON.stringify(err.response?.data)}`);
 				await this.setState('online', false, true);
 			}
 		} finally {
@@ -246,10 +338,11 @@ class HarviaFenix extends utils.Adapter {
 		}
 	}
 
-	private async setSaunaState(stateName: string, value: any): Promise<void> {
+	private async setSaunaState(stateName: string, value: any, isRetry: boolean = false): Promise<void> {
 		if (!this.idToken || !this.deviceBaseUrl) return;
-		if (this.isSendingCommand) return;
-
+		// Lock-Check: Nur blockieren, wenn es kein interner Retry ist
+		if (this.isSendingCommand && !isRetry) return;
+		// RACE-CONDITION-SCHUTZ:
 		const baseUrl = this.deviceBaseUrl.replace(/\/$/, '');
 		const devicesUrl = baseUrl.endsWith('/devices') ? baseUrl : `${baseUrl}/devices`;
 
@@ -263,36 +356,70 @@ class HarviaFenix extends utils.Adapter {
 				const url = `${devicesUrl}/command`;
 
 				const resp = await this.client.post(url, payload, {
+					// Header aus dem JS-Skript und den erfolgreichen Aufrufen
 					headers: {
-						'Authorization': `Bearer ${this.idToken}`,
+						'Authorization': `Bearer ${this.idToken.trim()}`, // .trim() aus JS-Skript
 						'Content-Type': 'application/json',
 						'x-harvia-partner-id': PARTNER_ID,
 						'x-harvia-app-id': CLIENT_ID
 					}
 				});
 
-				if (resp.data?.handled) {
+				if (resp.data && resp.data.handled) {
 					this.log.info(`${commandType} -> ${stateStr}`);
+					// BESTÄTIGUNG: Wir setzen ack: true sofort, damit die UI nicht "springt"
 					await this.setState(stateName, !!value, true);
 					this.lastCommandTime = Date.now();
+
+					if (stateName === 'heatOn') await this.setState('errorMsg', '', true);
+				} else {
+					const reason = resp.data ? resp.data.failureReason : 'Unbekannt';
+					this.log.warn(`Cloud lehnt Befehl ab: ${reason}`);
+					await this.setState('errorMsg', `Cloud-Fehler: ${reason}`, true);
 				}
 			} else if (stateName === 'targetTemp') {
-				const payload = { deviceId: this.config.deviceId, cabin: { id: 'C1' }, temperature: parseFloat(value) };
+				const payload = {
+					deviceId: this.config.deviceId,
+					cabin: { id: 'C1' },
+					temperature: parseFloat(value) // Muss zwingend eine Zahl sein
+				};
 				const url = `${devicesUrl}/target`;
 
 				await this.client.patch(url, payload, {
 					headers: {
-						'Authorization': `Bearer ${this.idToken}`,
+						'Authorization': `Bearer ${this.idToken.trim()}`, // .trim() aus JS-Skript
 						'Content-Type': 'application/json',
 						'x-harvia-partner-id': PARTNER_ID,
 						'x-harvia-app-id': CLIENT_ID
 					}
 				});
+				this.log.info(`Temp-Soll -> ${value}°C`);
+				// Sofortige Bestätigung im ioBroker
 				await this.setState('targetTemp', parseFloat(value), true);
 				this.lastCommandTime = Date.now();
 			}
 		} catch (err: any) {
-			this.log.error(`Steuerungsfehler: ${err.message}`);
+			const detail = err.response && err.response.data ? JSON.stringify(err.response.data) : err.message;
+
+			// "Device unavailable" ist ein Cloud-Sperr-Effekt bei schnellen Klicks.
+			// Wir loggen das nur noch als Debug, um das Info-Log sauber zu halten.
+			if (detail.includes('Device unavailable')) {
+				this.log.debug(`Cloud-Sperre: Gerät belegt, Befehl wird verworfen.`);
+			} else {
+				this.log.error(`Fehler bei der Steuerung: ${detail}`);
+				await this.setState('errorMsg', `Fehler: ${err.message}`, true);
+			}
+
+			// RE-LOGIN LOGIK: Falls der Token während der Laufzeit ungültig wurde
+			// Automatischer Re-Login bei abgelaufenem Token (HTTP 401)
+			if (err.response && err.response.status === 401) {
+				this.log.warn('Token abgelaufen bei Steuerung, löse Re-Login aus...');
+				this.isSendingCommand = false; // Lock kurz lösen für den Login
+				if (await this.login()) {
+					// Nach erfolgreichem Login Befehl einmal wiederholen
+					await this.setSaunaState(stateName, value, true);
+				}
+			}
 		} finally {
 			this.isSendingCommand = false;
 		}
@@ -314,21 +441,41 @@ class HarviaFenix extends utils.Adapter {
 	/**
 	 * Is called if a subscribed state changes
 	 */
+	private lastEventTime: { [id: string]: number } = {}; // Für Entprellung
+
+	private wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+
+	// Interne Hilfsfunktion zur Entprellung von ioBroker-Events (Race Condition Schutz)
+	private shouldProcess(id: string): boolean {
+		const now = Date.now();
+		if (this.lastEventTime[id] && (now - this.lastEventTime[id] < 1500)) {
+			return false; // Ignoriere Events innerhalb von 1500ms (VIS-Prellen)
+		}
+		this.lastEventTime[id] = now;
+		return true;
+	}
+
 	private async onStateChange(id: string, state: ioBroker.State | null | undefined): Promise<void> {
 		if (state && !state.ack) {
 			const stateId = id.split('.').pop();
-
 			if (stateId === 'heatOn') {
+				if (!this.shouldProcess(id)) return;
+				// Konvertierung sicherstellen (VIS sendet oft Strings)
+				const val = state.val === true || state.val === 'true' || state.val === 1;
+
 				const isRemoteReady = (await this.getStateAsync('remoteControl'))?.val;
-				if (state.val && !isRemoteReady) {
+				if (val && !isRemoteReady) {
 					this.log.warn('Fernstart nicht bereit!');
 					await this.setState('heatOn', false, true);
 					await this.setState('errorMsg', 'Fernstart am Panel nicht bereit!', true);
 				} else {
-					await this.setSaunaState('heatOn', state.val);
+					await this.setSaunaState('heatOn', val);
 				}
 			} else if (stateId === 'lightOn' || stateId === 'targetTemp') {
-				await this.setSaunaState(stateId, state.val);
+				if (!this.shouldProcess(id)) return;
+				// Konvertierung sicherstellen (VIS sendet oft Strings)
+				const val = state.val === true || state.val === 'true' || state.val === 1 || typeof state.val === 'number' ? state.val : false;
+				await this.setSaunaState(stateId, val);
 			}
 		}
 	}
