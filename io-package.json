@@ -44,15 +44,7 @@
 			"zh-cn": "通过 MyHarvia 云端控制 Harvia Fenix 桑拿房"
 		},
 		"authors": ["meistermopper <meister.mopper@gmail.com>"],
-		"keywords": [
-			"door-safety",
-			"heatOn",
-			"lightOn",
-			"panelTemp",
-			"targetTemp",
-			"totalSessions",
-			"totalOperatingHours"
-		],
+		"keywords": ["harvia", "fenix", "sauna", "myharvia", "cloud"],
 		"licenseInformation": {
 			"type": "free",
 			"license": "MIT"
