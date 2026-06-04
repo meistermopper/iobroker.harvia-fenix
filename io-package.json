@@ -69,6 +69,8 @@
 				"js-controller": ">=6.0.11"
 			}
 		],
+		"protectedNative": ["password"],
+		"encryptedNative": ["password"],
 		"globalDependencies": [
 			{
 				"admin": ">=7.0.23"

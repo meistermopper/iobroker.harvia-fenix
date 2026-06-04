@@ -17,14 +17,17 @@
 	],
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/meistermopper/ioBroker.harvia-fenix.git"
+		"url": "https://github.com/meistermopper/iobroker.harvia-fenix.git"
+	},
+	"engines": {
+		"node": ">=18"
 	},
 	"dependencies": {
-		"@iobroker/adapter-core": "^3.1.5",
+		"@iobroker/adapter-core": "^3.2.2",
 		"axios": "^1.7.9"
 	},
 	"devDependencies": {
-		"@biomejs/biome": "2.4.16",
+		"@biomejs/biome": "^2.4.16",
 		"@iobroker/testing": "^5.1.0",
 		"@tsconfig/node20": "^20.1.4",
 		"@types/chai": "^4.3.20",
