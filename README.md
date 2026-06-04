@@ -1,4 +1,4 @@
-![Logo](admin/harvia.png)
+![Logo](https://raw.githubusercontent.com/meistermopper/ioBroker.harvia-fenix/main/admin/harvia.png)
 # ioBroker.harvia-fenix
 
 [![NPM version](https://img.shields.io/npm/v/iobroker.harvia-fenix.svg)](https://www.npmjs.com/package/iobroker.harvia-fenix)
