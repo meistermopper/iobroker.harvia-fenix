@@ -447,20 +447,20 @@ class HarviaFenix extends utils.Adapter {
 				this.log.debug(`Poll Response: ${JSON.stringify(response.data)}`);
 			}
 
-			const responseData = response.data;
-			let p: HarviaStatusData | undefined;
+			// Improved Data Normalization
+			const p =
+				response.data &&
+				typeof response.data === "object" &&
+				"data" in response.data
+					? (response.data.data as HarviaStatusData)
+					: (response.data as HarviaStatusData);
 
-			if (responseData && "data" in responseData && responseData.data) {
-				p = responseData.data;
-			} else if (
-				responseData &&
-				typeof responseData === "object" &&
-				!("data" in responseData)
+			if (
+				p &&
+				(p.online !== undefined ||
+					p.temperature !== undefined ||
+					p.temp !== undefined)
 			) {
-				p = responseData as HarviaStatusData;
-			}
-
-			if (p) {
 				// LATENCY PROTECTION: If a command was sent less than LATENCY_MS ago,
 				// ignore this update to prevent UI jumping.
 				if (Date.now() - this.lastCommandTime < LATENCY_MS) {
@@ -595,12 +595,15 @@ class HarviaFenix extends utils.Adapter {
 					this.log.error(
 						`Status poll failed (${err.response?.status}): ${err.message}. Response Data: ${JSON.stringify(err.response?.data)}`,
 					);
-					await this.setState("online", false, true);
 				}
 			} else {
 				this.log.error(
 					`Status poll failed: ${err instanceof Error ? err.message : String(err)}`,
 				);
+			}
+			// Only set online to false if it's not a temporary network glitch
+			const currentOnline = await this.getStateAsync("online");
+			if (currentOnline?.val !== false) {
 				await this.setState("online", false, true);
 			}
 		} finally {
