@@ -45,15 +45,33 @@ To use this adapter, you need:
 
 ---
 
+## Device Configuration & Multi-Device Support
+
+### Automatic Discovery
+If you leave the **Device ID** field in the adapter settings empty, the adapter will automatically search for devices linked to your account upon startup. It will use the first device it finds as the active unit. The detected ID will be printed to the ioBroker log.
+
+### Manual Device ID
+For most users with a single sauna, automatic discovery is sufficient. However, it is recommended to copy the detected ID from the log and paste it into the configuration to ensure a stable connection to the specific hardware.
+
+*Note: Currently, the Device ID is not displayed anywhere within the MyHarvia 2 app interface.*
+
+### Multiple Saunas
+If your MyHarvia account manages multiple control units (e.g., one at home and one in a vacation cottage):
+1. Create a separate instance of the adapter for each sauna (e.g., `harvia-fenix.0` and `harvia-fenix.1`).
+2. Manually enter the specific **Device ID** for each unit in its respective instance configuration.
+This allows you to monitor and control both saunas independently with their own set of datapoints.
+
+---
+
 ## Features & State Points / Datenpunkte
 
-The adapter maps your sauna's cloud states into structured ioBroker datapoints under `harvia-fenix.0.<device_id>.*`.
+The adapter maps your sauna's cloud states into structured ioBroker datapoints under `harvia-fenix.0.*`.
 
 ### Available Datapoints
 | Datapoint | Type | Role | Access | Description |
 |---|---|---|---|---|
-| `info.online` | boolean | `indicator.reachable` | Read-only | Connection state of the control unit to the cloud. |
-| `doorsSafety` | boolean | `indicator.safety` | Read-only | Safety loop status (e.g., `true` if the door is secure / safe to run). |
+| `online` | boolean | `indicator.reachable` | Read-only | Connection state of the control unit to the cloud. |
+| `doorSafety` | boolean | `indicator.safety` | Read-only | Safety loop status (e.g., `true` if the door is secure / safe to run). |
 | `errorMsg` | string | `text` | Read-only | Current error messages or status text from the heater. |
 | `heatOn` | boolean | `switch.power` | Read/Write | Main toggle to switch the sauna heater ON (`true`) or OFF (`false`). |
 | `heaterPower` | string / number | `value.power` | Read-only | *Note:* This object is provisioned by the MyHarvia API structure but is currently delivered as `0 W` (unpopulated). It appears to be reserved for future hardware or app updates. |

@@ -2,8 +2,8 @@
 
 systemDictionary = {
 	"harvia-fenix adapter settings": {
-		en: "Adapter settings for Harvia MyHarvia (Fenix & Xenio)",
-		de: "Adaptereinstellungen für Harvia MyHarvia (Fenix & Xenio)",
+		en: "Adapter settings for Harvia MyHarvia (Fenix)",
+		de: "Adaptereinstellungen für Harvia MyHarvia (Fenix)",
 	},
 	"Username / Email": {
 		en: "Username / Email",
@@ -21,9 +21,9 @@ systemDictionary = {
 		en: "Polling Interval (seconds)",
 		de: "Abfrageintervall (Sekunden)",
 	},
-	"Leave this field empty and start the adapter to find the ID automatically in the ioBroker log (Discovery).":
+	"Leave this field empty and start the adapter to find the ID automatically in the ioBroker log (Discovery). Note: The ID is not visible in the MyHarvia 2 app.":
 		{
-			en: "Leave this field empty and start the adapter to find the ID automatically in the ioBroker log (Discovery).",
-			de: "Lass dieses Feld leer und starte den Adapter, um die ID automatisch im Log zu finden.",
+			en: "Leave this field empty and start the adapter to find the ID automatically in the ioBroker log (Discovery). Note: The ID is not visible in the MyHarvia 2 app.",
+			de: "Lass dieses Feld leer und starte den Adapter, um die ID automatisch im Log zu finden. Hinweis: Die ID ist in der MyHarvia 2 App nicht sichtbar.",
 		},
 };

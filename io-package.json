@@ -31,17 +31,17 @@
 			"zh-cn": "Harvia MyHarvia 桑拿控制"
 		},
 		"desc": {
-			"en": "iot-systems",
-			"de": "IoT-Systeme",
-			"ru": "iot-системы",
-			"pt": "sistemas iot",
-			"nl": "iot-systemen",
-			"fr": "systèmes iot",
-			"it": "sistemi iot",
-			"es": "sistemas-iot",
-			"pl": "systemy iot",
-			"uk": "iot-системи",
-			"zh-cn": "物联网系统"
+			"en": "Control Harvia Fenix sauna units via MyHarvia cloud",
+			"de": "Steuerung von Harvia Fenix Sauna-Steuerungen über die MyHarvia Cloud",
+			"ru": "Управление саунами Harvia Fenix через облако MyHarvia",
+			"pt": "Controle as unidades de sauna Harvia Fenix via nuvem MyHarvia",
+			"nl": "Bestuur Harvia Fenix-sauna-units via de MyHarvia-cloud",
+			"fr": "Contrôlez les saunas Harvia Fenix via le cloud MyHarvia",
+			"it": "Controlla le unità sauna Harvia Fenix tramite il cloud MyHarvia",
+			"es": "Controle las unidades de sauna Harvia Fenix a través de la nube MyHarvia",
+			"pl": "Sterowanie saunami Harvia Fenix za pomocą chmury MyHarvia",
+			"uk": "Керування саунами Harvia Fenix через хмару MyHarvia",
+			"zh-cn": "通过 MyHarvia 云端控制 Harvia Fenix 桑拿房"
 		},
 		"authors": ["meistermopper <meister.mopper@gmail.com>"],
 		"keywords": [

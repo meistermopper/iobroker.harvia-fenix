@@ -1,8 +1,8 @@
 {
 	"compilerOptions": {
-		"target": "ES2019",
-		"module": "CommonJS",
-		"lib": ["es2019"],
+		"target": "ES2022",
+		"module": "NodeNext",
+		"lib": ["ES2022"],
 		"outDir": "build",
 		"rootDir": "src",
 		"strict": true,
@@ -10,12 +10,14 @@
 		"skipLibCheck": true,
 		"forceConsistentCasingInFileNames": true,
 		"sourceMap": true,
-		"baseUrl": "./",
-		"paths": {
-			"*": ["node_modules/*"]
-		},
-		"types": ["node"]
+		"moduleResolution": "NodeNext",
+		"types": ["node", "mocha"] // Add "mocha" to include test runner types
 	},
-	"include": ["src/**/*.ts"],
-	"exclude": ["node_modules", "src/**/*.test.ts"]
+	"ts-node": {
+		"compilerOptions": {
+			"module": "NodeNext"
+		}
+	},
+	"include": ["src/**/*.ts", "test/**/*.ts"],
+	"exclude": ["node_modules"]
 }

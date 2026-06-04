@@ -2,13 +2,19 @@
 	"name": "iobroker.harvia-fenix",
 	"version": "0.0.1",
 	"description": "ioBroker adapter for Harvia Fenix Sauna Control",
+	"type": "commonjs",
 	"author": {
 		"name": "Thomas",
 		"email": "meister.mopper@gmail.com"
 	},
 	"homepage": "https://github.com/meistermopper/ioBroker.harvia-fenix",
 	"license": "MIT",
-	"keywords": ["ioBroker", "Harvia", "Fenix", "Sauna"],
+	"keywords": [
+		"ioBroker",
+		"Harvia",
+		"Fenix",
+		"Sauna"
+	],
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/meistermopper/ioBroker.harvia-fenix.git"
@@ -18,14 +24,14 @@
 		"axios": "^1.7.9"
 	},
 	"devDependencies": {
-		"@biomejs/biome": "1.9.4",
+		"@biomejs/biome": "2.4.16",
 		"@iobroker/testing": "^5.1.0",
 		"@tsconfig/node20": "^20.1.4",
 		"@types/chai": "^4.3.20",
 		"@types/mocha": "^10.0.10",
 		"@types/node": "^20.17.10",
 		"chai": "^4.5.0",
-		"mocha": "^8.4.0",
+		"mocha": "^10.7.3",
 		"rimraf": "^6.1.3",
 		"source-map-support": "^0.5.21",
 		"ts-node": "^10.9.2",
@@ -34,9 +40,14 @@
 		"lint-staged": "^15.2.11"
 	},
 	"main": "build/main.js",
-	"files": ["admin", "build", "io-package.json", "LICENSE"],
+	"files": [
+		"admin",
+		"build",
+		"io-package.json",
+		"LICENSE"
+	],
 	"scripts": {
-		"test:ts": "mocha --config test/mocharc.build.json",
+		"test:ts": "node --require ts-node/register node_modules/mocha/bin/mocha --config test/mocharc.build.json",
 		"test:package": "mocha test/package --exit",
 		"test:unit": "mocha test/unit --exit",
 		"test:integration": "mocha test/integration --exit",
@@ -52,7 +63,7 @@
 	"bugs": "https://github.com/meistermopper/ioBroker.harvia-fenix/issues",
 	"readmeFilename": "README.md",
 	"allowScripts": {
-		"@biomejs/biome@1.9.4": true,
+		"@biomejs/biome@2.4.16": true,
 		"esbuild@0.25.12": true
 	},
 	"overrides": {

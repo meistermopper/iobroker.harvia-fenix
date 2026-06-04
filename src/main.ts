@@ -81,7 +81,6 @@ class HarviaFenix extends utils.Adapter {
 	private activeDeviceId = "";
 	private loginPromise: Promise<boolean> | null = null;
 
-	private isLoggingIn = false;
 	private isSendingCommand = false;
 	private lastCommandTime = 0;
 	private updateInterval: ioBroker.Timeout | undefined;
@@ -723,13 +722,6 @@ class HarviaFenix extends utils.Adapter {
 		} catch {
 			callback();
 		}
-	}
-
-	/**
-	 * Is called if a subscribed state changes
-	 */
-	private wait(ms: number): Promise<void> {
-		return new Promise((resolve) => setTimeout(resolve, ms));
 	}
 
 	// Internal helper function for debouncing ioBroker events (Race Condition protection)
