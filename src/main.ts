@@ -447,20 +447,19 @@ class HarviaFenix extends utils.Adapter {
 				this.log.debug(`Poll Response: ${JSON.stringify(response.data)}`);
 			}
 
-			const responseData = response.data;
-			let p: HarviaStatusData | undefined;
+			// World-class data normalization: handle both direct objects and wrapped data objects
+			const rawData = response.data as any;
+			const p: HarviaStatusData =
+				rawData && typeof rawData === "object" && "data" in rawData
+					? rawData.data
+					: rawData;
 
-			if (responseData && "data" in responseData && responseData.data) {
-				p = responseData.data;
-			} else if (
-				responseData &&
-				typeof responseData === "object" &&
-				!("data" in responseData)
+			if (
+				p &&
+				(p.online !== undefined ||
+					p.temperature !== undefined ||
+					p.temp !== undefined)
 			) {
-				p = responseData as HarviaStatusData;
-			}
-
-			if (p) {
 				// LATENCY PROTECTION: If a command was sent less than LATENCY_MS ago,
 				// ignore this update to prevent UI jumping.
 				if (Date.now() - this.lastCommandTime < LATENCY_MS) {
