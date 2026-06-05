@@ -214,7 +214,7 @@ class HarviaFenix extends utils.Adapter {
 			{
 				id: "totalSessions",
 				type: "number",
-				role: "value",
+				role: "value.count",
 				write: false,
 				def: 0,
 			},
@@ -222,7 +222,7 @@ class HarviaFenix extends utils.Adapter {
 			{
 				id: "totalOperatingHours",
 				type: "number",
-				role: "value",
+				role: "value.hours",
 				unit: "h",
 				write: false,
 				def: 0,
@@ -447,7 +447,7 @@ class HarviaFenix extends utils.Adapter {
 				this.log.debug(`Poll Response: ${JSON.stringify(response.data)}`);
 			}
 
-			// World-class data normalization: handle both direct objects and wrapped data objects
+			// Improved Data Normalization
 			const rawData = response.data as any;
 			const p: HarviaStatusData =
 				rawData && typeof rawData === "object" && "data" in rawData
@@ -571,15 +571,25 @@ class HarviaFenix extends utils.Adapter {
 				}
 
 				// Remote control readiness (safety chain acknowledged on panel?)
-				if (p.remoteControlState !== undefined) {
+				if (
+					p.remoteControlState !== undefined &&
+					p.remoteControlState !== null
+				) {
 					await this.setState(
 						"remoteControl",
-						p.remoteControlState === 1,
+						p.remoteControlState === 1 || p.remoteControlState === true,
 						true,
 					);
 				}
 
-				await this.setState("doorSafety", p.doorSafetyState === 1, true); // 1 = Safe/Closed
+				if (p.doorSafetyState !== undefined && p.doorSafetyState !== null) {
+					await this.setState(
+						"doorSafety",
+						p.doorSafetyState === 1 || p.doorSafetyState === true,
+						true,
+					);
+				}
+
 				await this.setState("online", true, true);
 			} else {
 				this.log.warn(
