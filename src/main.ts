@@ -52,8 +52,8 @@ interface HarviaStatusData {
 	lightOn?: number | boolean | string;
 	lightState?: number | boolean | string;
 	light?: number | boolean | string;
-	remoteControlState?: number;
-	doorSafetyState?: number;
+	remoteControlState?: number | boolean | string;
+	doorSafetyState?: number | boolean | string;
 }
 
 interface HarviaLoginResponse {
@@ -82,6 +82,7 @@ class HarviaFenix extends utils.Adapter {
 	private loginPromise: Promise<boolean> | null = null;
 
 	private isSendingCommand = false;
+	private isUnloading = false;
 	private lastCommandTime = 0;
 	private updateInterval: ioBroker.Timeout | undefined;
 	private loginInterval: ioBroker.Interval | undefined;
@@ -448,11 +449,14 @@ class HarviaFenix extends utils.Adapter {
 			}
 
 			// Improved Data Normalization
-			const rawData = response.data as any;
+			const rawData = response.data;
 			const p: HarviaStatusData =
-				rawData && typeof rawData === "object" && "data" in rawData
-					? rawData.data
-					: rawData;
+				rawData &&
+				typeof rawData === "object" &&
+				"data" in rawData &&
+				rawData.data
+					? (rawData.data as HarviaStatusData)
+					: (rawData as HarviaStatusData);
 
 			if (
 				p &&
@@ -577,7 +581,9 @@ class HarviaFenix extends utils.Adapter {
 				) {
 					await this.setState(
 						"remoteControl",
-						p.remoteControlState === 1 || p.remoteControlState === true,
+						p.remoteControlState === 1 ||
+							p.remoteControlState === true ||
+							p.remoteControlState === "on",
 						true,
 					);
 				}
@@ -585,7 +591,9 @@ class HarviaFenix extends utils.Adapter {
 				if (p.doorSafetyState !== undefined && p.doorSafetyState !== null) {
 					await this.setState(
 						"doorSafety",
-						p.doorSafetyState === 1 || p.doorSafetyState === true,
+						p.doorSafetyState === 1 ||
+							p.doorSafetyState === true ||
+							p.doorSafetyState === "on",
 						true,
 					);
 				}
@@ -617,11 +625,14 @@ class HarviaFenix extends utils.Adapter {
 				await this.setState("online", false, true);
 			}
 		} finally {
-			const interval = (this.config.pollInterval || 60) * 1000;
-			this.updateInterval = this.setTimeout(
-				() => this.updateStatus(),
-				interval,
-			);
+			// Only schedule next poll if adapter is not unloading
+			if (!this.isUnloading) {
+				const interval = (this.config.pollInterval || 60) * 1000;
+				this.updateInterval = this.setTimeout(
+					() => this.updateStatus(),
+					interval,
+				);
+			}
 		}
 	}
 
@@ -752,6 +763,7 @@ class HarviaFenix extends utils.Adapter {
 	 */
 	private onUnload(callback: () => void): void {
 		try {
+			this.isUnloading = true;
 			if (this.updateInterval) {
 				this.clearTimeout(this.updateInterval);
 			}

@@ -47,20 +47,24 @@ const MIN_TARGET_TEMP = 40; // Minimum allowed target temperature in C
 const MAX_TARGET_TEMP = 110; // Maximum allowed target temperature in C
 const LATENCY_MS = 5000;
 class HarviaFenix extends utils.Adapter {
+    client;
+    idToken = "";
+    dataBaseUrl = "";
+    deviceBaseUrl = "";
+    authUrl = "";
+    activeDeviceId = "";
+    loginPromise = null;
+    isSendingCommand = false;
+    isUnloading = false;
+    lastCommandTime = 0;
+    updateInterval;
+    loginInterval;
+    lastEventTime = {}; // For debouncing
     constructor(options = {}) {
         super({
             ...options,
             name: "harvia-fenix",
         });
-        this.idToken = "";
-        this.dataBaseUrl = "";
-        this.deviceBaseUrl = "";
-        this.authUrl = "";
-        this.activeDeviceId = "";
-        this.loginPromise = null;
-        this.isSendingCommand = false;
-        this.lastCommandTime = 0;
-        this.lastEventTime = {}; // For debouncing
         this.on("ready", this.onReady.bind(this));
         this.on("stateChange", this.onStateChange.bind(this));
         // this.on('objectChange', this.onObjectChange.bind(this));
@@ -69,7 +73,7 @@ class HarviaFenix extends utils.Adapter {
         this.client = axios_1.default.create({
             timeout: 20000,
             headers: {
-                "User-Agent": "ioBroker.harvia-fenix/0.0.1",
+                "User-Agent": `ioBroker.${this.name}/${this.version}`,
             },
         });
     }
@@ -101,15 +105,29 @@ class HarviaFenix extends utils.Adapter {
                 id: "online",
                 type: "boolean",
                 role: "indicator.reachable",
+                write: false,
                 def: false,
             },
-            { id: "heatOn", type: "boolean", role: "switch.power", def: false },
-            { id: "lightOn", type: "boolean", role: "switch.light", def: false },
+            {
+                id: "heatOn",
+                type: "boolean",
+                role: "switch.power",
+                write: true,
+                def: false,
+            },
+            {
+                id: "lightOn",
+                type: "boolean",
+                role: "switch.light",
+                write: true,
+                def: false,
+            },
             {
                 id: "temp",
                 type: "number",
                 role: "value.temperature",
                 unit: "°C",
+                write: false,
                 def: 0,
             },
             {
@@ -117,6 +135,7 @@ class HarviaFenix extends utils.Adapter {
                 type: "number",
                 role: "level.temperature",
                 unit: "°C",
+                write: true,
                 def: 90,
             },
             {
@@ -124,26 +143,30 @@ class HarviaFenix extends utils.Adapter {
                 type: "number",
                 role: "value.power",
                 unit: "kW",
+                write: false,
                 def: 0,
             },
             {
                 id: "doorSafety",
                 type: "boolean",
                 role: "indicator.safety",
+                write: false,
                 def: false,
             },
             {
                 id: "remoteControl",
                 type: "boolean",
                 role: "indicator.state",
+                write: false,
                 def: false,
             },
-            { id: "errorMsg", type: "string", role: "text", def: "" },
+            { id: "errorMsg", type: "string", role: "text", write: false, def: "" },
             {
                 id: "panelTemp",
                 type: "number",
                 role: "value.temperature",
                 unit: "°C",
+                write: false,
                 def: 0,
             },
             {
@@ -151,15 +174,23 @@ class HarviaFenix extends utils.Adapter {
                 type: "number",
                 role: "value.number",
                 unit: "h",
+                write: false,
                 def: 0,
             },
-            { id: "totalSessions", type: "number", role: "value", def: 0 },
+            {
+                id: "totalSessions",
+                type: "number",
+                role: "value.count",
+                write: false,
+                def: 0,
+            },
             // In original script it was totalHours, we keep totalOperatingHours
             {
                 id: "totalOperatingHours",
                 type: "number",
-                role: "value",
+                role: "value.hours",
                 unit: "h",
+                write: false,
                 def: 0,
             },
         ];
@@ -172,7 +203,7 @@ class HarviaFenix extends utils.Adapter {
                     role: s.role,
                     unit: s.unit,
                     read: true,
-                    write: true,
+                    write: s.write,
                     def: s.def,
                 },
                 native: {},
@@ -239,7 +270,6 @@ class HarviaFenix extends utils.Adapter {
         }
     }
     async discoverDevices() {
-        var _a;
         try {
             if (!this.idToken || !this.deviceBaseUrl) {
                 return;
@@ -259,7 +289,7 @@ class HarviaFenix extends utils.Adapter {
                 this.log.info(`Harvia Cloud: ${devices.length} device(s) found.`);
                 for (const d of devices) {
                     const actualId = d.deviceId || d.id || d.name;
-                    this.log.info(`Found device: ${d.name} (ID: ${actualId}, Type: ${(_a = d.type) !== null && _a !== void 0 ? _a : "Fenix"})`);
+                    this.log.info(`Found device: ${d.name} (ID: ${actualId}, Type: ${d.type ?? "Fenix"})`);
                     // Use the configured ID if available, otherwise fall back to discovered ID
                     if (!this.activeDeviceId && !this.config.deviceId && actualId) {
                         this.log.warn(`Device ID not set in adapter configuration. Using found ID: ${actualId}`);
@@ -306,7 +336,6 @@ class HarviaFenix extends utils.Adapter {
         }
     }
     async updateStatus() {
-        var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o;
         try {
             if (!this.idToken || !this.dataBaseUrl) {
                 return;
@@ -327,17 +356,18 @@ class HarviaFenix extends utils.Adapter {
             if (response.data) {
                 this.log.debug(`Poll Response: ${JSON.stringify(response.data)}`);
             }
-            const responseData = response.data;
-            let p;
-            if (responseData && "data" in responseData && responseData.data) {
-                p = responseData.data;
-            }
-            else if (responseData &&
-                typeof responseData === "object" &&
-                !("data" in responseData)) {
-                p = responseData;
-            }
-            if (p) {
+            // Improved Data Normalization
+            const rawData = response.data;
+            const p = rawData &&
+                typeof rawData === "object" &&
+                "data" in rawData &&
+                rawData.data
+                ? rawData.data
+                : rawData;
+            if (p &&
+                (p.online !== undefined ||
+                    p.temperature !== undefined ||
+                    p.temp !== undefined)) {
                 // LATENCY PROTECTION: If a command was sent less than LATENCY_MS ago,
                 // ignore this update to prevent UI jumping.
                 if (Date.now() - this.lastCommandTime < LATENCY_MS) {
@@ -346,8 +376,8 @@ class HarviaFenix extends utils.Adapter {
                 }
                 // NEW DEBUG LOGGING FOR HEATON
                 if (p.online && p.heatOn !== undefined) {
-                    const actualHeat = (_a = p.heatState) !== null && _a !== void 0 ? _a : p.heat;
-                    const currentHeatOnState = (_b = (await this.getStateAsync("heatOn"))) === null || _b === void 0 ? void 0 : _b.val;
+                    const actualHeat = p.heatState ?? p.heat;
+                    const currentHeatOnState = (await this.getStateAsync("heatOn"))?.val;
                     const isHeatingExpected = actualHeat === 1 || actualHeat === true || actualHeat === "on";
                     if (isHeatingExpected && !currentHeatOnState) {
                         this.log.warn(`Expected heatOn=true, but ioBroker state is false. Raw data: ${JSON.stringify(p.heatOn)}`);
@@ -357,16 +387,16 @@ class HarviaFenix extends utils.Adapter {
                     }
                 }
                 // NORMALIZATION: Harvia uses 'temp' or 'temperature' depending on model.
-                const currentTemp = (_c = p.temperature) !== null && _c !== void 0 ? _c : p.temp;
+                const currentTemp = p.temperature ?? p.temp;
                 if (currentTemp !== undefined) {
                     await this.setState("temp", Math.round(Number.parseFloat(currentTemp) * 10) / 10, true);
                 }
-                const pPanelTemp = (_d = p.panelTemp) !== null && _d !== void 0 ? _d : p.panelTemperature;
+                const pPanelTemp = p.panelTemp ?? p.panelTemperature;
                 if (pPanelTemp !== undefined) {
                     await this.setState("panelTemp", Math.round(Number.parseFloat(pPanelTemp) * 10) / 10, true);
                 }
                 // Normalization of heater power (heaterPower vs power)
-                let currentPower = (_e = p.heaterPower) !== null && _e !== void 0 ? _e : p.power;
+                let currentPower = p.heaterPower ?? p.power;
                 if (currentPower !== undefined) {
                     currentPower =
                         Math.round((Number.parseFloat(currentPower) / 1000) * 100) / 100;
@@ -382,14 +412,14 @@ class HarviaFenix extends utils.Adapter {
                 if (p.totalHours !== undefined) {
                     await this.setState("totalOperatingHours", Math.round(Number.parseFloat(p.totalHours) * 100) / 100, true);
                 }
-                const tTemp = (_f = p.targetTemperature) !== null && _f !== void 0 ? _f : p.targetTemp;
+                const tTemp = p.targetTemperature ?? p.targetTemp;
                 if (tTemp !== undefined) {
                     await this.setState("targetTemp", typeof tTemp === "string" ? Number.parseFloat(tTemp) : tTemp, true);
                 }
                 // STATUS-FIX (Light/Heating): Robust check of state fields and base fields.
                 // Some cloud versions omit fields on 'off' or use alternative names.
-                const actualHeat = (_h = (_g = p.heatOn) !== null && _g !== void 0 ? _g : p.heatState) !== null && _h !== void 0 ? _h : p.heat;
-                const actualLight = (_k = (_j = p.lightOn) !== null && _j !== void 0 ? _j : p.lightState) !== null && _k !== void 0 ? _k : p.light;
+                const actualHeat = p.heatOn ?? p.heatState ?? p.heat;
+                const actualLight = p.lightOn ?? p.lightState ?? p.light;
                 // Conversion of 0/1 or "on"/"off" to boolean for ioBroker
                 if (actualHeat !== undefined && actualHeat !== null) {
                     await this.setState("heatOn", actualHeat === 1 || actualHeat === true || actualHeat === "on", true);
@@ -398,10 +428,17 @@ class HarviaFenix extends utils.Adapter {
                     await this.setState("lightOn", actualLight === 1 || actualLight === true || actualLight === "on", true);
                 }
                 // Remote control readiness (safety chain acknowledged on panel?)
-                if (p.remoteControlState !== undefined) {
-                    await this.setState("remoteControl", p.remoteControlState === 1, true);
+                if (p.remoteControlState !== undefined &&
+                    p.remoteControlState !== null) {
+                    await this.setState("remoteControl", p.remoteControlState === 1 ||
+                        p.remoteControlState === true ||
+                        p.remoteControlState === "on", true);
                 }
-                await this.setState("doorSafety", p.doorSafetyState === 1, true); // 1 = Safe/Closed
+                if (p.doorSafetyState !== undefined && p.doorSafetyState !== null) {
+                    await this.setState("doorSafety", p.doorSafetyState === 1 ||
+                        p.doorSafetyState === true ||
+                        p.doorSafetyState === "on", true);
+                }
                 await this.setState("online", true, true);
             }
             else {
@@ -410,26 +447,31 @@ class HarviaFenix extends utils.Adapter {
         }
         catch (err) {
             if ((0, axios_1.isAxiosError)(err)) {
-                if (((_l = err.response) === null || _l === void 0 ? void 0 : _l.status) === 401) {
+                if (err.response?.status === 401) {
                     void this.login();
                 }
                 else {
-                    this.log.error(`Status poll failed (${(_m = err.response) === null || _m === void 0 ? void 0 : _m.status}): ${err.message}. Response Data: ${JSON.stringify((_o = err.response) === null || _o === void 0 ? void 0 : _o.data)}`);
-                    await this.setState("online", false, true);
+                    this.log.error(`Status poll failed (${err.response?.status}): ${err.message}. Response Data: ${JSON.stringify(err.response?.data)}`);
                 }
             }
             else {
                 this.log.error(`Status poll failed: ${err instanceof Error ? err.message : String(err)}`);
+            }
+            // Avoid flapping: only set to offline if it's currently online
+            const currentOnline = await this.getStateAsync("online");
+            if (currentOnline?.val !== false) {
                 await this.setState("online", false, true);
             }
         }
         finally {
-            const interval = (this.config.pollInterval || 60) * 1000;
-            this.updateInterval = this.setTimeout(() => this.updateStatus(), interval);
+            // Only schedule next poll if adapter is not unloading
+            if (!this.isUnloading) {
+                const interval = (this.config.pollInterval || 60) * 1000;
+                this.updateInterval = this.setTimeout(() => this.updateStatus(), interval);
+            }
         }
     }
     async setSaunaState(stateName, value, isRetry = false) {
-        var _a, _b, _c;
         if (!this.idToken || !this.deviceBaseUrl) {
             return;
         }
@@ -463,7 +505,7 @@ class HarviaFenix extends utils.Adapter {
                         "x-harvia-app-id": CLIENT_ID,
                     },
                 });
-                if ((_a = resp.data) === null || _a === void 0 ? void 0 : _a.handled) {
+                if (resp.data?.handled) {
                     this.log.info(`${commandType} -> ${stateStr}`);
                     // CONFIRMATION: Set ack: true immediately to prevent UI "jumping"
                     await this.setState(stateName, !!value, true);
@@ -501,7 +543,7 @@ class HarviaFenix extends utils.Adapter {
         }
         catch (err) {
             let detail;
-            if ((0, axios_1.isAxiosError)(err) && ((_b = err.response) === null || _b === void 0 ? void 0 : _b.data)) {
+            if ((0, axios_1.isAxiosError)(err) && err.response?.data) {
                 detail = JSON.stringify(err.response.data);
             }
             else if (err instanceof Error) {
@@ -522,7 +564,7 @@ class HarviaFenix extends utils.Adapter {
             }
             // RE-LOGIN LOGIC: If token became invalid during runtime
             // Automatic re-login on expired token (HTTP 401)
-            if ((0, axios_1.isAxiosError)(err) && ((_c = err.response) === null || _c === void 0 ? void 0 : _c.status) === 401) {
+            if ((0, axios_1.isAxiosError)(err) && err.response?.status === 401) {
                 this.log.warn("Token expired during control, triggering re-login...");
                 this.isSendingCommand = false; // Briefly release lock for login
                 if (await this.login()) {
@@ -542,6 +584,7 @@ class HarviaFenix extends utils.Adapter {
      */
     onUnload(callback) {
         try {
+            this.isUnloading = true;
             if (this.updateInterval) {
                 this.clearTimeout(this.updateInterval);
             }
@@ -564,7 +607,6 @@ class HarviaFenix extends utils.Adapter {
         return true;
     }
     async onStateChange(id, state) {
-        var _a;
         if (state && !state.ack) {
             const stateId = id.split(".").pop();
             if (!stateId) {
@@ -576,7 +618,7 @@ class HarviaFenix extends utils.Adapter {
                 }
                 // Ensure boolean conversion (VIS often sends strings)
                 const val = state.val === true || state.val === "true" || state.val === 1;
-                const isRemoteReady = (_a = (await this.getStateAsync("remoteControl"))) === null || _a === void 0 ? void 0 : _a.val;
+                const isRemoteReady = (await this.getStateAsync("remoteControl"))?.val;
                 if (val && !isRemoteReady) {
                     this.log.warn("Remote start not ready!");
                     await this.setState("heatOn", false, true);

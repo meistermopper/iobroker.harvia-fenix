@@ -1,4 +1,5 @@
 {
+	"$schema": "https://raw.githubusercontent.com/ioBroker/ioBroker.js-controller/master/schemas/io-package.json",
 	"common": {
 		"name": "harvia-fenix",
 		"version": "0.0.1",
@@ -28,7 +29,7 @@
 			"es": "Control de sauna Harvia-Fenix",
 			"pl": "Sterowanie sauną Harvia-Fenix",
 			"uk": "Керування сауною Harvia-Fenix",
-			"zh-cn": "Harvia MyHarvia 桑拿控制"
+			"zh-cn": "Harvia-Fenix 桑拿控制"
 		},
 		"desc": {
 			"en": "Control Harvia Fenix sauna units via MyHarvia cloud",
@@ -69,8 +70,6 @@
 				"js-controller": ">=6.0.11"
 			}
 		],
-		"protectedNative": ["password"],
-		"encryptedNative": ["password"],
 		"globalDependencies": [
 			{
 				"admin": ">=7.0.23"
@@ -83,6 +82,8 @@
 		"deviceId": "",
 		"pollInterval": 60
 	},
+	"protectedNative": ["password"],
+	"encryptedNative": ["password"],
 	"objects": [],
 	"instanceObjects": [
 		{

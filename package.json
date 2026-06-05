@@ -80,7 +80,6 @@
 		"serialize-javascript": "^7.0.5"
 	},
 	"lint-staged": {
-		"*.{ts,js,json}": "biome check --write --no-errors-on-unmatched",
 		"**/*.{ts,js,json}": "biome check --write --no-errors-on-unmatched"
 	}
 }

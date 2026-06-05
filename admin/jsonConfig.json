@@ -2,7 +2,7 @@
 	"type": "tabs",
 	"items": {
 		"main": {
-			"title": "Login Settings",
+			"label": "Login Settings",
 			"type": "panel",
 			"items": {
 				"username": {
@@ -26,7 +26,7 @@
 					"label": "Polling Interval (seconds)",
 					"min": 30,
 					"max": 600,
-					"def": 60,
+					"default": 60,
 					"sm": 6
 				}
 			}
