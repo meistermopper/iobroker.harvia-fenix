@@ -23,14 +23,14 @@ ioBroker is an integration platform for the [Internet of Things](https://en.wiki
 ## Concept
 
 ioBroker is not just an application, it's more of a concept and a database schema.
-It offers a very easy way for systems to interoperate. 
+It offers a very easy way for systems to interoperate.
 ioBroker defines some common rules for a pair of databases used to exchange data and publish events between different systems.
 
 ![architecture](img/architecture.png)
 
 ### Databases
 
-ioBroker uses "in memory" database to hold the data and saves it on disk with reasonable intervals. 
+ioBroker uses "in memory" database to hold the data and saves it on disk with reasonable intervals.
 There are two types of storage:
 - objects (meta/configuration information)
 - states (values)
@@ -44,28 +44,28 @@ It's used to maintain and publish all states of connected systems.
 ### Adapters
 
 Systems are attached to ioBrokers databases via so-called adapters, technically processes running anywhere
-in the network and connecting all kinds of systems to ioBrokers databases. 
-A connection to ioBrokers databases can be implemented in nearly any programming language on nearly any platform 
+in the network and connecting all kinds of systems to ioBrokers databases.
+A connection to ioBrokers databases can be implemented in nearly any programming language on nearly any platform
 and an adapter can run on any host that is able to reach the databases via ip networking.
 
 See actual list of adapters on [iobroker.net](https://www.iobroker.net/#en/adapters)
 
 ### Security
 
-ioBroker is designed to be accessed by trusted adapters inside trusted networks. 
-This means that usually it is not a good idea to expose the ioBroker databases, 
-adapters or any smart home devices directly to the internet or, in general, 
-to an environment where untrusted clients can directly access these network services. 
-Adapters that offer services supposed to be exposed to the internet should be handled with care. 
-You should always activate **HTTPS** and use valid certificates for web, admin if open it for internet or 
+ioBroker is designed to be accessed by trusted adapters inside trusted networks.
+This means that usually it is not a good idea to expose the ioBroker databases,
+adapters or any smart home devices directly to the internet or, in general,
+to an environment where untrusted clients can directly access these network services.
+Adapters that offer services supposed to be exposed to the internet should be handled with care.
+You should always activate **HTTPS** and use valid certificates for web, admin if open it for internet or
 for example use it with additional security measures like VPN, VLAN and reverse proxies.
 
 ## Getting Started
 ### Operating System and Hardware
-[ioBroker.js-controller](https://github.com/iobroker/ioBroker.js-controller/) should run on any hardware 
+[ioBroker.js-controller](https://github.com/iobroker/ioBroker.js-controller/) should run on any hardware
 and OS that runs [Node.js](https://nodejs.org/) (ARM, x86, Windows, Linux, OSX).
 
-ioBroker spawns a new Node.js process for every adapter instance, so RAM becomes a limiting factor. 
+ioBroker spawns a new Node.js process for every adapter instance, so RAM becomes a limiting factor.
 A single adapter's memory fingerprint is roundabout 10 to 60 MB.
 
 ### Installation and first steps
@@ -84,12 +84,12 @@ Please request permission via info@iobroker.net
 
 ## License
 
-This module is distributor under the MIT License (MIT). 
+This module is distributor under the MIT License (MIT).
 **Please notice, that other ioBroker adapters can have different licenses.**
 
 The MIT License (MIT)
 
-Copyright (c) 2014-2022 bluefox <dogafox@gmail.com>,
+Copyright (c) 2014-2026 bluefox <dogafox@gmail.com>,
 Copyright (c) 2014      hobbyquaker
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
