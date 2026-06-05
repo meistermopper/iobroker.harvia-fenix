@@ -4,6 +4,10 @@
 		"name": "harvia-fenix",
 		"version": "0.0.1",
 		"news": {
+			"0.0.2": {
+				"en": "Fixed configuration schema and improved type safety",
+				"de": "Konfigurationsschema korrigiert und Typsicherheit verbessert"
+			},
 			"0.0.1": {
 				"en": "initial release",
 				"de": "Erstveröffentlichung",
