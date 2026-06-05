@@ -17,7 +17,7 @@
 	],
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/meistermopper/iobroker.harvia-fenix.git"
+		"url": "https://github.com/meistermopper/ioBroker.harvia-fenix.git"
 	},
 	"engines": {
 		"node": ">=18"
