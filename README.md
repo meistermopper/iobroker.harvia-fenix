@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://raw.githubusercontent.com/meistermopper/iobroker.harvia-fenix/main/admin/harvia.png" alt="Logo">
+  <img src="https://raw.githubusercontent.com/meistermopper/ioBroker.harvia-fenix/main/admin/harvia.png" alt="Logo">
 </p>
 # ioBroker.harvia-fenix
 
@@ -10,7 +10,7 @@
 
 [![NPM](https://nodei.co/npm/iobroker.harvia-fenix.png?downloads=true)](https://nodei.co/npm/iobroker.harvia-fenix/)
 
-**Tests:** ![Test and Release](https://github.com/meistermopper/iobroker.harvia-fenix/workflows/Test%20and%20Release/badge.svg)
+**Tests:** ![Test and Release](https://github.com/meistermopper/ioBroker.harvia-fenix/workflows/Test%20and%20Release/badge.svg)
 
 An ioBroker adapter to integrate and control your **Harvia Fenix** sauna control unit via the MyHarvia cloud infrastructure.
 
