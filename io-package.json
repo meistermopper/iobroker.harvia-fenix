@@ -2,8 +2,21 @@
 	"$schema": "https://raw.githubusercontent.com/ioBroker/ioBroker.js-controller/master/schemas/io-package.json",
 	"common": {
 		"name": "harvia-fenix",
-		"version": "0.0.2",
+		"version": "0.0.3",
 		"news": {
+			"0.0.3": {
+				"en": "### 0.0.1 (2026-06-05)\n* Initial release",
+				"de": "### 0.0.1 (2026-06-05)\n* Erstausstrahlung",
+				"ru": "### 0.0.1 (2026-06-05)\n* Первоначальный выпуск",
+				"pt": "### 0.0.1 (2026-06-05)\n* Lançamento inicial",
+				"nl": "### 0,1 (2026-06-05)\n* Eerste release",
+				"fr": "*## 0.0.1 (2026-06-05)\n* Libération initiale",
+				"it": "### 0.0.1 (2026-06-05)\n* rilascio iniziale",
+				"es": "### 0.0.1 (2026-06-05)\n* Publicación inicial",
+				"pl": "# # # 0.0.1 (2026- 06- 05)\n* Początkowe wydanie",
+				"uk": "## 0.0.1 (2026-06-05)\n* Початковий реліз",
+				"zh-cn": "^ 0.0.1 (2026-06-05) (中文(简体) )\n* 初次释放"
+			},
 			"0.0.2": {
 				"en": "Fixed configuration schema and improved type safety",
 				"de": "Konfigurationsschema korrigiert und Typsicherheit verbessert"
