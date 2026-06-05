@@ -19,7 +19,7 @@
 					"type": "text",
 					"label": "Device ID",
 					"sm": 12,
-					"help": "Leave this field empty and start the adapter to find the ID automatically in the ioBroker log (Discovery)."
+					"help": "Leave this field empty and start the adapter to find the ID automatically in the ioBroker log (Discovery). Note: The ID is not visible in the MyHarvia 2 app."
 				},
 				"pollInterval": {
 					"type": "number",

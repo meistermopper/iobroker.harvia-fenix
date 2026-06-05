@@ -101,7 +101,7 @@ class HarviaFenix extends utils.Adapter {
 		this.client = axios.create({
 			timeout: 20000,
 			headers: {
-				"User-Agent": "ioBroker.harvia-fenix/0.0.1",
+				"User-Agent": `ioBroker.${this.name}/${this.version}`,
 			},
 		});
 	}
