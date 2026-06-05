@@ -11,7 +11,7 @@
 		"forceConsistentCasingInFileNames": true,
 		"sourceMap": true,
 		"moduleResolution": "NodeNext",
-		"types": ["node", "mocha"] // Add "mocha" to include test runner types
+		"types": ["node", "mocha", "chai"] // Add mocha and chai to include test runner types
 	},
 	"ts-node": {
 		"compilerOptions": {
