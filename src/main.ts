@@ -752,9 +752,13 @@ class HarviaFenix extends utils.Adapter {
 
 			// RE-LOGIN LOGIC: If token became invalid during runtime
 			// Automatic re-login on expired token (HTTP 401)
-			if (isAxiosError(err) && err.response?.status === 401) {
-				this.log.warn("Token expired during control, triggering re-login...");
-				this.isSendingCommand = false; // Briefly release lock for login
+			if (
+				isAxiosError(err) &&
+				(err.response?.status === 401 || err.response?.status === 403)
+			) {
+				this.log.warn(
+					"Token expired or unauthorized during control, triggering re-login...",
+				);
 				if (await this.login()) {
 					// Repeat command once after successful login
 					await this.setSaunaState(stateName, value, true);
