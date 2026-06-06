@@ -2,8 +2,21 @@
 	"$schema": "https://raw.githubusercontent.com/ioBroker/ioBroker.js-controller/master/schemas/io-package.json",
 	"common": {
 		"name": "harvia-fenix",
-		"version": "0.0.7",
+		"version": "0.0.8",
 		"news": {
+			"0.0.8": {
+				"en": "Fix license file redundancy and add MIT content.",
+				"de": "Reparieren Sie Lizenzdatei Redundanz und fügen Sie MIT Inhalt hinzu.",
+				"ru": "Исправьте избыточность файлов лицензий и добавьте контент MIT.",
+				"pt": "Corrigir redundância do arquivo de licença e adicionar conteúdo MIT.",
+				"nl": "Repareer licentiebestand redundantie en voeg MIT-inhoud toe.",
+				"fr": "Correction de redondance de fichier de licence et ajout de contenu MIT.",
+				"it": "Risolvi la ridondanza del file di licenza e aggiungi contenuti MIT.",
+				"es": "Fijar la redundancia del archivo de licencia y añadir contenido MIT.",
+				"pl": "Napraw nadmiarowość plików licencyjnych i dodaj zawartość MIT.",
+				"uk": "Виправлення переадресації файлів ліцензії та додавання вмісту MIT.",
+				"zh-cn": "修复许可证文件冗余并添加MIT内容."
+			},
 			"0.0.7": {
 				"en": "Update comprehensive documentation, feature mapping, and legal safety declarations.",
 				"de": "Aktualisieren Sie umfassende Dokumentationen, Feature Mapping und rechtliche Sicherheitserklärungen.",
