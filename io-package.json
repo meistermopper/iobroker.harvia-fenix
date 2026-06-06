@@ -2,7 +2,7 @@
 	"$schema": "https://raw.githubusercontent.com/ioBroker/ioBroker.js-controller/master/schemas/io-package.json",
 	"common": {
 		"name": "harvia-fenix",
-		"version": "0.0.7",
+		"version": "0.0.8",
 		"news": {
 			"0.0.8": {
 				"en": "Fix license file redundancy and add MIT content.",

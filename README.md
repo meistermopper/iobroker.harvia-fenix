@@ -12,31 +12,8 @@
 
 **Tests:** ![Test and Release](https://github.com/meistermopper/ioBroker.harvia-fenix/workflows/Test%20and%20Release/badge.svg)
 
-An ioBroker adapter to integrate and control your **Harvia Fenix** sauna control unit via the MyHarvia cloud infrastructure.
-
+### An ioBroker adapter to integrate and control your **Harvia Fenix** sauna control unit via the MyHarvia cloud infrastructure.
 ---
-
-## ⚠️ CRITICAL SAFETY WARNING & DISCLAIMER / WICHTIGER SICHERHEITSHINWEIS
-
-### English
-**Remote operation of a sauna heater is subject to strict safety regulations!** According to the European safety standard **EN 60335-2-53** in conjunction with **EN 60335-1**, fire protection measures are mandatory for remote control setups. The sauna cabin must be equipped with an approved door sensor or a safety switch-off system. This ensures that the heater cannot be started remotely or via a timer if a flammable object (e.g., a towel) has been left on or near the heater.
-
-* **No Liability:** The developer of this adapter assumes absolutely no responsibility, warranty, or liability for any damages, fires, injuries, or legal issues resulting from the use or misconfiguration of this software. You operate this integration entirely at your own risk.
-
-### Deutsch
-**Der Fernstart eines Saunaofens unterliegt strengen Sicherheitsbestimmungen!** Nach der europäischen Sicherheitsnorm **EN 60335-2-53** in Verbindung mit der **EN 60335-1** sind strenge Brandschutzvorgaben für den Fernzugriff vorgeschrieben. Die Saunakabine muss zwingend über einen funktionierenden Türsensor oder eine Sicherheitsabschaltung verfügen. Dadurch muss sichergestellt sein, dass der Ofen nicht aus der Ferne oder per Zeitschaltuhr startet, wenn sich brennbare Gegenstände (z. B. Handtücher) auf dem Ofen befinden.
-
-* **Haftungsausschluss:** Der Entwickler dieses Adapters schließt jegliche Haftung, Gewährleistung oder Sicherheitsgarantien aus. Die Nutzung und Konfiguration dieser Software erfolgt vollständig auf eigene Gefahr und Verantwortung des Betreibers.
-
----
-
-## Compatibility Note / Kompatibilität
-
-* **Supported:** **Harvia Fenix** control units managed via the **MyHarvia 2** mobile application.
-* **NOT Supported:** **Harvia Xenio** series (e.g., Xenio WiFi / CX001WIFI). The Xenio series relies on a legacy hardware ecosystem and uses the older *"MyHarvia for Xenio"* app, which is fundamentally incompatible with the API utilized by this adapter.
-
----
-
 ## Prerequisites / Voraussetzungen
 
 To use this adapter, you need:
@@ -85,7 +62,20 @@ The adapter maps your sauna's cloud states into structured ioBroker datapoints u
 | `totalBathingHours` | number | `value.number` | Read-only | Total historical cumulative hours the sauna has been actively used (`h`). |
 | `totalOperatingHours`| number | `value.hours` | Read-only | Total system operational running hours (`h`). |
 | `totalSessions` | number | `value.count` | Read-only | Counter for the total number of individual sauna heating sessions executed. |
+---
 
+## ⚠️ CRITICAL SAFETY WARNING & DISCLAIMER / WICHTIGER SICHERHEITSHINWEIS
+
+### English
+**Remote operation of a sauna heater is subject to strict safety regulations!** According to the European safety standard **EN 60335-2-53** in conjunction with **EN 60335-1**, fire protection measures are mandatory for remote control setups. The sauna cabin must be equipped with an approved door sensor or a safety switch-off system. This ensures that the heater cannot be started remotely or via a timer if a flammable object (e.g., a towel) has been left on or near the heater.
+
+* **No Liability:** The developer of this adapter assumes absolutely no responsibility, warranty, or liability for any damages, fires, injuries, or legal issues resulting from the use or misconfiguration of this software. You operate this integration entirely at your own risk.
+---
+
+## Compatibility Note / Kompatibilität
+
+* **Supported:** **Harvia Fenix** control units managed via the **MyHarvia 2** mobile application.
+* **NOT Supported:** **Harvia Xenio** series (e.g., Xenio WiFi / CX001WIFI). The Xenio series relies on a legacy hardware ecosystem and uses the older *"MyHarvia for Xenio"* app, which is fundamentally incompatible with the API utilized by this adapter.
 ---
 
 ## Changelog
