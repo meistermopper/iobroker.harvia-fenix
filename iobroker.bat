@@ -1,1 +1,0 @@
-node node_modules/iobroker.js-controller/iobroker.js %1 %2 %3 %4 %5

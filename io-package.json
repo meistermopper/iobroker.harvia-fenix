@@ -2,20 +2,20 @@
 	"$schema": "https://raw.githubusercontent.com/ioBroker/ioBroker.js-controller/master/schemas/io-package.json",
 	"common": {
 		"name": "harvia-fenix",
-		"version": "0.0.8",
+		"version": "0.0.7",
 		"news": {
 			"0.0.8": {
 				"en": "Fix license file redundancy and add MIT content.",
-				"de": "Reparieren Sie Lizenzdatei Redundanz und fügen Sie MIT Inhalt hinzu.",
-				"ru": "Исправьте избыточность файлов лицензий и добавьте контент MIT.",
-				"pt": "Corrigir redundância do arquivo de licença e adicionar conteúdo MIT.",
-				"nl": "Repareer licentiebestand redundantie en voeg MIT-inhoud toe.",
-				"fr": "Correction de redondance de fichier de licence et ajout de contenu MIT.",
-				"it": "Risolvi la ridondanza del file di licenza e aggiungi contenuti MIT.",
-				"es": "Fijar la redundancia del archivo de licencia y añadir contenido MIT.",
-				"pl": "Napraw nadmiarowość plików licencyjnych i dodaj zawartość MIT.",
-				"uk": "Виправлення переадресації файлів ліцензії та додавання вмісту MIT.",
-				"zh-cn": "修复许可证文件冗余并添加MIT内容."
+				"de": "Redundanz der Lizenzdateien behoben und MIT-Inhalt hinzugefügt.",
+				"ru": "Устранение избыточности файлов лицензий и добавление контента MIT.",
+				"pt": "Corrigir redundância de arquivo de licença e adicionar conteúdo MIT.",
+				"nl": "Redundantie van licentiebestanden oplossen en MIT-inhoud toevoegen.",
+				"fr": "Correction de la redondance des fichiers de licence et ajout du contenu MIT.",
+				"it": "Correggi la ridondanza dei file di licenza e aggiungi il contenuto MIT.",
+				"es": "Corrija la redundanz de los archivos de licencia y agregue contenido MIT.",
+				"pl": "Naprawienie redundancji plików licencji i dodanie treści MIT.",
+				"uk": "Виправлення надмірності ліцензійного файлу та додавання вмісту MIT.",
+				"zh-cn": "修复许可证文件的冗余并添加 MIT 内容。"
 			},
 			"0.0.7": {
 				"en": "Update comprehensive documentation, feature mapping, and legal safety declarations.",

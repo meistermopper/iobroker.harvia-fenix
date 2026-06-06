@@ -89,6 +89,9 @@ The adapter maps your sauna's cloud states into structured ioBroker datapoints u
 ---
 
 ## Changelog
+### 0.0.8 (2026-06-06)
+* (meistermopper) Fix license file redundancy and add MIT content.
+
 ### 0.0.7 (2026-06-06)
 * (meistermopper) Update comprehensive documentation, feature mapping, and legal safety declarations.
 

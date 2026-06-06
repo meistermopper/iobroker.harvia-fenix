@@ -1,4 +1,7 @@
 # Changelog
+## **WORK IN PROGRESS**
+* (meistermopper) Cleanup project structure and remove redundant license automation.
+
 ## 0.0.8 (2026-06-06)
 * (meistermopper) Fix license file redundancy and add MIT content.
 
