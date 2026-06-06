@@ -2,8 +2,21 @@
 	"$schema": "https://raw.githubusercontent.com/ioBroker/ioBroker.js-controller/master/schemas/io-package.json",
 	"common": {
 		"name": "harvia-fenix",
-		"version": "0.0.3",
+		"version": "0.0.4",
 		"news": {
+			"0.0.4": {
+				"en": "Cleanup project structure and fix documentation.",
+				"de": "Projektstruktur reinigen und Dokumentation fixieren.",
+				"ru": "Очистка структуры проекта и исправление документации.",
+				"pt": "Limpar a estrutura do projeto e corrigir documentação.",
+				"nl": "Projectstructuur opruimen en documentatie repareren.",
+				"fr": "Structure du projet de nettoyage et documentation de réparation.",
+				"it": "Struttura del progetto di pulizia e documentazione di correzione.",
+				"es": "Limpie la estructura del proyecto y fije la documentación.",
+				"pl": "Oczyścić strukturę projektu i naprawić dokumentację.",
+				"uk": "Структура проекту очищення та фіксація документації.",
+				"zh-cn": "清理项目结构并修补文件."
+			},
 			"0.0.3": {
 				"en": "### 0.0.1 (2026-06-05)\n* Initial release",
 				"de": "### 0.0.1 (2026-06-05)\n* Erstausstrahlung",
