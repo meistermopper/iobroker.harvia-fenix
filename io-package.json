@@ -2,8 +2,12 @@
 	"$schema": "https://raw.githubusercontent.com/ioBroker/ioBroker.js-controller/master/schemas/io-package.json",
 	"common": {
 		"name": "harvia-fenix",
-		"version": "0.0.4",
+		"version": "0.0.5",
 		"news": {
+			"0.0.5": {
+				"en": "Force identity fix for README and license.",
+				"de": "Identität von README und Lizenz final fixiert."
+			},
 			"0.0.4": {
 				"en": "Cleanup project structure and fix documentation.",
 				"de": "Projektstruktur reinigen und Dokumentation fixieren.",
@@ -18,17 +22,8 @@
 				"zh-cn": "清理项目结构并修补文件."
 			},
 			"0.0.3": {
-				"en": "### 0.0.1 (2026-06-05)\n* Initial release",
-				"de": "### 0.0.1 (2026-06-05)\n* Erstausstrahlung",
-				"ru": "### 0.0.1 (2026-06-05)\n* Первоначальный выпуск",
-				"pt": "### 0.0.1 (2026-06-05)\n* Lançamento inicial",
-				"nl": "### 0,1 (2026-06-05)\n* Eerste release",
-				"fr": "*## 0.0.1 (2026-06-05)\n* Libération initiale",
-				"it": "### 0.0.1 (2026-06-05)\n* rilascio iniziale",
-				"es": "### 0.0.1 (2026-06-05)\n* Publicación inicial",
-				"pl": "# # # 0.0.1 (2026- 06- 05)\n* Początkowe wydanie",
-				"uk": "## 0.0.1 (2026-06-05)\n* Початковий реліз",
-				"zh-cn": "^ 0.0.1 (2026-06-05) (中文(简体) )\n* 初次释放"
+				"en": "Initial release",
+				"de": "Erstveröffentlichung"
 			},
 			"0.0.2": {
 				"en": "Fixed configuration schema and improved type safety",
@@ -134,6 +129,181 @@
 				"read": true,
 				"write": false,
 				"def": false
+			},
+			"native": {}
+		},
+		{
+			"_id": "online",
+			"type": "state",
+			"common": {
+				"role": "indicator.reachable",
+				"name": "Cloud connection status",
+				"type": "boolean",
+				"read": true,
+				"write": false,
+				"def": false
+			},
+			"native": {}
+		},
+		{
+			"_id": "heatOn",
+			"type": "state",
+			"common": {
+				"role": "switch.power",
+				"name": "Sauna heater power",
+				"type": "boolean",
+				"read": true,
+				"write": true,
+				"def": false
+			},
+			"native": {}
+		},
+		{
+			"_id": "lightOn",
+			"type": "state",
+			"common": {
+				"role": "switch.light",
+				"name": "Sauna light",
+				"type": "boolean",
+				"read": true,
+				"write": true,
+				"def": false
+			},
+			"native": {}
+		},
+		{
+			"_id": "temp",
+			"type": "state",
+			"common": {
+				"role": "value.temperature",
+				"name": "Current cabin temperature",
+				"type": "number",
+				"unit": "°C",
+				"read": true,
+				"write": false,
+				"def": 0
+			},
+			"native": {}
+		},
+		{
+			"_id": "targetTemp",
+			"type": "state",
+			"common": {
+				"role": "level.temperature",
+				"name": "Target temperature",
+				"type": "number",
+				"unit": "°C",
+				"read": true,
+				"write": true,
+				"def": 90
+			},
+			"native": {}
+		},
+		{
+			"_id": "doorSafety",
+			"type": "state",
+			"common": {
+				"role": "indicator.safety",
+				"name": "Door safety circuit",
+				"type": "boolean",
+				"read": true,
+				"write": false,
+				"def": false
+			},
+			"native": {}
+		},
+		{
+			"_id": "remoteControl",
+			"type": "state",
+			"common": {
+				"role": "indicator.state",
+				"name": "Remote control authorized",
+				"type": "boolean",
+				"read": true,
+				"write": false,
+				"def": false
+			},
+			"native": {}
+		},
+		{
+			"_id": "totalBathingHours",
+			"type": "state",
+			"common": {
+				"role": "value.number",
+				"name": "Total bathing hours",
+				"type": "number",
+				"unit": "h",
+				"read": true,
+				"write": false,
+				"def": 0
+			},
+			"native": {}
+		},
+		{
+			"_id": "totalSessions",
+			"type": "state",
+			"common": {
+				"role": "value.count",
+				"name": "Total sessions",
+				"type": "number",
+				"read": true,
+				"write": false,
+				"def": 0
+			},
+			"native": {}
+		},
+		{
+			"_id": "errorMsg",
+			"type": "state",
+			"common": {
+				"role": "text",
+				"name": "Last error message",
+				"type": "string",
+				"read": true,
+				"write": false,
+				"def": ""
+			},
+			"native": {}
+		},
+		{
+			"_id": "heaterPower",
+			"type": "state",
+			"common": {
+				"role": "value.power",
+				"name": "Current heater power",
+				"type": "number",
+				"unit": "kW",
+				"read": true,
+				"write": false,
+				"def": 0
+			},
+			"native": {}
+		},
+		{
+			"_id": "panelTemp",
+			"type": "state",
+			"common": {
+				"role": "value.temperature",
+				"name": "Panel temperature",
+				"type": "number",
+				"unit": "°C",
+				"read": true,
+				"write": false,
+				"def": 0
+			},
+			"native": {}
+		},
+		{
+			"_id": "totalOperatingHours",
+			"type": "state",
+			"common": {
+				"role": "value.hours",
+				"name": "Total operating hours",
+				"type": "number",
+				"unit": "h",
+				"read": true,
+				"write": false,
+				"def": 0
 			},
 			"native": {}
 		}

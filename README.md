@@ -1,111 +1,114 @@
-![Logo](img/logos/ioBroker_Logo_Long_Vector.svg)
-# ioBroker (windows installer)
+<p align="center">
+  <img src="https://raw.githubusercontent.com/meistermopper/ioBroker.harvia-fenix/main/admin/harvia.png" alt="Logo">
+</p>
+# ioBroker.harvia-fenix
 
-[![NPM version](https://img.shields.io/npm/v/iobroker.svg)](https://www.npmjs.com/package/iobroker)
-[![Downloads](https://img.shields.io/npm/dm/iobroker.svg)](https://www.npmjs.com/package/iobroker)
+[![NPM version](https://img.shields.io/npm/v/iobroker.harvia-fenix.svg)](https://www.npmjs.com/package/iobroker.harvia-fenix)
+[![Downloads](https://img.shields.io/npm/dm/iobroker.harvia-fenix.svg)](https://www.npmjs.com/package/iobroker.harvia-fenix)
+![Number of Installations](https://iobroker.live/badges/harvia-fenix-installed.svg)
+![Current version in stable repository](https://iobroker.live/badges/harvia-fenix-stable.svg)
 
-[![NPM](https://nodei.co/npm/iobroker.png?downloads=true)](https://nodei.co/npm/iobroker/)
+[!NPM](https://nodei.co/npm/iobroker.harvia-fenix/)
 
-*Automate your life!*
+**Tests:** ![Test and Release](https://github.com/meistermopper/ioBroker.harvia-fenix/workflows/Test%20and%20Release/badge.svg)
 
-To install on linux just run: `curl -sLf https://iobroker.net/install.sh | bash -`
+An ioBroker adapter to integrate and control your **Harvia Fenix** sauna control unit via the MyHarvia cloud infrastructure.
 
-To install on windows: `mkdir C:\iobroker && cd C:\iobroker && npx iobroker` or use [installer](https://github.com/ioBroker/ioBroker.build)
+---
 
-See [ioBroker documentation](https://www.iobroker.net/#en/documentation) for more information
+## ⚠️ CRITICAL SAFETY WARNING & DISCLAIMER / WICHTIGER SICHERHEITSHINWEIS
 
-* [ioBroker website](https://www.iobroker.net)
-* [Forum](https://forum.iobroker.net)
-* [Requests for adapters](https://github.com/ioBroker/AdapterRequests/issues)
+### English
+**Remote operation of a sauna heater is subject to strict safety regulations!** According to the European safety standard **EN 60335-2-53** in conjunction with **EN 60335-1**, fire protection measures are mandatory for remote control setups. The sauna cabin must be equipped with an approved door sensor or a safety switch-off system. This ensures that the heater cannot be started remotely or via a timer if a flammable object (e.g., a towel) has been left on or near the heater.
 
-ioBroker is an integration platform for the [Internet of Things](https://en.wikipedia.org/wiki/Internet_of_Things), focused on Building Automation, Smart Metering, Ambient Assisted Living, Process Automation, Visualization and Data Logging.
+* **No Liability:** The developer of this adapter assumes absolutely no responsibility, warranty, or liability for any damages, fires, injuries, or legal issues resulting from the use or misconfiguration of this software. You operate this integration entirely at your own risk.
 
-## Concept
+### Deutsch
+**Der Fernstart eines Saunaofens unterliegt strengen Sicherheitsbestimmungen!** Nach der europäischen Sicherheitsnorm **EN 60335-2-53** in Verbindung mit der **EN 60335-1** sind strenge Brandschutzvorgaben für den Fernzugriff vorgeschrieben. Die Saunakabine muss zwingend über einen funktionierenden Türsensor oder eine Sicherheitsabschaltung verfügen. Dadurch muss sichergestellt sein, dass der Ofen nicht aus der Ferne oder per Zeitschaltuhr startet, wenn sich brennbare Gegenstände (z. B. Handtücher) auf dem Ofen befinden.
 
-ioBroker is not just an application, it's more of a concept and a database schema.
-It offers a very easy way for systems to interoperate.
-ioBroker defines some common rules for a pair of databases used to exchange data and publish events between different systems.
+* **Haftungsausschluss:** Der Entwickler dieses Adapters schließt jegliche Haftung, Gewährleistung oder Sicherheitsgarantien aus. Die Nutzung und Konfiguration dieser Software erfolgt vollständig auf eigene Gefahr und Verantwortung des Betreibers.
 
-![architecture](img/architecture.png)
+---
 
-### Databases
+## Compatibility Note / Kompatibilität
 
-ioBroker uses "in memory" database to hold the data and saves it on disk with reasonable intervals.
-There are two types of storage:
-- objects (meta/configuration information)
-- states (values)
+* **Supported:** **Harvia Fenix** control units managed via the **MyHarvia 2** mobile application.
+* **NOT Supported:** **Harvia Xenio** series (e.g., Xenio WiFi / CX001WIFI). The Xenio series relies on a legacy hardware ecosystem and uses the older *"MyHarvia for Xenio"* app, which is fundamentally incompatible with the API utilized by this adapter.
 
-Objects and states can be stored in "in memory" or in Redis.
+---
 
-[Redis](https://redis.io/) is an in-memory key-value data store and also a message broker with publish/subscribe pattern.
+## Prerequisites / Voraussetzungen
 
-It's used to maintain and publish all states of connected systems.
+To use this adapter, you need:
+1. A registered account within the official **MyHarvia 2** smartphone application.
+2. Your valid login credentials:
+   * **Email Address**
+   * **Password**
 
-### Adapters
+---
 
-Systems are attached to ioBrokers databases via so-called adapters, technically processes running anywhere
-in the network and connecting all kinds of systems to ioBrokers databases.
-A connection to ioBrokers databases can be implemented in nearly any programming language on nearly any platform
-and an adapter can run on any host that is able to reach the databases via ip networking.
+## Device Configuration & Multi-Device Support
 
-See actual list of adapters on [iobroker.net](https://www.iobroker.net/#en/adapters)
+### Automatic Discovery
+If you leave the **Device ID** field in the adapter settings empty, the adapter will automatically search for devices linked to your account upon startup. It will use the first device it finds as the active unit. The detected ID will be printed to the ioBroker log.
 
-### Security
+### Manual Device ID
+For most users with a single sauna, automatic discovery is sufficient. However, it is recommended to copy the detected ID from the log and paste it into the configuration to ensure a stable connection to the specific hardware.
 
-ioBroker is designed to be accessed by trusted adapters inside trusted networks.
-This means that usually it is not a good idea to expose the ioBroker databases,
-adapters or any smart home devices directly to the internet or, in general,
-to an environment where untrusted clients can directly access these network services.
-Adapters that offer services supposed to be exposed to the internet should be handled with care.
-You should always activate **HTTPS** and use valid certificates for web, admin if open it for internet or
-for example use it with additional security measures like VPN, VLAN and reverse proxies.
+*Note: Currently, the Device ID is not displayed anywhere within the MyHarvia 2 app interface.*
 
-## Getting Started
-### Operating System and Hardware
-[ioBroker.js-controller](https://github.com/iobroker/ioBroker.js-controller/) should run on any hardware
-and OS that runs [Node.js](https://nodejs.org/) (ARM, x86, Windows, Linux, OSX).
+### Multiple Saunas
+If your MyHarvia account manages multiple control units (e.g., one at home and one in a vacation cottage):
+1. Create a separate instance of the adapter for each sauna (e.g., `harvia-fenix.0` and `harvia-fenix.1`).
+2. Manually enter the specific **Device ID** for each unit in its respective instance configuration.
+This allows you to monitor and control both saunas independently with their own set of datapoints.
 
-ioBroker spawns a new Node.js process for every adapter instance, so RAM becomes a limiting factor.
-A single adapter's memory fingerprint is roundabout 10 to 60 MB.
+---
 
-### Installation and first steps
-* [ioBroker Download](https://www.iobroker.net/#en/download)
+## Features & State Points / Datenpunkte
 
-### Community support
-* Get help in the [ioBroker Forums](https://forum.iobroker.net) (english, german and russian languages)
+The adapter maps your sauna's cloud states into structured ioBroker datapoints under `harvia-fenix.0.*`.
 
-## Logos and pictures
+### Available Datapoints
+| Datapoint | Type | Role | Access | Description |
+|---|---|---|---|---|
+| `online` | boolean | `indicator.reachable` | Read-only | Connection state of the control unit to the cloud. |
+| `doorSafety` | boolean | `indicator.safety` | Read-only | Safety loop status (e.g., `true` if the door is secure / safe to run). |
+| `errorMsg` | string | `text` | Read-only | Current error messages or status text from the heater. |
+| `heatOn` | boolean | `switch.power` | Read/Write | Main toggle to switch the sauna heater ON (`true`) or OFF (`false`). |
+| `heaterPower` | string / number | `value.power` | Read-only | *Note:* This object is provisioned by the MyHarvia API structure but is currently delivered as `0 W` (unpopulated). It appears to be reserved for future hardware or app updates. |
+| `lightOn` | boolean | `switch.light` | Read/Write | Toggle to switch the integrated sauna lighting ON or OFF. |
+| `panelTemp` | number | `value.temperature` | Read-only | The temperature reading measured at the physical control panel unit. |
+| `remoteControl` | boolean | `indicator.state` | Read-only | Indicates if remote control authorization is currently active on the device. |
+| `targetTemp` | number | `level.temperature` | Read/Write | Target temperature setpoint for the sauna cabin (e.g., `90 °C`). |
+| `temp` | number | `value.temperature` | Read-only | The current ambient temperature inside the sauna cabin (e.g., `17 °C`). |
+| `totalBathingHours` | number | `value.number` | Read-only | Total historical cumulative hours the sauna has been actively used (`h`). |
+| `totalOperatingHours`| number | `value.number` | Read-only | Total system operational running hours (`h`). |
+| `totalSessions` | number | `value` | Read-only | Counter for the total number of individual sauna heating sessions executed. |
 
-**All logos are protected by copyright and may not be used without permission.**
+---
 
-Please request permission via info@iobroker.net
+## Changelog
+### 0.0.5 (2026-06-06)
+* (meistermopper) Force identity fix for README and license.
+* (meistermopper) Update comprehensive documentation, feature mapping, and legal safety declarations.
 
-[Logos](https://github.com/ioBroker/ioBroker/tree/master/img)
+### 0.0.4 (2026-06-06)
+* (meistermopper) Cleanup project structure and fix documentation.
+
+### 0.0.3 (2026-06-05)
+* (meistermopper) Initial release
+
+### 0.0.2
+* (meistermopper) Fixed configuration schema and improved type safety
+
+### 0.0.1
+* (meistermopper) Initial release
+
+---
+
+## Trademarks / Markenhinweis
+Harvia and MyHarvia 2 are registered trademarks of Harvia Group. This adapter is an independent, community-driven open-source project and is neither officially endorsed, sponsored, nor supported by Harvia.
 
 ## License
-
-This module is distributor under the MIT License (MIT).
-**Please notice, that other ioBroker adapters can have different licenses.**
-
-The MIT License (MIT)
-
-Copyright (c) 2014-2026 bluefox <dogafox@gmail.com>,
-Copyright (c) 2014      hobbyquaker
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in
-all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-THE SOFTWARE.
+MIT License - Copyright (c) 2026 meistermopper
