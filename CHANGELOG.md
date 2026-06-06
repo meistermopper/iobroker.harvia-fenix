@@ -1,4 +1,7 @@
 # Changelog
+## **WORK IN PROGRESS**
+* (meistermopper) Fix license file redundancy and add MIT content.
+
 ## 0.0.7 (2026-06-06)
 * (meistermopper) Update comprehensive documentation, feature mapping, and legal safety declarations.
 
