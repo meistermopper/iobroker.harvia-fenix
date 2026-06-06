@@ -1,5 +1,5 @@
 # Changelog
-## **WORK IN PROGRESS**
+## 0.0.7 (2026-06-06)
 * (meistermopper) Update comprehensive documentation, feature mapping, and legal safety declarations.
 
 ## 0.0.6 (2026-06-06)

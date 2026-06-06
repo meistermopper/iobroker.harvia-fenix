@@ -2,8 +2,21 @@
 	"$schema": "https://raw.githubusercontent.com/ioBroker/ioBroker.js-controller/master/schemas/io-package.json",
 	"common": {
 		"name": "harvia-fenix",
-		"version": "0.0.6",
+		"version": "0.0.7",
 		"news": {
+			"0.0.7": {
+				"en": "Update comprehensive documentation, feature mapping, and legal safety declarations.",
+				"de": "Aktualisieren Sie umfassende Dokumentationen, Feature Mapping und rechtliche Sicherheitserklärungen.",
+				"ru": "Обновите полную документацию, отображение функций и юридические декларации безопасности.",
+				"pt": "Atualizar documentação abrangente, mapeamento de recursos e declarações de segurança legal.",
+				"nl": "Update uitgebreide documentatie, feature mapping en wettelijke veiligheidsverklaringen.",
+				"fr": "Mettre à jour la documentation complète, la cartographie des caractéristiques et les déclarations de sécurité juridique.",
+				"it": "Aggiorna la documentazione completa, la mappatura delle caratteristiche e le dichiarazioni di sicurezza legale.",
+				"es": "Actualizar documentación completa, cartografía de características y declaraciones de seguridad jurídica.",
+				"pl": "Aktualizacja kompleksowej dokumentacji, mapowanie funkcji i prawnych deklaracji bezpieczeństwa.",
+				"uk": "Оновити комплексну документацію, налаштовувати та правову безпеку.",
+				"zh-cn": "更新综合文件、专题绘图和法律安全申报."
+			},
 			"0.0.1": {
 				"en": "initial release",
 				"de": "Erstveröffentlichung",

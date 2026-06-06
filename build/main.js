@@ -248,7 +248,7 @@ class HarviaFenix extends utils.Adapter {
                 password: this.config.password,
                 client_id: CLIENT_ID,
             });
-            this.idToken = response.data.idToken; // JWT-Token
+            this.idToken = response.data.idToken.trim(); // JWT-Token trimmed
             await this.setState("info.connection", true, true);
             return true;
         }
@@ -454,6 +454,9 @@ class HarviaFenix extends utils.Adapter {
                 else if (err.code === "ECONNABORTED" || err.code === "ETIMEDOUT") {
                     this.log.debug("Cloud connection timeout during status poll, will retry in next interval.");
                 }
+                else if (err.response?.status === 429) {
+                    this.log.warn("Cloud rate limit reached. Slowing down...");
+                }
                 else {
                     this.log.error(`Status poll failed (${err.response?.status}): ${err.message}. Response Data: ${JSON.stringify(err.response?.data)}`);
                 }
@@ -503,7 +506,7 @@ class HarviaFenix extends utils.Adapter {
                 const resp = await this.client.post(url, payload, {
                     // Headers from JS-script and successful calls
                     headers: {
-                        Authorization: `Bearer ${this.idToken.trim()}`, // .trim() from original JS-script
+                        Authorization: `Bearer ${this.idToken}`,
                         "Content-Type": "application/json",
                         "x-harvia-partner-id": PARTNER_ID,
                         "x-harvia-app-id": CLIENT_ID,
@@ -533,7 +536,7 @@ class HarviaFenix extends utils.Adapter {
                 const url = `${devicesUrl}/target`;
                 await this.client.patch(url, payload, {
                     headers: {
-                        Authorization: `Bearer ${this.idToken.trim()}`,
+                        Authorization: `Bearer ${this.idToken}`,
                         "Content-Type": "application/json",
                         "x-harvia-partner-id": PARTNER_ID,
                         "x-harvia-app-id": CLIENT_ID,
@@ -568,9 +571,9 @@ class HarviaFenix extends utils.Adapter {
             }
             // RE-LOGIN LOGIC: If token became invalid during runtime
             // Automatic re-login on expired token (HTTP 401)
-            if ((0, axios_1.isAxiosError)(err) && err.response?.status === 401) {
-                this.log.warn("Token expired during control, triggering re-login...");
-                this.isSendingCommand = false; // Briefly release lock for login
+            if ((0, axios_1.isAxiosError)(err) &&
+                (err.response?.status === 401 || err.response?.status === 403)) {
+                this.log.warn("Token expired or unauthorized during control, triggering re-login...");
                 if (await this.login()) {
                     // Repeat command once after successful login
                     await this.setSaunaState(stateName, value, true);
