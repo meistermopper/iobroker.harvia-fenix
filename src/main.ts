@@ -296,7 +296,7 @@ class HarviaFenix extends utils.Adapter {
 					client_id: CLIENT_ID,
 				},
 			);
-			this.idToken = response.data.idToken; // JWT-Token
+			this.idToken = response.data.idToken.trim(); // JWT-Token trimmed
 			await this.setState("info.connection", true, true);
 			return true;
 		} catch (err) {
@@ -615,6 +615,8 @@ class HarviaFenix extends utils.Adapter {
 					this.log.debug(
 						"Cloud connection timeout during status poll, will retry in next interval.",
 					);
+				} else if (err.response?.status === 429) {
+					this.log.warn("Cloud rate limit reached. Slowing down...");
 				} else {
 					this.log.error(
 						`Status poll failed (${err.response?.status}): ${err.message}. Response Data: ${JSON.stringify(err.response?.data)}`,
@@ -681,7 +683,7 @@ class HarviaFenix extends utils.Adapter {
 					{
 						// Headers from JS-script and successful calls
 						headers: {
-							Authorization: `Bearer ${this.idToken.trim()}`, // .trim() from original JS-script
+							Authorization: `Bearer ${this.idToken}`,
 							"Content-Type": "application/json",
 							"x-harvia-partner-id": PARTNER_ID,
 							"x-harvia-app-id": CLIENT_ID,
@@ -713,7 +715,7 @@ class HarviaFenix extends utils.Adapter {
 
 				await this.client.patch<HarviaCommandResponse>(url, payload, {
 					headers: {
-						Authorization: `Bearer ${this.idToken.trim()}`,
+						Authorization: `Bearer ${this.idToken}`,
 						"Content-Type": "application/json",
 						"x-harvia-partner-id": PARTNER_ID,
 						"x-harvia-app-id": CLIENT_ID,
