@@ -447,8 +447,12 @@ class HarviaFenix extends utils.Adapter {
         }
         catch (err) {
             if ((0, axios_1.isAxiosError)(err)) {
-                if (err.response?.status === 401) {
+                if (err.response?.status === 401 || err.response?.status === 403) {
+                    this.log.info("Token expired or unauthorized, attempting re-login...");
                     void this.login();
+                }
+                else if (err.code === "ECONNABORTED" || err.code === "ETIMEDOUT") {
+                    this.log.debug("Cloud connection timeout during status poll, will retry in next interval.");
                 }
                 else {
                     this.log.error(`Status poll failed (${err.response?.status}): ${err.message}. Response Data: ${JSON.stringify(err.response?.data)}`);

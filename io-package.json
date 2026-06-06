@@ -2,8 +2,21 @@
 	"$schema": "https://raw.githubusercontent.com/ioBroker/ioBroker.js-controller/master/schemas/io-package.json",
 	"common": {
 		"name": "harvia-fenix",
-		"version": "0.0.5",
+		"version": "0.0.6",
 		"news": {
+			"0.0.6": {
+				"en": "Force identity fix for README and license.\nUpdate comprehensive documentation, feature mapping, and legal safety declarations.",
+				"de": "Force Identity Fix für README und Lizenz.\nAktualisieren Sie umfassende Dokumentationen, Feature Mapping und rechtliche Sicherheitserklärungen.",
+				"ru": "Идентификация силы для чтения и лицензирования.\nОбновите полную документацию, отображение функций и юридические декларации безопасности.",
+				"pt": "Forçar correção de identidade para README e licença.\nAtualizar documentação abrangente, mapeamento de recursos e declarações de segurança legal.",
+				"nl": "Dwing identiteit vast te stellen voor README en licentie.\nUpdate uitgebreide documentatie, feature mapping en wettelijke veiligheidsverklaringen.",
+				"fr": "Forcer la correction d'identité pour README et licence.\nMettre à jour la documentation complète, la cartographie des caractéristiques et les déclarations de sécurité juridique.",
+				"it": "Identità della forza fissa per README e la licenza.\nAggiorna la documentazione completa, la mappatura delle caratteristiche e le dichiarazioni di sicurezza legale.",
+				"es": "Fijación de identidad de fuerza para README y licencia.\nActualizar documentación completa, cartografía de características y declaraciones de seguridad jurídica.",
+				"pl": "Naprawa tożsamości siły dla README i licencji.\nAktualizacja kompleksowej dokumentacji, mapowanie funkcji i prawnych deklaracji bezpieczeństwa.",
+				"uk": "Пристрої фіксації ідентичності для отримання ліцензії.\nОновити комплексну документацію, налаштовувати та правову безпеку.",
+				"zh-cn": "README和许可证的强制身份修正.\n更新综合文件、专题绘图和法律安全申报."
+			},
 			"0.0.5": {
 				"en": "Force identity fix for README and license.",
 				"de": "Identität von README und Lizenz final fixiert."

@@ -1,5 +1,5 @@
 # Changelog
-## **WORK IN PROGRESS**
+## 0.0.6 (2026-06-06)
 * (meistermopper) Force identity fix for README and license.
 * (meistermopper) Update comprehensive documentation, feature mapping, and legal safety declarations.
 
