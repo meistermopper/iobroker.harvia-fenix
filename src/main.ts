@@ -19,10 +19,11 @@ interface HarviaEndpoints {
 			data: { https: string };
 			device: { https: string };
 			generics: { https: string };
+			users?: { https: string };
 		};
-		Config: {
-			PartnerOrganizationId: string;
-		};
+	};
+	Config?: {
+		PartnerOrganizationId: string;
 	};
 }
 
@@ -84,6 +85,7 @@ class HarviaFenix extends utils.Adapter {
 	private idToken = "";
 	private dataBaseUrl = "";
 	private deviceBaseUrl = "";
+	private usersBaseUrl = "";
 	private authUrl = "";
 	private partnerId = "ORG/prod:0:6656:0"; // Fallback
 	private activeDeviceId = "";
@@ -323,10 +325,11 @@ class HarviaFenix extends utils.Adapter {
 			const ep = response.data.endpoints.RestApi;
 			this.dataBaseUrl = ep.data.https;
 			this.deviceBaseUrl = ep.device.https;
+			this.usersBaseUrl = ep.users?.https || "";
 			this.authUrl = `${ep.generics.https}/auth/token`;
 
-			if (response.data.endpoints.Config?.PartnerOrganizationId) {
-				this.partnerId = response.data.endpoints.Config.PartnerOrganizationId;
+			if (response.data.Config?.PartnerOrganizationId) {
+				this.partnerId = response.data.Config.PartnerOrganizationId;
 			}
 
 			this.log.info(
@@ -411,28 +414,48 @@ class HarviaFenix extends utils.Adapter {
 				return;
 			}
 
-			const baseUrl = this.deviceBaseUrl.replace(/\/$/, "");
-			// Try to retrieve the list of devices
-			const url = baseUrl.endsWith("/devices") ? baseUrl : `${baseUrl}/devices`;
+			const endpointsToTry = [];
+			const devBase = this.deviceBaseUrl.replace(/\/$/, "");
+			endpointsToTry.push(
+				devBase.endsWith("/devices") ? devBase : `${devBase}/devices`,
+			);
 
-			this.log.info(`Searching for devices at: ${url}`);
+			if (this.usersBaseUrl) {
+				const userBase = this.usersBaseUrl.replace(/\/$/, "");
+				endpointsToTry.push(
+					userBase.endsWith("/devices") ? userBase : `${userBase}/devices`,
+				);
+			}
 
-			const response = await this.client.get<{ devices: HarviaDevice[] }>(url, {
-				headers: {
-					Authorization: `Bearer ${this.idToken}`,
-					"x-harvia-partner-id": this.partnerId,
-					"x-harvia-app-id": CLIENT_ID,
-				},
-			});
-
-			this.log.debug(`Discovery Response: ${JSON.stringify(response.data)}`);
-
-			// Handle both: { devices: [...] } and directly [...]
 			let devices: HarviaDevice[] = [];
-			if (Array.isArray(response.data)) {
-				devices = response.data;
-			} else if (response.data && Array.isArray(response.data.devices)) {
-				devices = response.data.devices;
+
+			for (const url of endpointsToTry) {
+				this.log.info(`Searching for devices at: ${url}`);
+				try {
+					const response = await this.client.get<
+						{ devices: HarviaDevice[] } | HarviaDevice[]
+					>(url, {
+						headers: {
+							Authorization: `Bearer ${this.idToken}`,
+							"x-harvia-partner-id": this.partnerId,
+							"x-harvia-app-id": CLIENT_ID,
+						},
+					});
+
+					this.log.debug(
+						`Discovery Response: ${JSON.stringify(response.data)}`,
+					);
+
+					if (Array.isArray(response.data)) {
+						devices = response.data;
+					} else if (response.data && Array.isArray(response.data.devices)) {
+						devices = response.data.devices;
+					}
+
+					if (devices.length > 0) break;
+				} catch {
+					this.log.debug(`Discovery at ${url} failed, trying next...`);
+				}
 			}
 
 			if (devices.length > 0) {
