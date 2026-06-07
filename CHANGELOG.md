@@ -1,4 +1,7 @@
 # Changelog
+## **WORK IN PROGRESS**
+* (meistermopper) Fix Sentry integration and minor linting issues.
+
 ## 0.0.11 (2026-06-07)
 * (meistermopper) Add dummy unit test and fix CI test scripts
 

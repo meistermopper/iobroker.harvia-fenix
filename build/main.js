@@ -486,9 +486,16 @@ class HarviaFenix extends utils.Adapter {
             }
             // Improved Data Normalization
             const rawData = response.data;
-            const p = (rawData && typeof rawData === "object" && "data" in rawData
-                ? rawData.data || rawData
-                : rawData);
+            let p;
+            if (rawData &&
+                typeof rawData === "object" &&
+                "data" in rawData &&
+                rawData.data) {
+                p = rawData.data;
+            }
+            else {
+                p = rawData;
+            }
             if (p &&
                 (p.online !== undefined ||
                     HarviaFenix.getApiValue(p, ["temperature", "temp"]) !== undefined)) {

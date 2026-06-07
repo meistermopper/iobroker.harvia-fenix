@@ -623,11 +623,17 @@ class HarviaFenix extends utils.Adapter {
 
 			// Improved Data Normalization
 			const rawData = response.data;
-			const p = (
-				rawData && typeof rawData === "object" && "data" in rawData
-					? (rawData as Record<string, unknown>).data || rawData
-					: rawData
-			) as HarviaStatusData;
+			let p: HarviaStatusData;
+			if (
+				rawData &&
+				typeof rawData === "object" &&
+				"data" in rawData &&
+				(rawData as Record<string, unknown>).data
+			) {
+				p = (rawData as { data: HarviaStatusData }).data;
+			} else {
+				p = rawData as HarviaStatusData;
+			}
 
 			if (
 				p &&

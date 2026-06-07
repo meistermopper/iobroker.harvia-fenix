@@ -2,8 +2,12 @@
 	"$schema": "https://raw.githubusercontent.com/ioBroker/ioBroker.js-controller/master/schemas/io-package.json",
 	"common": {
 		"name": "harvia-fenix",
-		"version": "0.0.11",
+		"version": "0.0.12",
 		"news": {
+			"0.0.12": {
+				"en": "Fix Sentry integration and minor linting issues.",
+				"de": "Sentry-Integration und kleinere Linting-Fehler behoben."
+			},
 			"0.0.11": {
 				"en": "Add dummy unit test and fix CI test scripts",
 				"de": "Hinzufügen von Dummy Unit Test und Beheben von CI-Testskripten",
