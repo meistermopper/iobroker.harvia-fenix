@@ -462,9 +462,11 @@ class HarviaFenix extends utils.Adapter {
             // Improved Data Normalization
             const rawData = response.data;
             let p;
-            if (rawData && typeof rawData === "object" && "data" in rawData) {
-                const nested = rawData;
-                p = nested.data;
+            if (rawData &&
+                typeof rawData === "object" &&
+                "data" in rawData &&
+                rawData.data) {
+                p = rawData.data;
             }
             else {
                 p = rawData;

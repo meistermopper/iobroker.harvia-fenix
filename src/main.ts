@@ -596,9 +596,13 @@ class HarviaFenix extends utils.Adapter {
 			const rawData = response.data;
 			let p: HarviaStatusData;
 
-			if (rawData && typeof rawData === "object" && "data" in rawData) {
-				const nested = rawData as { data: HarviaStatusData };
-				p = nested.data;
+			if (
+				rawData &&
+				typeof rawData === "object" &&
+				"data" in rawData &&
+				(rawData as Record<string, unknown>).data
+			) {
+				p = (rawData as Record<string, unknown>).data as HarviaStatusData;
 			} else {
 				p = rawData as HarviaStatusData;
 			}

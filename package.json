@@ -35,6 +35,7 @@
 		"@alcalzone/release-script-plugin-package": "^3.0.0",
 		"@alcalzone/release-script-plugin-version": "^3.0.0",
 		"@biomejs/biome": "^2.4.16",
+		"@alcalzone/release-script-plugin-license": "^3.0.0",
 		"@iobroker/testing": "^5.1.0",
 		"@tsconfig/node20": "^20.1.4",
 		"@types/chai": "^4.3.20",
@@ -58,7 +59,7 @@
 		"README.md"
 	],
 	"scripts": {
-		"test:ts": "mocha --config test/mocharc.build.json",
+		"test:ts": "cross-env NODE_OPTIONS=\"--no-experimental-detect-module\" mocha --config test/mocharc.build.json",
 		"test:package": "cross-env NODE_OPTIONS=\"--no-experimental-detect-module\" mocha test/package --exit",
 		"test:unit": "cross-env NODE_OPTIONS=\"--no-experimental-detect-module\" mocha test/unit --exit",
 		"test:integration": "cross-env NODE_OPTIONS=\"--no-experimental-detect-module\" mocha test/integration --exit",
