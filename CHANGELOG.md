@@ -1,5 +1,5 @@
 # Changelog
-## **WORK IN PROGRESS**
+## 0.0.10 (2026-06-07)
 * (meistermopper) Cleanup project structure and remove redundant license automation.
 
 ## 0.0.8 (2026-06-06)

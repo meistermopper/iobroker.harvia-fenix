@@ -2,8 +2,21 @@
 	"$schema": "https://raw.githubusercontent.com/ioBroker/ioBroker.js-controller/master/schemas/io-package.json",
 	"common": {
 		"name": "harvia-fenix",
-		"version": "0.0.9",
+		"version": "0.0.10",
 		"news": {
+			"0.0.10": {
+				"en": "Cleanup project structure and remove redundant license automation.",
+				"de": "Projektstruktur bereinigen und redundante Lizenzautomatisierung entfernen.",
+				"ru": "Очистить структуру проекта и устранить избыточную автоматизацию лицензии.",
+				"pt": "Limpar a estrutura do projeto e remover a automação de licença redundante.",
+				"nl": "Projectstructuur opruimen en redundante licentieautomatisering verwijderen.",
+				"fr": "Nettoyer la structure du projet et supprimer l'automatisation de licence redondante.",
+				"it": "Cleanup struttura del progetto e rimuovere ridondante automazione delle licenze.",
+				"es": "Limpiar la estructura del proyecto y eliminar la automatización de licencias redundantes.",
+				"pl": "Oczyszczenie struktury projektu i usunięcie zbędnej automatyzacji licencji.",
+				"uk": "Очищення структури проекту і видалення надлишкової автоматизації ліцензії.",
+				"zh-cn": "清理项目结构,取消冗余许可证自动化."
+			},
 			"0.0.9": {
 				"en": "Add German documentation and improve remote control status detection.",
 				"de": "Deutsche Dokumentation hinzugefügt und Erkennung des Fernsteuerungsstatus verbessert.",
