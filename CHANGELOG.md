@@ -1,5 +1,6 @@
 # Changelog
 ## **WORK IN PROGRESS**
+* (meistermopper) Add dummy unit test and fix CI test scripts
 
 ## 0.0.10 (2026-06-07)
 * (meistermopper) Finalize TypeScript type safety, documentation links, and build process improvements.
