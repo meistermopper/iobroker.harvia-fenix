@@ -362,11 +362,21 @@ class HarviaFenix extends utils.Adapter {
                         },
                     });
                     this.log.debug(`Discovery Response: ${JSON.stringify(response.data)}`);
-                    if (Array.isArray(response.data)) {
-                        devices = response.data;
+                    const rawDiscovery = response.data;
+                    const discoveryData = (rawDiscovery &&
+                        typeof rawDiscovery === "object" &&
+                        "data" in rawDiscovery
+                        ? rawDiscovery.data
+                        : rawDiscovery);
+                    if (Array.isArray(discoveryData)) {
+                        devices = discoveryData;
                     }
-                    else if (response.data && Array.isArray(response.data.devices)) {
-                        devices = response.data.devices;
+                    else if (discoveryData &&
+                        typeof discoveryData === "object" &&
+                        "devices" in discoveryData &&
+                        Array.isArray(discoveryData.devices)) {
+                        devices = discoveryData
+                            .devices;
                     }
                     if (devices.length > 0)
                         break;
@@ -402,13 +412,28 @@ class HarviaFenix extends utils.Adapter {
                                     await this.setState("online", HarviaFenix.isTrue(val), true);
                                     break;
                                 case "stats.totalSessions.C1":
-                                    await this.setState("totalSessions", Math.round(Number.parseInt(String(val), 10)), true);
+                                    {
+                                        const num = typeof val === "number"
+                                            ? val
+                                            : Number.parseInt(String(val), 10);
+                                        await this.setState("totalSessions", Math.round(num), true);
+                                    }
                                     break;
                                 case "stats.totalBathingHours.C1":
-                                    await this.setState("totalBathingHours", Math.round(Number.parseFloat(String(val)) * 100) / 100, true);
+                                    {
+                                        const num = typeof val === "number"
+                                            ? val
+                                            : Number.parseFloat(String(val));
+                                        await this.setState("totalBathingHours", Math.round(num * 100) / 100, true);
+                                    }
                                     break;
                                 case "stats.totalOperatingHours.C1":
-                                    await this.setState("totalOperatingHours", Math.round(Number.parseFloat(String(val)) * 100) / 100, true);
+                                    {
+                                        const num = typeof val === "number"
+                                            ? val
+                                            : Number.parseFloat(String(val));
+                                        await this.setState("totalOperatingHours", Math.round(num * 100) / 100, true);
+                                    }
                                     break;
                                 case "BT_MAC":
                                     this.log.debug(`Bluetooth MAC: ${val}`);
@@ -461,16 +486,9 @@ class HarviaFenix extends utils.Adapter {
             }
             // Improved Data Normalization
             const rawData = response.data;
-            let p;
-            if (rawData &&
-                typeof rawData === "object" &&
-                "data" in rawData &&
-                rawData.data) {
-                p = rawData.data;
-            }
-            else {
-                p = rawData;
-            }
+            const p = (rawData && typeof rawData === "object" && "data" in rawData
+                ? rawData.data || rawData
+                : rawData);
             if (p &&
                 (p.online !== undefined ||
                     HarviaFenix.getApiValue(p, ["temperature", "temp"]) !== undefined)) {

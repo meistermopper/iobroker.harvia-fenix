@@ -5,9 +5,9 @@
 		"version": "0.0.10",
 		"news": {
 			"0.0.10": {
-				"en": "Cleanup project structure and remove redundant license automation.",
-				"de": "Projektstruktur bereinigen und redundante Lizenzautomatisierung entfernen.",
-				"ru": "Очистить структуру проекта и устранить избыточную автоматизацию лицензии.",
+				"en": "Finalize TypeScript type safety, documentation links, and build process improvements.",
+				"de": "Abschluss der TypeScript-Typsicherheit, Dokumentationslinks und Verbesserungen am Build-Prozess.",
+				"ru": "Завершение обеспечения безопасности типов TypeScript, ссылок на документацию и улучшений процесса сборки.",
 				"pt": "Limpar a estrutura do projeto e remover a automação de licença redundante.",
 				"nl": "Projectstructuur opruimen en redundante licentieautomatisering verwijderen.",
 				"fr": "Nettoyer la structure du projet et supprimer l'automatisation de licence redondante.",

@@ -462,10 +462,25 @@ class HarviaFenix extends utils.Adapter {
 						`Discovery Response: ${JSON.stringify(response.data)}`,
 					);
 
-					if (Array.isArray(response.data)) {
-						devices = response.data;
-					} else if (response.data && Array.isArray(response.data.devices)) {
-						devices = response.data.devices;
+					const rawDiscovery = response.data;
+					const discoveryData = (
+						rawDiscovery &&
+						typeof rawDiscovery === "object" &&
+						"data" in rawDiscovery
+							? (rawDiscovery as Record<string, unknown>).data
+							: rawDiscovery
+					) as { devices: HarviaDevice[] } | HarviaDevice[];
+
+					if (Array.isArray(discoveryData)) {
+						devices = discoveryData;
+					} else if (
+						discoveryData &&
+						typeof discoveryData === "object" &&
+						"devices" in discoveryData &&
+						Array.isArray((discoveryData as Record<string, unknown>).devices)
+					) {
+						devices = (discoveryData as Record<string, unknown>)
+							.devices as HarviaDevice[];
 					}
 
 					if (devices.length > 0) break;
@@ -510,25 +525,39 @@ class HarviaFenix extends utils.Adapter {
 									await this.setState("online", HarviaFenix.isTrue(val), true);
 									break;
 								case "stats.totalSessions.C1":
-									await this.setState(
-										"totalSessions",
-										Math.round(Number.parseInt(String(val), 10)),
-										true,
-									);
+									{
+										const num =
+											typeof val === "number"
+												? val
+												: Number.parseInt(String(val), 10);
+										await this.setState("totalSessions", Math.round(num), true);
+									}
 									break;
 								case "stats.totalBathingHours.C1":
-									await this.setState(
-										"totalBathingHours",
-										Math.round(Number.parseFloat(String(val)) * 100) / 100,
-										true,
-									);
+									{
+										const num =
+											typeof val === "number"
+												? val
+												: Number.parseFloat(String(val));
+										await this.setState(
+											"totalBathingHours",
+											Math.round(num * 100) / 100,
+											true,
+										);
+									}
 									break;
 								case "stats.totalOperatingHours.C1":
-									await this.setState(
-										"totalOperatingHours",
-										Math.round(Number.parseFloat(String(val)) * 100) / 100,
-										true,
-									);
+									{
+										const num =
+											typeof val === "number"
+												? val
+												: Number.parseFloat(String(val));
+										await this.setState(
+											"totalOperatingHours",
+											Math.round(num * 100) / 100,
+											true,
+										);
+									}
 									break;
 								case "BT_MAC":
 									this.log.debug(`Bluetooth MAC: ${val}`);
@@ -594,18 +623,11 @@ class HarviaFenix extends utils.Adapter {
 
 			// Improved Data Normalization
 			const rawData = response.data;
-			let p: HarviaStatusData;
-
-			if (
-				rawData &&
-				typeof rawData === "object" &&
-				"data" in rawData &&
-				(rawData as any).data
-			) {
-				p = (rawData as { data: HarviaStatusData }).data;
-			} else {
-				p = rawData as HarviaStatusData;
-			}
+			const p = (
+				rawData && typeof rawData === "object" && "data" in rawData
+					? (rawData as Record<string, unknown>).data || rawData
+					: rawData
+			) as HarviaStatusData;
 
 			if (
 				p &&
