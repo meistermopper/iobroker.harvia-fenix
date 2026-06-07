@@ -365,6 +365,9 @@ class HarviaFenix extends utils.Adapter {
 				return false;
 			}
 
+			this.log.debug(
+				`Attempting login for user: ${this.config.username?.substring(0, 3)}...`,
+			);
 			const response = await this.client.post<HarviaLoginResponse>(
 				this.authUrl,
 				{
@@ -418,10 +421,20 @@ class HarviaFenix extends utils.Adapter {
 				headers: {
 					Authorization: `Bearer ${this.idToken}`,
 					"x-harvia-partner-id": this.partnerId,
+					"x-harvia-app-id": CLIENT_ID,
 				},
 			});
 
-			const devices = response.data.devices || [];
+			this.log.debug(`Discovery Response: ${JSON.stringify(response.data)}`);
+
+			// Handle both: { devices: [...] } and directly [...]
+			let devices: HarviaDevice[] = [];
+			if (Array.isArray(response.data)) {
+				devices = response.data;
+			} else if (response.data && Array.isArray(response.data.devices)) {
+				devices = response.data.devices;
+			}
+
 			if (devices.length > 0) {
 				this.log.info(`Harvia Cloud: ${devices.length} device(s) found.`);
 				for (const d of devices) {
