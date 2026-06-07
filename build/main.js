@@ -35,11 +35,14 @@ var __importStar = (this && this.__importStar) || (function () {
         return result;
     };
 })();
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 // The adapter-core module gives you access to the core ioBroker functions
 // you need to create an adapter
 const utils = __importStar(require("@iobroker/adapter-core"));
-const axios_1 = __importStar(require("axios"));
+const axios_1 = __importDefault(require("axios"));
 // Harvia API Constants
 const CLIENT_ID = "24emhb2mm0v4sscqhbdev86b2v";
 const PARTNER_ID = "ORG/prod:0:6656:0";
@@ -210,6 +213,30 @@ class HarviaFenix extends utils.Adapter {
             });
         }
     }
+    /**
+     * Robust check for truthy values from Harvia API
+     */
+    isTrue(val) {
+        if (val === undefined || val === null)
+            return false;
+        // Special case for Fenix Remote Ready: onOffTrigger = 21
+        if (val === 21 || val === "21")
+            return true;
+        return (val === 1 || val === "1" || val === true || val === "true" || val === "on");
+    }
+    /**
+     * Helper to get value from multiple possible API keys
+     */
+    getApiValue(data, keys) {
+        if (!data || typeof data !== "object")
+            return undefined;
+        for (const key of keys) {
+            if (data[key] !== undefined && data[key] !== null) {
+                return data[key];
+            }
+        }
+        return undefined;
+    }
     async fetchConfig() {
         try {
             const response = await this.client.get("https://api.harvia.io/endpoints");
@@ -300,27 +327,28 @@ class HarviaFenix extends utils.Adapter {
                         this.log.info(`Configured Device ID (${this.config.deviceId}) does not match found ID (${actualId}). Please check settings.`);
                     }
                     // Read static attributes directly at startup
+                    const attributes = {};
                     if (Array.isArray(d.attr)) {
                         for (const a of d.attr) {
-                            // Ensure value exists before parsing
-                            if (a.value === undefined || a.value === null) {
-                                continue;
-                            }
-                            switch (a.key) {
+                            if (a.key && a.value !== undefined)
+                                attributes[a.key] = a.value;
+                        }
+                        for (const [key, val] of Object.entries(attributes)) {
+                            switch (key) {
                                 case "connected":
-                                    await this.setState("online", a.value === "true", true);
+                                    await this.setState("online", this.isTrue(val), true);
                                     break;
                                 case "stats.totalSessions.C1":
-                                    await this.setState("totalSessions", Math.round(Number.parseInt(a.value, 10)), true);
+                                    await this.setState("totalSessions", Math.round(Number.parseInt(val, 10)), true);
                                     break;
-                                case "stats.totalBathingHours.C1": // In script it was totalBathingHours
-                                    await this.setState("totalBathingHours", Math.round(Number.parseFloat(a.value) * 100) / 100, true);
+                                case "stats.totalBathingHours.C1":
+                                    await this.setState("totalBathingHours", Math.round(Number.parseFloat(val) * 100) / 100, true);
                                     break;
                                 case "stats.totalOperatingHours.C1":
-                                    await this.setState("totalOperatingHours", Math.round(Number.parseFloat(a.value) * 100) / 100, true);
+                                    await this.setState("totalOperatingHours", Math.round(Number.parseFloat(val) * 100) / 100, true);
                                     break;
                                 case "BT_MAC":
-                                    this.log.debug(`Bluetooth MAC: ${a.value}`);
+                                    this.log.debug(`Bluetooth MAC: ${val}`);
                                     break;
                             }
                         }
@@ -340,8 +368,11 @@ class HarviaFenix extends utils.Adapter {
             if (!this.idToken || !this.dataBaseUrl) {
                 return;
             }
-            const url = `${this.dataBaseUrl.replace(/\/$/, "")}/data/latest-data`; // Path from JS-script
+            const url = `${this.dataBaseUrl.replace(/\/$/, "")}/data/latest-data`;
             const deviceId = this.activeDeviceId || this.config.deviceId;
+            if (!deviceId) {
+                return;
+            }
             this.log.debug(`Poll Status: ${url} (ID: ${deviceId})`);
             const response = await this.client.get(url, {
                 params: { deviceId },
@@ -366,78 +397,81 @@ class HarviaFenix extends utils.Adapter {
                 : rawData;
             if (p &&
                 (p.online !== undefined ||
-                    p.temperature !== undefined ||
-                    p.temp !== undefined)) {
-                // LATENCY PROTECTION: If a command was sent less than LATENCY_MS ago,
-                // ignore this update to prevent UI jumping.
+                    this.getApiValue(p, ["temperature", "temp"]) !== undefined)) {
                 if (Date.now() - this.lastCommandTime < LATENCY_MS) {
                     this.log.debug(`Polling ignored due to latency protection (${LATENCY_MS}ms). Last command ${Date.now() - this.lastCommandTime}ms ago.`);
                     return;
                 }
-                // NEW DEBUG LOGGING FOR HEATON
-                if (p.online && p.heatOn !== undefined) {
-                    const actualHeat = p.heatState ?? p.heat;
-                    const currentHeatOnState = (await this.getStateAsync("heatOn"))?.val;
-                    const isHeatingExpected = actualHeat === 1 || actualHeat === true || actualHeat === "on";
-                    if (isHeatingExpected && !currentHeatOnState) {
-                        this.log.warn(`Expected heatOn=true, but ioBroker state is false. Raw data: ${JSON.stringify(p.heatOn)}`);
-                    }
-                    else if (actualHeat === undefined) {
-                        this.log.debug(`Heat status undefined in API response, but device is online. Raw data: ${JSON.stringify(p)}`);
-                    }
-                }
-                // NORMALIZATION: Harvia uses 'temp' or 'temperature' depending on model.
-                const currentTemp = p.temperature ?? p.temp;
+                // Temperatures
+                const currentTemp = this.getApiValue(p, ["temperature", "temp"]);
                 if (currentTemp !== undefined) {
                     await this.setState("temp", Math.round(Number.parseFloat(currentTemp) * 10) / 10, true);
                 }
-                const pPanelTemp = p.panelTemp ?? p.panelTemperature;
+                const pPanelTemp = this.getApiValue(p, [
+                    "panelTemp",
+                    "panelTemperature",
+                ]);
                 if (pPanelTemp !== undefined) {
                     await this.setState("panelTemp", Math.round(Number.parseFloat(pPanelTemp) * 10) / 10, true);
                 }
-                // Normalization of heater power (heaterPower vs power)
-                let currentPower = p.heaterPower ?? p.power;
+                // Power
+                let currentPower = this.getApiValue(p, ["heaterPower", "power"]);
                 if (currentPower !== undefined) {
                     currentPower =
                         Math.round((Number.parseFloat(currentPower) / 1000) * 100) / 100;
                     await this.setState("heaterPower", currentPower, true);
                 }
-                if (p.totalBathingHours !== undefined) {
-                    await this.setState("totalBathingHours", Math.round(Number.parseFloat(p.totalBathingHours) * 100) /
-                        100, true);
+                // Stats
+                const bathHours = this.getApiValue(p, ["totalBathingHours"]);
+                if (bathHours !== undefined) {
+                    await this.setState("totalBathingHours", Math.round(Number.parseFloat(bathHours) * 100) / 100, true);
                 }
-                if (p.totalSessions !== undefined) {
-                    await this.setState("totalSessions", Math.round(Number.parseInt(p.totalSessions, 10)), true);
+                const sessions = this.getApiValue(p, ["totalSessions"]);
+                if (sessions !== undefined) {
+                    await this.setState("totalSessions", Math.round(Number.parseInt(sessions, 10)), true);
                 }
-                if (p.totalHours !== undefined) {
-                    await this.setState("totalOperatingHours", Math.round(Number.parseFloat(p.totalHours) * 100) / 100, true);
+                const opHours = this.getApiValue(p, ["totalHours"]);
+                if (opHours !== undefined) {
+                    await this.setState("totalOperatingHours", Math.round(Number.parseFloat(opHours) * 100) / 100, true);
                 }
-                const tTemp = p.targetTemperature ?? p.targetTemp;
+                const tTemp = this.getApiValue(p, ["targetTemperature", "targetTemp"]);
                 if (tTemp !== undefined) {
                     await this.setState("targetTemp", typeof tTemp === "string" ? Number.parseFloat(tTemp) : tTemp, true);
                 }
-                // STATUS-FIX (Light/Heating): Robust check of state fields and base fields.
-                // Some cloud versions omit fields on 'off' or use alternative names.
-                const actualHeat = p.heatOn ?? p.heatState ?? p.heat;
-                const actualLight = p.lightOn ?? p.lightState ?? p.light;
-                // Conversion of 0/1 or "on"/"off" to boolean for ioBroker
-                if (actualHeat !== undefined && actualHeat !== null) {
-                    await this.setState("heatOn", actualHeat === 1 || actualHeat === true || actualHeat === "on", true);
+                // Boolean States with fallbacks
+                const actualHeat = this.getApiValue(p, [
+                    "heatOn",
+                    "heatState",
+                    "heat",
+                    "heater",
+                ]);
+                if (actualHeat !== undefined) {
+                    await this.setState("heatOn", this.isTrue(actualHeat), true);
                 }
-                if (actualLight !== undefined && actualLight !== null) {
-                    await this.setState("lightOn", actualLight === 1 || actualLight === true || actualLight === "on", true);
+                const actualLight = this.getApiValue(p, [
+                    "lightOn",
+                    "lightState",
+                    "light",
+                ]);
+                if (actualLight !== undefined) {
+                    await this.setState("lightOn", this.isTrue(actualLight), true);
                 }
-                // Remote control readiness (safety chain acknowledged on panel?)
-                if (p.remoteControlState !== undefined &&
-                    p.remoteControlState !== null) {
-                    await this.setState("remoteControl", p.remoteControlState === 1 ||
-                        p.remoteControlState === true ||
-                        p.remoteControlState === "on", true);
+                // Remote Control Ready (Fenix priority: onOffTrigger === 21)
+                const remoteReady = this.getApiValue(p, [
+                    "onOffTrigger",
+                    "remoteControlState",
+                    "safetyRelay",
+                ]);
+                if (remoteReady !== undefined) {
+                    await this.setState("remoteControl", this.isTrue(remoteReady), true);
                 }
-                if (p.doorSafetyState !== undefined && p.doorSafetyState !== null) {
-                    await this.setState("doorSafety", p.doorSafetyState === 1 ||
-                        p.doorSafetyState === true ||
-                        p.doorSafetyState === "on", true);
+                const doorSafe = this.getApiValue(p, [
+                    "doorSafetyState",
+                    "doorSafety",
+                    "door",
+                ]);
+                if (doorSafe !== undefined) {
+                    await this.setState("doorSafety", this.isTrue(doorSafe), true);
                 }
                 await this.setState("online", true, true);
             }
@@ -446,7 +480,7 @@ class HarviaFenix extends utils.Adapter {
             }
         }
         catch (err) {
-            if ((0, axios_1.isAxiosError)(err)) {
+            if (axios_1.default.isAxiosError(err)) {
                 if (err.response?.status === 401 || err.response?.status === 403) {
                     this.log.info("Token expired or unauthorized, attempting re-login...");
                     void this.login();
@@ -522,7 +556,7 @@ class HarviaFenix extends utils.Adapter {
                     }
                 }
                 else {
-                    const reason = resp.data ? resp.data.failureReason : "Unknown";
+                    const reason = resp.data?.failureReason || "Unknown";
                     this.log.warn(`Cloud rejected command: ${reason}`);
                     await this.setState("errorMsg", `Cloud error: ${reason}`, true);
                 }
@@ -550,7 +584,7 @@ class HarviaFenix extends utils.Adapter {
         }
         catch (err) {
             let detail;
-            if ((0, axios_1.isAxiosError)(err) && err.response?.data) {
+            if (axios_1.default.isAxiosError(err) && err.response?.data) {
                 detail = JSON.stringify(err.response.data);
             }
             else if (err instanceof Error) {
@@ -571,7 +605,7 @@ class HarviaFenix extends utils.Adapter {
             }
             // RE-LOGIN LOGIC: If token became invalid during runtime
             // Automatic re-login on expired token (HTTP 401)
-            if ((0, axios_1.isAxiosError)(err) &&
+            if (axios_1.default.isAxiosError(err) &&
                 (err.response?.status === 401 || err.response?.status === 403)) {
                 this.log.warn("Token expired or unauthorized during control, triggering re-login...");
                 if (await this.login()) {
@@ -623,8 +657,7 @@ class HarviaFenix extends utils.Adapter {
                 if (!this.shouldProcess(id)) {
                     return;
                 }
-                // Ensure boolean conversion (VIS often sends strings)
-                const val = state.val === true || state.val === "true" || state.val === 1;
+                const val = this.isTrue(state.val);
                 const isRemoteReady = (await this.getStateAsync("remoteControl"))?.val;
                 if (val && !isRemoteReady) {
                     this.log.warn("Remote start not ready!");
@@ -653,7 +686,7 @@ class HarviaFenix extends utils.Adapter {
                     }
                 }
                 else {
-                    val = state.val === true || state.val === "true" || state.val === 1;
+                    val = this.isTrue(state.val);
                 }
                 await this.setSaunaState(stateId, val);
             }

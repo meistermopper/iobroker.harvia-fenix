@@ -5,7 +5,7 @@
 // The adapter-core module gives you access to the core ioBroker functions
 // you need to create an adapter
 import * as utils from "@iobroker/adapter-core";
-import axios, { type AxiosInstance, isAxiosError } from "axios";
+import axios, { type AxiosInstance } from "axios";
 
 // Harvia API Constants
 const CLIENT_ID = "24emhb2mm0v4sscqhbdev86b2v";
@@ -34,10 +34,12 @@ interface HarviaDevice {
 }
 
 interface HarviaStatusData {
+	[key: string]: unknown;
 	online?: boolean;
 	heatOn?: number | boolean | string;
 	heatState?: number | boolean | string;
 	heat?: number | boolean | string;
+	heater?: number | boolean | string;
 	temperature?: string | number;
 	temp?: string | number;
 	panelTemp?: string | number;
@@ -54,6 +56,10 @@ interface HarviaStatusData {
 	light?: number | boolean | string;
 	remoteControlState?: number | boolean | string;
 	doorSafetyState?: number | boolean | string;
+	doorSafety?: number | boolean | string;
+	door?: number | boolean | string;
+	onOffTrigger?: number | string;
+	safetyRelay?: number | boolean | string;
 }
 
 interface HarviaLoginResponse {
@@ -247,6 +253,68 @@ class HarviaFenix extends utils.Adapter {
 		}
 	}
 
+	/**
+	 * Robust check for truthy values from Harvia API
+	 */
+	private isTrue(val: unknown): boolean {
+		if (val === undefined || val === null) return false;
+
+		let checkVal: unknown = val;
+		if (typeof val === "string") {
+			checkVal = val.toLowerCase().trim();
+		}
+
+		// extended for Fenix Remote Ready (21, 23) and other truthy indicators
+		const trueValues: unknown[] = [
+			1,
+			21,
+			23,
+			"1",
+			"21",
+			"23",
+			true,
+			"true",
+			"on",
+			"enabled",
+			"safe",
+			"ready",
+			"active",
+			"standby",
+		];
+
+		return trueValues.includes(checkVal);
+	}
+
+	/**
+	 * Helper to get value from multiple possible API keys
+	 */
+	private getApiValue(
+		p: Record<string, unknown> | null | undefined,
+		keys: string[],
+	): unknown {
+		if (!p || typeof p !== "object") return undefined;
+
+		// 1. Search top level
+		for (const key of keys) {
+			const val = p[key];
+			if (val !== undefined && val !== null) {
+				return val;
+			}
+		}
+
+		// 2. Search in status object (new Harvia API structure)
+		const status = p.status as Record<string, unknown> | undefined;
+		if (status && typeof status === "object") {
+			for (const key of keys) {
+				const val = status[key];
+				if (val !== undefined && val !== null) {
+					return val;
+				}
+			}
+		}
+		return undefined;
+	}
+
 	private async fetchConfig(): Promise<boolean> {
 		try {
 			const response = await this.client.get<HarviaEndpoints>(
@@ -369,40 +437,40 @@ class HarviaFenix extends utils.Adapter {
 					}
 
 					// Read static attributes directly at startup
+					const attributes: Record<string, string> = {};
 					if (Array.isArray(d.attr)) {
 						for (const a of d.attr) {
-							// Ensure value exists before parsing
-							if (a.value === undefined || a.value === null) {
-								continue;
-							}
+							if (a.key && a.value !== undefined) attributes[a.key] = a.value;
+						}
 
-							switch (a.key) {
+						for (const [key, val] of Object.entries(attributes)) {
+							switch (key) {
 								case "connected":
-									await this.setState("online", a.value === "true", true);
+									await this.setState("online", this.isTrue(val), true);
 									break;
 								case "stats.totalSessions.C1":
 									await this.setState(
 										"totalSessions",
-										Math.round(Number.parseInt(a.value, 10)),
+										Math.round(Number.parseInt(val, 10)),
 										true,
 									);
 									break;
-								case "stats.totalBathingHours.C1": // In script it was totalBathingHours
+								case "stats.totalBathingHours.C1":
 									await this.setState(
 										"totalBathingHours",
-										Math.round(Number.parseFloat(a.value) * 100) / 100,
+										Math.round(Number.parseFloat(val) * 100) / 100,
 										true,
 									);
 									break;
 								case "stats.totalOperatingHours.C1":
 									await this.setState(
 										"totalOperatingHours",
-										Math.round(Number.parseFloat(a.value) * 100) / 100,
+										Math.round(Number.parseFloat(val) * 100) / 100,
 										true,
 									);
 									break;
 								case "BT_MAC":
-									this.log.debug(`Bluetooth MAC: ${a.value}`);
+									this.log.debug(`Bluetooth MAC: ${val}`);
 									break;
 							}
 						}
@@ -426,9 +494,13 @@ class HarviaFenix extends utils.Adapter {
 				return;
 			}
 
-			const url = `${this.dataBaseUrl.replace(/\/$/, "")}/data/latest-data`; // Path from JS-script
+			const url = `${this.dataBaseUrl.replace(/\/$/, "")}/data/latest-data`;
 
 			const deviceId = this.activeDeviceId || this.config.deviceId;
+			if (!deviceId) {
+				return;
+			}
+
 			this.log.debug(`Poll Status: ${url} (ID: ${deviceId})`);
 
 			const response = await this.client.get<
@@ -461,11 +533,8 @@ class HarviaFenix extends utils.Adapter {
 			if (
 				p &&
 				(p.online !== undefined ||
-					p.temperature !== undefined ||
-					p.temp !== undefined)
+					this.getApiValue(p, ["temperature", "temp"]) !== undefined)
 			) {
-				// LATENCY PROTECTION: If a command was sent less than LATENCY_MS ago,
-				// ignore this update to prevent UI jumping.
 				if (Date.now() - this.lastCommandTime < LATENCY_MS) {
 					this.log.debug(
 						`Polling ignored due to latency protection (${LATENCY_MS}ms). Last command ${Date.now() - this.lastCommandTime}ms ago.`,
@@ -473,26 +542,13 @@ class HarviaFenix extends utils.Adapter {
 					return;
 				}
 
-				// NEW DEBUG LOGGING FOR HEATON
-				if (p.online && p.heatOn !== undefined) {
-					const actualHeat = p.heatState ?? p.heat;
-					const currentHeatOnState = (await this.getStateAsync("heatOn"))?.val;
-					const isHeatingExpected =
-						actualHeat === 1 || actualHeat === true || actualHeat === "on";
-
-					if (isHeatingExpected && !currentHeatOnState) {
-						this.log.warn(
-							`Expected heatOn=true, but ioBroker state is false. Raw data: ${JSON.stringify(p.heatOn)}`,
-						);
-					} else if (actualHeat === undefined) {
-						this.log.debug(
-							`Heat status undefined in API response, but device is online. Raw data: ${JSON.stringify(p)}`,
-						);
-					}
-				}
-
-				// NORMALIZATION: Harvia uses 'temp' or 'temperature' depending on model.
-				const currentTemp = p.temperature ?? p.temp;
+				// Temperatures
+				const currentTemp = this.getApiValue(p, [
+					"temperature",
+					"temp",
+					"current_temperature",
+					"ambient_temperature",
+				]);
 				if (currentTemp !== undefined) {
 					await this.setState(
 						"temp",
@@ -501,7 +557,11 @@ class HarviaFenix extends utils.Adapter {
 					);
 				}
 
-				const pPanelTemp = p.panelTemp ?? p.panelTemperature;
+				const pPanelTemp = this.getApiValue(p, [
+					"panelTemp",
+					"panelTemperature",
+					"panel_temperature",
+				]);
 				if (pPanelTemp !== undefined) {
 					await this.setState(
 						"panelTemp",
@@ -510,92 +570,125 @@ class HarviaFenix extends utils.Adapter {
 					);
 				}
 
-				// Normalization of heater power (heaterPower vs power)
-				let currentPower = p.heaterPower ?? p.power;
-				if (currentPower !== undefined) {
-					currentPower =
-						Math.round(
-							(Number.parseFloat(currentPower as string) / 1000) * 100,
-						) / 100;
+				// Power
+				const rawPower = this.getApiValue(p, [
+					"heaterPower",
+					"power",
+					"heater_power",
+				]);
+				if (rawPower !== undefined) {
+					const currentPower =
+						Math.round((Number.parseFloat(String(rawPower)) / 1000) * 100) /
+						100;
 					await this.setState("heaterPower", currentPower, true);
 				}
 
-				if (p.totalBathingHours !== undefined) {
+				// Stats
+				const bathHours = this.getApiValue(p, [
+					"totalBathingHours",
+					"total_bathing_hours",
+					"bathing_hours",
+				]);
+				if (bathHours !== undefined) {
 					await this.setState(
 						"totalBathingHours",
-						Math.round(Number.parseFloat(p.totalBathingHours as string) * 100) /
-							100,
+						Math.round(Number.parseFloat(bathHours as string) * 100) / 100,
 						true,
 					);
 				}
-				if (p.totalSessions !== undefined) {
+				const sessions = this.getApiValue(p, [
+					"totalSessions",
+					"total_sessions",
+					"sessions",
+				]);
+				if (sessions !== undefined) {
 					await this.setState(
 						"totalSessions",
-						Math.round(Number.parseInt(p.totalSessions as string, 10)),
+						Math.round(Number.parseInt(sessions as string, 10)),
 						true,
 					);
 				}
-				if (p.totalHours !== undefined) {
+				const opHours = this.getApiValue(p, [
+					"totalOperatingHours",
+					"totalHours",
+					"total_hours",
+					"operating_hours",
+				]);
+				if (opHours !== undefined) {
 					await this.setState(
 						"totalOperatingHours",
-						Math.round(Number.parseFloat(p.totalHours as string) * 100) / 100,
+						Math.round(Number.parseFloat(opHours as string) * 100) / 100,
 						true,
 					);
 				}
 
-				const tTemp = p.targetTemperature ?? p.targetTemp;
+				const tTemp = this.getApiValue(p, [
+					"targetTemperature",
+					"targetTemp",
+					"target_temperature",
+					"setpoint_temperature",
+				]);
 				if (tTemp !== undefined) {
-					await this.setState(
-						"targetTemp",
-						typeof tTemp === "string" ? Number.parseFloat(tTemp) : tTemp,
-						true,
-					);
+					const targetValue =
+						typeof tTemp === "number"
+							? tTemp
+							: Number.parseFloat(String(tTemp));
+					await this.setState("targetTemp", targetValue, true);
 				}
 
-				// STATUS-FIX (Light/Heating): Robust check of state fields and base fields.
-				// Some cloud versions omit fields on 'off' or use alternative names.
-				const actualHeat = p.heatOn ?? p.heatState ?? p.heat;
-				const actualLight = p.lightOn ?? p.lightState ?? p.light;
-
-				// Conversion of 0/1 or "on"/"off" to boolean for ioBroker
-				if (actualHeat !== undefined && actualHeat !== null) {
-					await this.setState(
-						"heatOn",
-						actualHeat === 1 || actualHeat === true || actualHeat === "on",
-						true,
-					);
+				// Boolean States with fallbacks
+				const actualHeat = this.getApiValue(p, [
+					"heatOn",
+					"heatState",
+					"heat",
+					"heater",
+					"heat_on",
+					"is_heating",
+				]);
+				if (actualHeat !== undefined) {
+					await this.setState("heatOn", this.isTrue(actualHeat), true);
 				}
 
-				if (actualLight !== undefined && actualLight !== null) {
-					await this.setState(
-						"lightOn",
-						actualLight === 1 || actualLight === true || actualLight === "on",
-						true,
-					);
+				const actualLight = this.getApiValue(p, [
+					"lightOn",
+					"lightState",
+					"light",
+					"light_on",
+				]);
+				if (actualLight !== undefined) {
+					await this.setState("lightOn", this.isTrue(actualLight), true);
 				}
 
-				// Remote control readiness (safety chain acknowledged on panel?)
-				if (
-					p.remoteControlState !== undefined &&
-					p.remoteControlState !== null
-				) {
-					await this.setState(
-						"remoteControl",
-						p.remoteControlState === 1 ||
-							p.remoteControlState === true ||
-							p.remoteControlState === "on",
-						true,
-					);
+				// Remote Control Ready (Fenix priority: onOffTrigger === 21)
+				const remoteReady = this.getApiValue(p, [
+					"remoteControl",
+					"remoteReady",
+					"onOffTrigger",
+					"remote_control",
+					"remote_ready",
+					"is_remote_ready",
+					"safetyRelay",
+					"remoteControlState",
+					"remote",
+					"isRemoteReady",
+					"remoteStart",
+					"remoteStartEnabled",
+					"remoteReadyState",
+				]);
+				if (remoteReady !== undefined) {
+					await this.setState("remoteControl", this.isTrue(remoteReady), true);
 				}
 
-				if (p.doorSafetyState !== undefined && p.doorSafetyState !== null) {
-					await this.setState(
-						"doorSafety",
-						p.doorSafetyState === 1 ||
-							p.doorSafetyState === true ||
-							p.doorSafetyState === "on",
-						true,
-					);
+				const doorSafe = this.getApiValue(p, [
+					"doorSafetyState",
+					"doorSafety",
+					"door",
+					"door_closed",
+					"door_safety_state",
+					"door_safety",
+				]);
+				if (doorSafe !== undefined) {
+					await this.setState("doorSafety", this.isTrue(doorSafe), true);
 				}
 
 				await this.setState("online", true, true);
@@ -605,7 +698,7 @@ class HarviaFenix extends utils.Adapter {
 				);
 			}
 		} catch (err: unknown) {
-			if (isAxiosError(err)) {
+			if (axios.isAxiosError(err)) {
 				if (err.response?.status === 401 || err.response?.status === 403) {
 					this.log.info(
 						"Token expired or unauthorized, attempting re-login...",
@@ -701,7 +794,7 @@ class HarviaFenix extends utils.Adapter {
 						await this.setState("errorMsg", "", true);
 					}
 				} else {
-					const reason = resp.data ? resp.data.failureReason : "Unknown";
+					const reason = resp.data.failureReason || "Unknown";
 					this.log.warn(`Cloud rejected command: ${reason}`);
 					await this.setState("errorMsg", `Cloud error: ${reason}`, true);
 				}
@@ -732,7 +825,7 @@ class HarviaFenix extends utils.Adapter {
 			}
 		} catch (err: unknown) {
 			let detail: string;
-			if (isAxiosError(err) && err.response?.data) {
+			if (axios.isAxiosError(err) && err.response?.data) {
 				detail = JSON.stringify(err.response.data);
 			} else if (err instanceof Error) {
 				detail = err.message;
@@ -753,7 +846,7 @@ class HarviaFenix extends utils.Adapter {
 			// RE-LOGIN LOGIC: If token became invalid during runtime
 			// Automatic re-login on expired token (HTTP 401)
 			if (
-				isAxiosError(err) &&
+				axios.isAxiosError(err) &&
 				(err.response?.status === 401 || err.response?.status === 403)
 			) {
 				this.log.warn(
@@ -812,10 +905,7 @@ class HarviaFenix extends utils.Adapter {
 				if (!this.shouldProcess(id)) {
 					return;
 				}
-				// Ensure boolean conversion (VIS often sends strings)
-				const val =
-					state.val === true || state.val === "true" || state.val === 1;
-
+				const val = this.isTrue(state.val);
 				const isRemoteReady = (await this.getStateAsync("remoteControl"))?.val;
 				if (val && !isRemoteReady) {
 					this.log.warn("Remote start not ready!");
@@ -853,7 +943,7 @@ class HarviaFenix extends utils.Adapter {
 						return;
 					}
 				} else {
-					val = state.val === true || state.val === "true" || state.val === 1;
+					val = this.isTrue(state.val);
 				}
 				await this.setSaunaState(stateId, val);
 			}
