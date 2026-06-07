@@ -2,8 +2,21 @@
 	"$schema": "https://raw.githubusercontent.com/ioBroker/ioBroker.js-controller/master/schemas/io-package.json",
 	"common": {
 		"name": "harvia-fenix",
-		"version": "0.0.10",
+		"version": "0.0.11",
 		"news": {
+			"0.0.11": {
+				"en": "Add dummy unit test and fix CI test scripts",
+				"de": "Hinzufügen von Dummy Unit Test und Beheben von CI-Testskripten",
+				"ru": "Добавьте фиктивный модульный тест и исправьте тестовые сценарии CI",
+				"pt": "Adicionar teste de unidade simulada e corrigir scripts de teste CI",
+				"nl": "Voeg dummy unit test toe en bevestig CI test scripts",
+				"fr": "Ajouter l'essai de l'unité factice et fixer les scénarios d'essai de l'IC",
+				"it": "Aggiungere test di unità fittizio e correggere gli script di test CI",
+				"es": "Agregue el test de unidad de dummy y corrija scripts de prueba de CI",
+				"pl": "Dodaj test jednostkowy i ustaw skrypty testu CI",
+				"uk": "Додайте тест і зафіксуйте сценарії випробувань CI",
+				"zh-cn": "添加模拟单元测试并修正 CI 测试脚本"
+			},
 			"0.0.10": {
 				"en": "Finalize TypeScript type safety, documentation links, and build process improvements.",
 				"de": "Abschluss der TypeScript-Typsicherheit, Dokumentationslinks und Verbesserungen am Build-Prozess.",

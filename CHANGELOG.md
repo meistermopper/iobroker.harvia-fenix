@@ -1,5 +1,5 @@
 # Changelog
-## **WORK IN PROGRESS**
+## 0.0.11 (2026-06-07)
 * (meistermopper) Add dummy unit test and fix CI test scripts
 
 ## 0.0.10 (2026-06-07)
