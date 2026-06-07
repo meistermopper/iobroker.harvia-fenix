@@ -18,6 +18,9 @@ concurrency:
   group: ${{ github.ref }}
   cancel-in-progress: true
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 jobs:
   # Performs quick checks before the expensive test runs
   check-and-lint:
@@ -40,6 +43,7 @@ jobs:
 
     runs-on: ${{ matrix.os }}
     strategy:
+      fail-fast: false
       matrix:
         node-version: [20.x, 22.x, 24.x]
         os: [ubuntu-latest, windows-latest, macos-latest]
@@ -71,6 +75,8 @@ jobs:
 
     steps:
       - uses: ioBroker/testing-action-deploy@v1
+        env:
+          SENTRY_AUTH_TOKEN: "${{ secrets.SENTRY_AUTH_TOKEN }}"
         with:
           node-version: '20.x'
           # Uncomment the following line if your adapter cannot be installed using 'npm ci'
@@ -83,7 +89,7 @@ jobs:
           # Enter this token as a GitHub secret (with name SENTRY_AUTH_TOKEN) in the repository options
           # Then uncomment and customize the following block:
           sentry: true
-          sentry-token: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          sentry-token: "${{ env.SENTRY_AUTH_TOKEN }}"
           sentry-project: "iobroker-harvia-fenix"
           sentry-version-prefix: "iobroker.harvia-fenix"
           sentry-sourcemap-paths: "build/"

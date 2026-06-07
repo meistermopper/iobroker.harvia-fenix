@@ -27,6 +27,13 @@
 		"axios": "^1.7.9"
 	},
 	"devDependencies": {
+		"@alcalzone/release-script": "^3.1.0",
+		"@alcalzone/release-script-plugin-changelog": "^3.0.0",
+		"@alcalzone/release-script-plugin-git": "^3.0.0",
+		"@alcalzone/release-script-plugin-iobroker": "^3.0.0",
+		"@alcalzone/release-script-plugin-manual-review": "^3.0.0",
+		"@alcalzone/release-script-plugin-package": "^3.0.0",
+		"@alcalzone/release-script-plugin-version": "^3.0.0",
 		"@biomejs/biome": "^2.4.16",
 		"@iobroker/testing": "^5.1.0",
 		"@tsconfig/node20": "^20.1.4",
@@ -34,19 +41,13 @@
 		"@types/mocha": "^10.0.10",
 		"@types/node": "^20.17.10",
 		"chai": "^4.5.0",
+		"cross-env": "^7.0.3",
+		"husky": "^9.1.7",
+		"lint-staged": "^15.2.11",
 		"mocha": "^10.7.3",
 		"source-map-support": "^0.5.21",
 		"ts-node": "^10.9.2",
-		"typescript": "~5.7.3",
-		"husky": "^9.1.7",
-		"lint-staged": "^15.2.11",
-		"@alcalzone/release-script": "^3.1.0",
-		"@alcalzone/release-script-plugin-iobroker": "^3.0.0",
-		"@alcalzone/release-script-plugin-manual-review": "^3.0.0",
-		"@alcalzone/release-script-plugin-git": "^3.0.0",
-		"@alcalzone/release-script-plugin-package": "^3.0.0",
-		"@alcalzone/release-script-plugin-version": "^3.0.0",
-		"@alcalzone/release-script-plugin-changelog": "^3.0.0"
+		"typescript": "~5.7.3"
 	},
 	"main": "build/main.js",
 	"files": [
@@ -57,10 +58,10 @@
 		"README.md"
 	],
 	"scripts": {
-		"test:ts": "node --require ts-node/register node_modules/mocha/bin/mocha --config test/mocharc.build.json",
-		"test:package": "mocha test/package --exit",
-		"test:unit": "mocha test/unit --exit",
-		"test:integration": "mocha test/integration --exit",
+		"test:ts": "mocha --config test/mocharc.build.json",
+		"test:package": "cross-env NODE_OPTIONS=\"--no-experimental-detect-module\" mocha test/package --exit",
+		"test:unit": "cross-env NODE_OPTIONS=\"--no-experimental-detect-module\" mocha test/unit --exit",
+		"test:integration": "cross-env NODE_OPTIONS=\"--no-experimental-detect-module\" mocha test/integration --exit",
 		"test": "npm run test:ts && npm run test:package",
 		"check": "biome check .",
 		"format": "biome format --write .",
