@@ -2,8 +2,12 @@
 	"$schema": "https://raw.githubusercontent.com/ioBroker/ioBroker.js-controller/master/schemas/io-package.json",
 	"common": {
 		"name": "harvia-fenix",
-		"version": "0.0.8",
+		"version": "0.0.9",
 		"news": {
+			"0.0.9": {
+				"en": "Add German documentation and improve remote control status detection.",
+				"de": "Deutsche Dokumentation hinzugefügt und Erkennung des Fernsteuerungsstatus verbessert."
+			},
 			"0.0.8": {
 				"en": "Fix license file redundancy and add MIT content.",
 				"de": "Redundanz der Lizenzdateien behoben und MIT-Inhalt hinzugefügt.",

@@ -76,9 +76,12 @@ Der Adapter bildet die Cloud-Zustände Ihrer Sauna in strukturierten ioBroker-Da
 ---
 
 ## Änderungsprotokoll (Changelog)
+### 0.0.9 (2026-06-07)
+* (meistermopper) Deutsche Dokumentation hinzugefügt und Erkennung des Fernsteuerungsstatus verbessert.
+* (meistermopper) Technisch: TypeScript-Typen und Build-Prozess korrigiert.
+
 ### 0.0.8 (2026-06-06)
 * (meistermopper) Redundante Lizenzdatei entfernt und MIT-Inhalt hinzugefügt.
-* (meistermopper) Deutsche Übersetzung der Dokumentation hinzugefügt.
 
 ### 0.0.7 (2026-06-06)
 * (meistermopper) Umfassende Dokumentation, Feature-Mapping und Sicherheitshinweise aktualisiert.

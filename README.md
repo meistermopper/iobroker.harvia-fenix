@@ -80,9 +80,12 @@ The adapter maps your sauna's cloud states into structured ioBroker datapoints u
 ---
 
 ## Changelog
+### 0.0.9 (2026-06-07)
+* (meistermopper) Add German documentation and improve remote control status detection.
+* (meistermopper) Technical: Fix TypeScript types and build process.
+
 ### 0.0.8 (2026-06-06)
 * (meistermopper) Fix license file redundancy and add MIT content.
-* (meistermopper) Add German translation of documentation.
 
 ### 0.0.7 (2026-06-06)
 * (meistermopper) Update comprehensive documentation, feature mapping, and legal safety declarations.
