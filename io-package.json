@@ -6,7 +6,16 @@
 		"news": {
 			"0.0.9": {
 				"en": "Add German documentation and improve remote control status detection.",
-				"de": "Deutsche Dokumentation hinzugefügt und Erkennung des Fernsteuerungsstatus verbessert."
+				"de": "Deutsche Dokumentation hinzugefügt und Erkennung des Fernsteuerungsstatus verbessert.",
+				"ru": "Добавлена немецкая документация и улучшено обнаружение статуса дистанционного управления.",
+				"pt": "Adicionada documentação em alemão e melhorada a detecção do status do controle remoto.",
+				"nl": "Duitse documentatie toegevoegd en detectie van afstandsbedieningsstatus verbeterd.",
+				"fr": "Ajout de la documentation allemande et amélioration de la détection de l'état de la télécommande.",
+				"it": "Aggiunta la documentazione in tedesco e migliorato il rilevamento dello stato del controllo remoto.",
+				"es": "Se ha añadido la documentación en alemán y se ha mejorado la detección del estado del control remoto.",
+				"pl": "Dodano niemiecką dokumentację i poprawiono wykrywanie stanu zdalnego sterowania.",
+				"uk": "Додано німецьку документацію та покращено виявлення статусу дистанційного керування.",
+				"zh-cn": "添加了德语文档并改进了远程控制状态检测。"
 			},
 			"0.0.8": {
 				"en": "Fix license file redundancy and add MIT content.",
