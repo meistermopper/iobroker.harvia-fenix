@@ -595,11 +595,11 @@ class HarviaFenix extends utils.Adapter {
 					"ambient_temperature",
 				]);
 				if (currentTemp !== undefined) {
-					await this.setState(
-						"temp",
-						Math.round(Number.parseFloat(currentTemp as string) * 10) / 10,
-						true,
-					);
+					const val =
+						typeof currentTemp === "number"
+							? currentTemp
+							: Number.parseFloat(String(currentTemp));
+					await this.setState("temp", Math.round(val * 10) / 10, true);
 				}
 
 				const pPanelTemp = this.getApiValue(p, [
@@ -608,11 +608,11 @@ class HarviaFenix extends utils.Adapter {
 					"panel_temperature",
 				]);
 				if (pPanelTemp !== undefined) {
-					await this.setState(
-						"panelTemp",
-						Math.round(Number.parseFloat(pPanelTemp as string) * 10) / 10,
-						true,
-					);
+					const val =
+						typeof pPanelTemp === "number"
+							? pPanelTemp
+							: Number.parseFloat(String(pPanelTemp));
+					await this.setState("panelTemp", Math.round(val * 10) / 10, true);
 				}
 
 				// Power
@@ -635,9 +635,13 @@ class HarviaFenix extends utils.Adapter {
 					"bathing_hours",
 				]);
 				if (bathHours !== undefined) {
+					const val =
+						typeof bathHours === "number"
+							? bathHours
+							: Number.parseFloat(String(bathHours));
 					await this.setState(
 						"totalBathingHours",
-						Math.round(Number.parseFloat(bathHours as string) * 100) / 100,
+						Math.round(val * 100) / 100,
 						true,
 					);
 				}
@@ -647,11 +651,11 @@ class HarviaFenix extends utils.Adapter {
 					"sessions",
 				]);
 				if (sessions !== undefined) {
-					await this.setState(
-						"totalSessions",
-						Math.round(Number.parseInt(sessions as string, 10)),
-						true,
-					);
+					const val =
+						typeof sessions === "number"
+							? sessions
+							: Number.parseInt(String(sessions), 10);
+					await this.setState("totalSessions", Math.round(val), true);
 				}
 				const opHours = this.getApiValue(p, [
 					"totalOperatingHours",
@@ -660,9 +664,13 @@ class HarviaFenix extends utils.Adapter {
 					"operating_hours",
 				]);
 				if (opHours !== undefined) {
+					const val =
+						typeof opHours === "number"
+							? opHours
+							: Number.parseFloat(String(opHours));
 					await this.setState(
 						"totalOperatingHours",
-						Math.round(Number.parseFloat(opHours as string) * 100) / 100,
+						Math.round(val * 100) / 100,
 						true,
 					);
 				}
@@ -847,7 +855,10 @@ class HarviaFenix extends utils.Adapter {
 				const payload: HarviaSaunaCommand = {
 					deviceId,
 					cabin: { id: "C1" },
-					temperature: Number.parseFloat(value as string),
+					temperature:
+						typeof value === "number"
+							? value
+							: Number.parseFloat(String(value)),
 				};
 				const url = `${devicesUrl}/target`;
 
@@ -863,7 +874,7 @@ class HarviaFenix extends utils.Adapter {
 				// Immediate confirmation in ioBroker
 				await this.setState(
 					"targetTemp",
-					Number.parseFloat(value as string),
+					typeof value === "number" ? value : Number.parseFloat(String(value)),
 					true,
 				);
 				this.lastCommandTime = Date.now();
@@ -970,7 +981,10 @@ class HarviaFenix extends utils.Adapter {
 				// Ensure type conversion
 				let val: string | number | boolean | null = state.val;
 				if (stateId === "targetTemp") {
-					val = Number.parseFloat(state.val as string);
+					val =
+						typeof state.val === "number"
+							? state.val
+							: Number.parseFloat(String(state.val));
 					if (
 						Number.isNaN(val) ||
 						(val as number) < MIN_TARGET_TEMP ||
