@@ -1,6 +1,12 @@
 # Changelog
+## **WORK IN PROGRESS**
+
 ## 0.0.10 (2026-06-07)
+* (meistermopper) Finalize TypeScript type safety, documentation links, and build process improvements.
 * (meistermopper) Cleanup project structure and remove redundant license automation.
+
+## 0.0.9 (2026-06-07)
+* (meistermopper) Add German documentation and improve remote control status detection.
 
 ## 0.0.8 (2026-06-06)
 * (meistermopper) Fix license file redundancy and add MIT content.
