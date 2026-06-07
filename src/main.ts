@@ -13,33 +13,23 @@ const MIN_TARGET_TEMP = 40; // Minimum allowed target temperature in C
 const MAX_TARGET_TEMP = 110; // Maximum allowed target temperature in C
 const LATENCY_MS = 5000;
 
-interface HarviaEndpoints {
-	endpoints: {
-		RestApi?: {
-			data: { https: string };
-			device: { https: string };
-			generics: { https: string };
-			users?: { https: string };
-			Config?: {
-				PartnerOrganizationId: string;
-			};
-		};
-		Config?: {
-			PartnerOrganizationId: string;
-		};
-	};
-	RestApi?: {
-		data: { https: string };
-		device: { https: string };
-		generics: { https: string };
-		users?: { https: string };
-		Config?: {
-			PartnerOrganizationId: string;
-		};
-	};
+interface HarviaRestApiConfig {
+	data: { https: string };
+	device: { https: string };
+	generics: { https: string };
+	users?: { https: string };
 	Config?: {
 		PartnerOrganizationId: string;
 	};
+}
+
+interface HarviaEndpoints {
+	endpoints: {
+		RestApi?: HarviaRestApiConfig;
+		Config?: { PartnerOrganizationId: string };
+	};
+	RestApi?: HarviaRestApiConfig;
+	Config?: { PartnerOrganizationId: string };
 }
 
 interface HarviaDevice {
