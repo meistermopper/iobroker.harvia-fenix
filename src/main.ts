@@ -600,9 +600,9 @@ class HarviaFenix extends utils.Adapter {
 				rawData &&
 				typeof rawData === "object" &&
 				"data" in rawData &&
-				(rawData as Record<string, unknown>).data
+				(rawData as any).data
 			) {
-				p = (rawData as Record<string, unknown>).data as HarviaStatusData;
+				p = (rawData as { data: HarviaStatusData }).data;
 			} else {
 				p = rawData as HarviaStatusData;
 			}
