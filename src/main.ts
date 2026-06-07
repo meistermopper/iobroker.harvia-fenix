@@ -9,8 +9,6 @@ import axios, { type AxiosInstance } from "axios";
 
 // Harvia API Constants
 const CLIENT_ID = "24emhb2mm0v4sscqhbdev86b2v";
-const PARTNER_ID = "ORG/prod:0:6656:0";
-
 const MIN_TARGET_TEMP = 40; // Minimum allowed target temperature in C
 const MAX_TARGET_TEMP = 110; // Maximum allowed target temperature in C
 const LATENCY_MS = 5000;
@@ -21,6 +19,9 @@ interface HarviaEndpoints {
 			data: { https: string };
 			device: { https: string };
 			generics: { https: string };
+		};
+		Config: {
+			PartnerOrganizationId: string;
 		};
 	};
 }
@@ -84,6 +85,7 @@ class HarviaFenix extends utils.Adapter {
 	private dataBaseUrl = "";
 	private deviceBaseUrl = "";
 	private authUrl = "";
+	private partnerId = "ORG/prod:0:6656:0"; // Fallback
 	private activeDeviceId = "";
 	private loginPromise: Promise<boolean> | null = null;
 
@@ -107,9 +109,6 @@ class HarviaFenix extends utils.Adapter {
 
 		this.client = axios.create({
 			timeout: 20000,
-			headers: {
-				"User-Agent": `ioBroker.${this.name}/${this.version}`,
-			},
 		});
 	}
 
@@ -325,8 +324,13 @@ class HarviaFenix extends utils.Adapter {
 			this.dataBaseUrl = ep.data.https;
 			this.deviceBaseUrl = ep.device.https;
 			this.authUrl = `${ep.generics.https}/auth/token`;
+
+			if (response.data.endpoints.Config?.PartnerOrganizationId) {
+				this.partnerId = response.data.endpoints.Config.PartnerOrganizationId;
+			}
+
 			this.log.info(
-				`API configuration loaded: Data=${this.dataBaseUrl}, Device=${this.deviceBaseUrl}`,
+				`API configuration loaded: Data=${this.dataBaseUrl}, Device=${this.deviceBaseUrl}, Partner=${this.partnerId}`,
 			);
 			return true;
 		} catch (err) {
@@ -353,6 +357,11 @@ class HarviaFenix extends utils.Adapter {
 	private async performLogin(): Promise<boolean> {
 		try {
 			if (!this.authUrl && !(await this.fetchConfig())) {
+				return false;
+			}
+
+			if (!this.config.username || !this.config.password) {
+				this.log.error("Login failed: Username or password not configured!");
 				return false;
 			}
 
@@ -408,7 +417,7 @@ class HarviaFenix extends utils.Adapter {
 			const response = await this.client.get<{ devices: HarviaDevice[] }>(url, {
 				headers: {
 					Authorization: `Bearer ${this.idToken}`,
-					"x-harvia-partner-id": PARTNER_ID,
+					"x-harvia-partner-id": this.partnerId,
 				},
 			});
 
@@ -511,7 +520,7 @@ class HarviaFenix extends utils.Adapter {
 					// Headers from JS-script and successful calls
 					Accept: "application/json",
 					"x-harvia-app-id": CLIENT_ID,
-					"x-harvia-partner-id": PARTNER_ID,
+					"x-harvia-partner-id": this.partnerId,
 					Authorization: `Bearer ${this.idToken}`,
 				},
 			});
@@ -778,7 +787,7 @@ class HarviaFenix extends utils.Adapter {
 						headers: {
 							Authorization: `Bearer ${this.idToken}`,
 							"Content-Type": "application/json",
-							"x-harvia-partner-id": PARTNER_ID,
+							"x-harvia-partner-id": this.partnerId,
 							"x-harvia-app-id": CLIENT_ID,
 						},
 					},
@@ -810,7 +819,7 @@ class HarviaFenix extends utils.Adapter {
 					headers: {
 						Authorization: `Bearer ${this.idToken}`,
 						"Content-Type": "application/json",
-						"x-harvia-partner-id": PARTNER_ID,
+						"x-harvia-partner-id": this.partnerId,
 						"x-harvia-app-id": CLIENT_ID,
 					},
 				});
