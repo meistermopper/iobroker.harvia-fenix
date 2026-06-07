@@ -76,6 +76,10 @@ Der Adapter bildet die Cloud-Zustände Ihrer Sauna in strukturierten ioBroker-Da
 ---
 
 ## Änderungsprotokoll (Changelog)
+### 0.0.10 (2026-06-07)
+* (meistermopper) TypeScript-Typsicherheit und Build-Prozess finalisiert.
+* (meistermopper) GitHub Actions Workflow und Sentry-Integration verbessert.
+
 ### 0.0.9 (2026-06-07)
 * (meistermopper) Deutsche Dokumentation hinzugefügt und Erkennung des Fernsteuerungsstatus verbessert.
 * (meistermopper) Technisch: TypeScript-Typen und Build-Prozess korrigiert.

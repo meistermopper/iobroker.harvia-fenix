@@ -1,6 +1,7 @@
 <p align="center">
   <img src="https://raw.githubusercontent.com/meistermopper/ioBroker.harvia-fenix/main/admin/harvia.png" alt="Logo">
 </p>
+
 # ioBroker.harvia-fenix
 
 **[Hier geht es zur deutschen Version der Dokumentation.](README_de.md)**
@@ -80,6 +81,10 @@ The adapter maps your sauna's cloud states into structured ioBroker datapoints u
 ---
 
 ## Changelog
+### 0.0.10 (2026-06-07)
+* (meistermopper) Finalize TypeScript type safety and build process.
+* (meistermopper) Improve GitHub Actions workflow and Sentry integration.
+
 ### 0.0.9 (2026-06-07)
 * (meistermopper) Add German documentation and improve remote control status detection.
 * (meistermopper) Technical: Fix TypeScript types and build process.
