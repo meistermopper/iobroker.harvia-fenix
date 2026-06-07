@@ -15,11 +15,26 @@ const LATENCY_MS = 5000;
 
 interface HarviaEndpoints {
 	endpoints: {
-		RestApi: {
+		RestApi?: {
 			data: { https: string };
 			device: { https: string };
 			generics: { https: string };
 			users?: { https: string };
+			Config?: {
+				PartnerOrganizationId: string;
+			};
+		};
+		Config?: {
+			PartnerOrganizationId: string;
+		};
+	};
+	RestApi?: {
+		data: { https: string };
+		device: { https: string };
+		generics: { https: string };
+		users?: { https: string };
+		Config?: {
+			PartnerOrganizationId: string;
 		};
 	};
 	Config?: {
@@ -94,6 +109,7 @@ class HarviaFenix extends utils.Adapter {
 	private isSendingCommand = false;
 	private isUnloading = false;
 	private lastCommandTime = 0;
+	private firstPoll = true;
 	private updateInterval: ioBroker.Timeout | undefined;
 	private loginInterval: ioBroker.Interval | undefined;
 	private lastEventTime: Record<string, number> = {}; // For debouncing
@@ -322,14 +338,26 @@ class HarviaFenix extends utils.Adapter {
 				"https://api.harvia.io/endpoints",
 			);
 			this.log.debug(`Endpoints Response: ${JSON.stringify(response.data)}`);
-			const ep = response.data.endpoints.RestApi;
+
+			const ep = response.data.RestApi || response.data.endpoints.RestApi;
+			if (!ep) {
+				this.log.error(
+					"Could not find RestApi configuration in endpoints response",
+				);
+				return false;
+			}
+
 			this.dataBaseUrl = ep.data.https;
 			this.deviceBaseUrl = ep.device.https;
 			this.usersBaseUrl = ep.users?.https || "";
 			this.authUrl = `${ep.generics.https}/auth/token`;
 
-			if (response.data.Config?.PartnerOrganizationId) {
-				this.partnerId = response.data.Config.PartnerOrganizationId;
+			const partnerId =
+				response.data.Config?.PartnerOrganizationId ||
+				response.data.endpoints.Config?.PartnerOrganizationId;
+
+			if (partnerId) {
+				this.partnerId = partnerId;
 			}
 
 			this.log.info(
@@ -522,9 +550,15 @@ class HarviaFenix extends utils.Adapter {
 					}
 				}
 			} else {
-				this.log.warn(
-					"Login successful, but no devices found in Harvia account.",
-				);
+				if (this.config.deviceId) {
+					this.log.info(
+						`No devices found via discovery, using manually configured Device ID: ${this.config.deviceId}`,
+					);
+				} else {
+					this.log.warn(
+						"Login successful, but no devices found in Harvia account.",
+					);
+				}
 			}
 		} catch (err) {
 			this.log.error(
@@ -544,6 +578,11 @@ class HarviaFenix extends utils.Adapter {
 			const deviceId = this.activeDeviceId || this.config.deviceId;
 			if (!deviceId) {
 				return;
+			}
+
+			if (this.firstPoll) {
+				this.log.info(`Starting status polling for device ID: ${deviceId}`);
+				this.firstPoll = false;
 			}
 
 			this.log.debug(`Poll Status: ${url} (ID: ${deviceId})`);
