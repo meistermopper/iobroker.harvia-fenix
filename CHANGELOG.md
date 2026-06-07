@@ -1,5 +1,5 @@
 # Changelog
-## **WORK IN PROGRESS**
+## 0.0.13 (2026-06-07)
 * (meistermopper) Fix Sentry integration and minor linting issues.
 
 ## 0.0.11 (2026-06-07)

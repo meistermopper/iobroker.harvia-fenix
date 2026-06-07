@@ -2,8 +2,21 @@
 	"$schema": "https://raw.githubusercontent.com/ioBroker/ioBroker.js-controller/master/schemas/io-package.json",
 	"common": {
 		"name": "harvia-fenix",
-		"version": "0.0.12",
+		"version": "0.0.13",
 		"news": {
+			"0.0.13": {
+				"en": "Fix Sentry integration and minor linting issues.",
+				"de": "Fix Sentry Integration und kleinere Linting-Probleme.",
+				"ru": "Исправьте интеграцию Sentry и незначительные проблемы с подкладкой.",
+				"pt": "Corrigir integração Sentry e pequenos problemas de fiação.",
+				"nl": "Fix Sentry integratie en kleine linding kwesties.",
+				"fr": "Réparez l'intégration de Sentry et les problèmes mineurs de doublage.",
+				"it": "Fissare l'integrazione Sentry e problemi di linting minori.",
+				"es": "Arreglar la integración de Sentry y problemas de forro menor.",
+				"pl": "Fix Integracja Sentry i drobne problemy linting.",
+				"uk": "Фіксувати інтеграцію понять та неповнолітні проблеми.",
+				"zh-cn": "解决哨兵融合和细小林木问题."
+			},
 			"0.0.12": {
 				"en": "Fix Sentry integration and minor linting issues.",
 				"de": "Sentry-Integration und kleinere Linting-Fehler behoben."
@@ -72,19 +85,6 @@
 				"pl": "Aktualizacja kompleksowej dokumentacji, mapowanie funkcji i prawnych deklaracji bezpieczeństwa.",
 				"uk": "Оновити комплексну документацію, налаштовувати та правову безпеку.",
 				"zh-cn": "更新综合文件、专题绘图和法律安全申报."
-			},
-			"0.0.1": {
-				"en": "initial release",
-				"de": "Erstveröffentlichung",
-				"ru": "Начальная версия",
-				"pt": "lançamento inicial",
-				"nl": "Eerste uitgave",
-				"fr": "Première version",
-				"it": "Versione iniziale",
-				"es": "Versión inicial",
-				"pl": "Pierwsze wydanie",
-				"uk": "Початкова версія",
-				"zh-cn": "首次出版"
 			}
 		},
 		"titleLang": {
