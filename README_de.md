@@ -17,7 +17,8 @@ Um diesen Adapter zu nutzen, benötigen Sie:
    * **E-Mail-Adresse**
    * **Passwort**
 
-Wir empfehlen, ein separates Konto für ioBroker in der Harvia 2 App einzurichten und diese Zugangsdaten in der Instanz zu verwenden.
+*Hinweis: Wir empfehlen, ein separates Konto für ioBroker in der Harvia 2 App einzurichten und diese Zugangsdaten in der Instanz zu verwenden.*
+
 ---
 
 ## Gerätekonfiguration & Multi-Geräte-Unterstützung
