@@ -81,6 +81,15 @@ The adapter maps your sauna's cloud states into structured ioBroker datapoints u
 ---
 
 ## Changelog
+### 0.0.14 (2026-06-08)
+* (meistermopper) Fix Sentry authentication and trigger clean release.
+
+### 0.0.13 (2026-06-07)
+* (meistermopper) Fix Sentry integration and minor linting issues.
+
+### 0.0.11 (2026-06-07)
+* (meistermopper) Add dummy unit test and fix CI test scripts
+
 ### 0.0.10 (2026-06-07)
 * (meistermopper) Finalize TypeScript type safety and build process.
 * (meistermopper) Improve GitHub Actions workflow and Sentry integration.
@@ -100,9 +109,6 @@ The adapter maps your sauna's cloud states into structured ioBroker datapoints u
 
 ### 0.0.4 (2026-06-06)
 * (meistermopper) Cleanup project structure and fix documentation.
-
-### 0.0.3 (2026-06-05)
-* (meistermopper) Initial release
 
 ### 0.0.2
 * (meistermopper) Fixed configuration schema and improved type safety

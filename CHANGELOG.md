@@ -1,4 +1,7 @@
 # Changelog
+## 0.0.14 (2026-06-08)
+* (meistermopper) Fix Sentry authentication and trigger clean release.
+
 ## 0.0.13 (2026-06-07)
 * (meistermopper) Fix Sentry integration and minor linting issues.
 

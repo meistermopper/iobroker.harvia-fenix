@@ -76,6 +76,15 @@ Der Adapter bildet die Cloud-Zustände Ihrer Sauna in strukturierten ioBroker-Da
 ---
 
 ## Änderungsprotokoll (Changelog)
+### 0.0.14 (2026-06-08)
+* (meistermopper) Sentry-Authentifizierung korrigiert und neuen Release angestoßen.
+
+### 0.0.13 (2026-06-07)
+* (meistermopper) Fix Sentry Integration und kleinere Linting-Probleme.
+
+### 0.0.11 (2026-06-07)
+* (meistermopper) Hinzufügen von Dummy Unit Test und Beheben von CI-Testskripten
+
 ### 0.0.10 (2026-06-07)
 * (meistermopper) TypeScript-Typsicherheit und Build-Prozess finalisiert.
 * (meistermopper) GitHub Actions Workflow und Sentry-Integration verbessert.
@@ -93,7 +102,7 @@ Der Adapter bildet die Cloud-Zustände Ihrer Sauna in strukturierten ioBroker-Da
 ### 0.0.4 (2026-06-06)
 * (meistermopper) Projektstruktur bereinigt und Dokumentation korrigiert.
 
-### 0.0.3 (2026-06-05)
+### 0.0.1 (2026-06-05)
 * (meistermopper) Erstveröffentlichung
 
 ---

@@ -2,8 +2,12 @@
 	"$schema": "https://raw.githubusercontent.com/ioBroker/ioBroker.js-controller/master/schemas/io-package.json",
 	"common": {
 		"name": "harvia-fenix",
-		"version": "0.0.13",
+		"version": "0.0.14",
 		"news": {
+			"0.0.14": {
+				"en": "Retry Sentry integration with corrected authentication.",
+				"de": "Sentry-Integration mit korrigierter Authentifizierung erneut versuchen."
+			},
 			"0.0.13": {
 				"en": "Fix Sentry integration and minor linting issues.",
 				"de": "Fix Sentry Integration und kleinere Linting-Probleme.",
