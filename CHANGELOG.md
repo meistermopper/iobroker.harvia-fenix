@@ -27,9 +27,6 @@
 ## 0.0.4 (2026-06-06)
 * (meistermopper) Cleanup project structure and fix documentation.
 
-## 0.0.3 (2026-06-05)
-* (meistermopper) Initial release
-
 ## 0.0.2
 * (meistermopper) Fixed configuration schema and improved type safety
 
