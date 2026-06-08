@@ -129,6 +129,8 @@ The adapter maps your sauna's cloud states into structured ioBroker datapoints u
 
 ---
 
+[Older changelogs can be found there](CHANGELOG_OLD.md)
+
 ## Trademarks
 Harvia and MyHarvia 2 are registered trademarks of Harvia Group. This adapter is an independent, community-driven open-source project and is neither officially endorsed, sponsored, nor supported by Harvia.
 
