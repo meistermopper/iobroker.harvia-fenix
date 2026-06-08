@@ -43,19 +43,6 @@
 				"uk": "Фіксувати інтеграцію понять та неповнолітні проблеми.",
 				"zh-cn": "解决哨兵融合和细小林木问题."
 			},
-			"0.0.12": {
-				"en": "Fix Sentry integration and minor linting issues.",
-				"de": "Sentry-Integration und kleinere Linting-Fehler behoben.",
-				"ru": "Исправьте интеграцию Sentry и незначительные проблемы с подкладкой.",
-				"pt": "Corrigir integração Sentry e pequenos problemas de fiação.",
-				"nl": "Fix Sentry integratie en kleine linding kwesties.",
-				"fr": "Réparez l'intégration de Sentry et les problèmes mineurs de doublage.",
-				"it": "Fissare l'integrazione Sentry e problemi di linting minori.",
-				"es": "Arreglar la integración de Sentry y problemas de forro menor.",
-				"pl": "Fix Integracja Sentry i drobne problemy linting.",
-				"uk": "Фіксувати інтеграцію понять та неповнолітні проблеми.",
-				"zh-cn": "解决哨兵融合和细小林木问题."
-			},
 			"0.0.11": {
 				"en": "Add dummy unit test and fix CI test scripts",
 				"de": "Hinzufügen von Dummy Unit Test und Beheben von CI-Testskripten",
@@ -68,58 +55,6 @@
 				"pl": "Dodaj test jednostkowy i ustaw skrypty testu CI",
 				"uk": "Додайте тест і зафіксуйте сценарії випробувань CI",
 				"zh-cn": "添加模拟单元测试并修正 CI 测试脚本"
-			},
-			"0.0.10": {
-				"en": "Finalize TypeScript type safety, documentation links, and build process improvements.",
-				"de": "Abschluss der TypeScript-Typsicherheit, Dokumentationslinks und Verbesserungen am Build-Prozess.",
-				"ru": "Завершение обеспечения безопасности типов TypeScript, ссылок на документацию и улучшений процесса сборки.",
-				"pt": "Limpar a estrutura do projeto e remover a automação de licença redundante.",
-				"nl": "Projectstructuur opruimen en redundante licentieautomatisering verwijderen.",
-				"fr": "Nettoyer la structure du projet et supprimer l'automatisation de licence redondante.",
-				"it": "Cleanup struttura del progetto e rimuovere ridondante automazione delle licenze.",
-				"es": "Limpiar la estructura del proyecto y eliminar la automatización de licencias redundantes.",
-				"pl": "Oczyszczenie struktury projektu i usunięcie zbędnej automatyzacji licencji.",
-				"uk": "Очищення структури проекту і видалення надлишкової автоматизації ліцензії.",
-				"zh-cn": "清理项目结构,取消冗余许可证自动化."
-			},
-			"0.0.9": {
-				"en": "Add German documentation and improve remote control status detection.",
-				"de": "Deutsche Dokumentation hinzugefügt und Erkennung des Fernsteuerungsstatus verbessert.",
-				"ru": "Добавлена немецкая документация и улучшено обнаружение статуса дистанционного управления.",
-				"pt": "Adicionada documentação em alemão e melhorada a detecção do status do controle remoto.",
-				"nl": "Duitse documentatie toegevoegd en detectie van afstandsbedieningsstatus verbeterd.",
-				"fr": "Ajout de la documentation allemande et amélioration de la détection de l'état de la télécommande.",
-				"it": "Aggiunta la documentazione in tedesco e migliorato il rilevamento dello stato del controllo remoto.",
-				"es": "Se ha añadido la documentación en alemán y se ha mejorado la detección del estado del control remoto.",
-				"pl": "Dodano niemiecką dokumentację i poprawiono wykrywanie stanu zdalnego sterowania.",
-				"uk": "Додано німецьку документацію та покращено виявлення статусу дистанційного керування.",
-				"zh-cn": "添加了德语文档并改进了远程控制状态检测。"
-			},
-			"0.0.8": {
-				"en": "Fix license file redundancy and add MIT content.",
-				"de": "Redundanz der Lizenzdateien behoben und MIT-Inhalt hinzugefügt.",
-				"ru": "Устранение избыточности файлов лицензий и добавление контента MIT.",
-				"pt": "Corrigir redundância de arquivo de licença e adicionar conteúdo MIT.",
-				"nl": "Redundantie van licentiebestanden oplossen en MIT-inhoud toevoegen.",
-				"fr": "Correction de la redondance des fichiers de licence et ajout du contenu MIT.",
-				"it": "Correggi la ridondanza dei file di licenza e aggiungi il contenuto MIT.",
-				"es": "Corrija la redundanz de los archivos de licencia y agregue contenido MIT.",
-				"pl": "Naprawienie redundancji plików licencji i dodanie treści MIT.",
-				"uk": "Виправлення надмірності ліцензійного файлу та додавання вмісту MIT.",
-				"zh-cn": "修复许可证文件的冗余并添加 MIT 内容。"
-			},
-			"0.0.7": {
-				"en": "Update comprehensive documentation, feature mapping, and legal safety declarations.",
-				"de": "Aktualisieren Sie umfassende Dokumentationen, Feature Mapping und rechtliche Sicherheitserklärungen.",
-				"ru": "Обновите полную документацию, отображение функций и юридические декларации безопасности.",
-				"pt": "Atualizar documentação abrangente, mapeamento de recursos e declarações de segurança legal.",
-				"nl": "Update uitgebreide documentatie, feature mapping en wettelijke veiligheidsverklaringen.",
-				"fr": "Mettre à jour la documentation complète, la cartographie des caractéristiques et les déclarations de sécurité juridique.",
-				"it": "Aggiorna la documentazione completa, la mappatura delle caratteristiche e le dichiarazioni di sicurezza legale.",
-				"es": "Actualizar documentación completa, cartografía de características y declaraciones de seguridad jurídica.",
-				"pl": "Aktualizacja kompleksowej dokumentacji, mapowanie funkcji i prawnych deklaracji bezpieczeństwa.",
-				"uk": "Оновити комплексну документацію, налаштовувати та правову безпеку.",
-				"zh-cn": "更新综合文件、专题绘图和法律安全申报."
 			}
 		},
 		"titleLang": {
