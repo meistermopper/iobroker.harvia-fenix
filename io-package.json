@@ -1,325 +1,337 @@
 {
-	"$schema": "https://raw.githubusercontent.com/ioBroker/ioBroker.js-controller/master/schemas/io-package.json",
-	"common": {
-		"name": "harvia-fenix",
-		"version": "0.0.17",
-		"news": {
-			"0.0.17": {
-				"en": "Removed invalid secret references to fix GitHub Action warnings.",
-				"de": "Ungültige Secret-Referenzen entfernt, um GitHub Action Warnungen zu beheben.",
-				"ru": "Удалены недействительные ссылки на секреты для исправления предупреждений GitHub Action.",
-				"pt": "Referências secretas inválidas removidas para corrigir avisos do GitHub Action.",
-				"nl": "Ongeldige geheime verwijzingen verwijderd om GitHub Action-waarschuwingen op te lossen.",
-				"fr": "Références secrètes invalides supprimées pour corriger les avertissements de GitHub Action.",
-				"it": "Rimosse le referenze segrete non valide per correggere gli avvisi di GitHub Action.",
-				"es": "Referencias secretas inválidas eliminadas para corregir advertencias de GitHub Action.",
-				"pl": "Usunięto nieprawidłowe odwołania do sekretów, aby naprawić ostrzeżenia GitHub Action.",
-				"uk": "Видалено недійсні посилання на секрети для виправлення попереджень GitHub Action.",
-				"zh-cn": "已删除无效的秘密引用以修复 GitHub Action 警告。"
-			},
-			"0.0.14": {
-				"en": "Retry Sentry integration with corrected authentication.",
-				"de": "Sentry-Integration mit korrigierter Authentifizierung erneut versuchen.",
-				"ru": "Повторная попытка интеграции Sentry с исправленной аутентификацией.",
-				"pt": "Tentar novamente a integração Sentry com autenticação corrigida.",
-				"nl": "Sentry-integratie opnieuw proberen met gecorrigeerde authenticatie.",
-				"fr": "Nouvelle tentative d'intégration Sentry avec authentification corrigée.",
-				"it": "Riprovare l'integrazione Sentry con autenticazione corretta.",
-				"es": "Reintentar la integración de Sentry con autenticación corregida.",
-				"pl": "Ponowna próba integracji Sentry z poprawioną autentykacją.",
-				"uk": "Повторна спроба інтеграції Sentry з виправленою автентифікацією.",
-				"zh-cn": "使用更正的身份验证重试 Sentry 集成。"
-			},
-			"0.0.13": {
-				"en": "Fix Sentry integration and minor linting issues.",
-				"de": "Fix Sentry Integration und kleinere Linting-Probleme.",
-				"ru": "Исправьте интеграцию Sentry и незначительные проблемы с подкладкой.",
-				"pt": "Corrigir integração Sentry e pequenos problemas de fiação.",
-				"nl": "Fix Sentry integratie en kleine linding kwesties.",
-				"fr": "Réparez l'intégration de Sentry et les problèmes mineurs de doublage.",
-				"it": "Fissare l'integrazione Sentry e problemi di linting minori.",
-				"es": "Arreglar la integración de Sentry y problemas de forro menor.",
-				"pl": "Fix Integracja Sentry i drobne problemy linting.",
-				"uk": "Фіксувати інтеграцію понять та неповнолітні проблеми.",
-				"zh-cn": "解决哨兵融合和细小林木问题."
-			},
-			"0.0.11": {
-				"en": "Add dummy unit test and fix CI test scripts",
-				"de": "Hinzufügen von Dummy Unit Test und Beheben von CI-Testskripten",
-				"ru": "Добавьте фиктивный модульный тест и исправьте тестовые сценарии CI",
-				"pt": "Adicionar teste de unidade simulada e corrigir scripts de teste CI",
-				"nl": "Voeg dummy unit test toe en bevestig CI test scripts",
-				"fr": "Ajouter l'essai de l'unité factice et fixer les scénarios d'essai de l'IC",
-				"it": "Aggiungere test di unità fittizio e correggere gli script di test CI",
-				"es": "Agregue el test de unidad de dummy y corrija scripts de prueba de CI",
-				"pl": "Dodaj test jednostkowy i ustaw skrypty testu CI",
-				"uk": "Додайте тест і зафіксуйте сценарії випробувань CI",
-				"zh-cn": "添加模拟单元测试并修正 CI 测试脚本"
-			}
-		},
-		"titleLang": {
-			"en": "Harvia-Fenix Sauna Control",
-			"de": "Harvia-Fenix Saunasteuerung",
-			"ru": "Управление сауной Harvia-Fenix",
-			"pt": "Controle de Sauna Harvia-Fenix",
-			"nl": "Harvia-Fenix ​​saunabediening",
-			"fr": "Contrôle du sauna HarviaFenix",
-			"it": "Controllo sauna Harvia-Fenix",
-			"es": "Control de sauna Harvia-Fenix",
-			"pl": "Sterowanie sauną Harvia-Fenix",
-			"uk": "Керування сауною Harvia-Fenix",
-			"zh-cn": "Harvia-Fenix 桑拿控制"
-		},
-		"desc": {
-			"en": "Control Harvia Fenix sauna units via MyHarvia cloud",
-			"de": "Steuerung von Harvia Fenix Sauna-Steuerungen über die MyHarvia Cloud",
-			"ru": "Управление саунами Harvia Fenix через облако MyHarvia",
-			"pt": "Controle as unidades de sauna Harvia Fenix via nuvem MyHarvia",
-			"nl": "Bestuur Harvia Fenix-sauna-units via de MyHarvia-cloud",
-			"fr": "Contrôlez les saunas Harvia Fenix via le cloud MyHarvia",
-			"it": "Controlla le unità sauna Harvia Fenix tramite il cloud MyHarvia",
-			"es": "Controle las unidades de sauna Harvia Fenix a través de la nube MyHarvia",
-			"pl": "Sterowanie saunami Harvia Fenix za pomocą chmury MyHarvia",
-			"uk": "Керування саунами Harvia Fenix через хмару MyHarvia",
-			"zh-cn": "通过 MyHarvia 云端控制 Harvia Fenix 桑拿房"
-		},
-		"authors": ["meistermopper <meister.mopper@gmail.com>"],
-		"keywords": ["harvia", "fenix", "sauna", "myharvia", "cloud"],
-		"licenseInformation": {
-			"type": "free",
-			"license": "MIT"
-		},
-		"platform": "Javascript/Node.js",
-		"icon": "harvia.png",
-		"enabled": true,
-		"extIcon": "https://raw.githubusercontent.com/meistermopper/ioBroker.harvia-fenix/main/admin/harvia.png",
-		"readme": "https://github.com/meistermopper/ioBroker.harvia-fenix/blob/main/README.md",
-		"loglevel": "info",
-		"tier": 3,
-		"mode": "daemon",
-		"type": "household",
-		"compact": true,
-		"connectionType": "cloud",
-		"dataSource": "poll",
-		"adminUI": {
-			"config": "json"
-		},
-		"dependencies": [
-			{
-				"js-controller": ">=6.0.11"
-			}
-		],
-		"globalDependencies": [
-			{
-				"admin": ">=7.0.23"
-			}
-		]
-	},
-	"native": {
-		"username": "",
-		"password": "",
-		"deviceId": "",
-		"pollInterval": 60
-	},
-	"protectedNative": ["password"],
-	"encryptedNative": ["password"],
-	"objects": [],
-	"instanceObjects": [
-		{
-			"_id": "info",
-			"type": "channel",
-			"common": {
-				"name": "Information"
-			},
-			"native": {}
-		},
-		{
-			"_id": "info.connection",
-			"type": "state",
-			"common": {
-				"role": "indicator.connected",
-				"name": "Device or service connected",
-				"type": "boolean",
-				"read": true,
-				"write": false,
-				"def": false
-			},
-			"native": {}
-		},
-		{
-			"_id": "online",
-			"type": "state",
-			"common": {
-				"role": "indicator.reachable",
-				"name": "Cloud connection status",
-				"type": "boolean",
-				"read": true,
-				"write": false,
-				"def": false
-			},
-			"native": {}
-		},
-		{
-			"_id": "heatOn",
-			"type": "state",
-			"common": {
-				"role": "switch.power",
-				"name": "Sauna heater power",
-				"type": "boolean",
-				"read": true,
-				"write": true,
-				"def": false
-			},
-			"native": {}
-		},
-		{
-			"_id": "lightOn",
-			"type": "state",
-			"common": {
-				"role": "switch.light",
-				"name": "Sauna light",
-				"type": "boolean",
-				"read": true,
-				"write": true,
-				"def": false
-			},
-			"native": {}
-		},
-		{
-			"_id": "temp",
-			"type": "state",
-			"common": {
-				"role": "value.temperature",
-				"name": "Current cabin temperature",
-				"type": "number",
-				"unit": "°C",
-				"read": true,
-				"write": false,
-				"def": 0
-			},
-			"native": {}
-		},
-		{
-			"_id": "targetTemp",
-			"type": "state",
-			"common": {
-				"role": "level.temperature",
-				"name": "Target temperature",
-				"type": "number",
-				"unit": "°C",
-				"read": true,
-				"write": true,
-				"def": 90
-			},
-			"native": {}
-		},
-		{
-			"_id": "doorSafety",
-			"type": "state",
-			"common": {
-				"role": "indicator.safety",
-				"name": "Door safety circuit",
-				"type": "boolean",
-				"read": true,
-				"write": false,
-				"def": false
-			},
-			"native": {}
-		},
-		{
-			"_id": "remoteControl",
-			"type": "state",
-			"common": {
-				"role": "indicator.state",
-				"name": "Remote control authorized",
-				"type": "boolean",
-				"read": true,
-				"write": false,
-				"def": false
-			},
-			"native": {}
-		},
-		{
-			"_id": "totalBathingHours",
-			"type": "state",
-			"common": {
-				"role": "value.number",
-				"name": "Total bathing hours",
-				"type": "number",
-				"unit": "h",
-				"read": true,
-				"write": false,
-				"def": 0
-			},
-			"native": {}
-		},
-		{
-			"_id": "totalSessions",
-			"type": "state",
-			"common": {
-				"role": "value.count",
-				"name": "Total sessions",
-				"type": "number",
-				"read": true,
-				"write": false,
-				"def": 0
-			},
-			"native": {}
-		},
-		{
-			"_id": "errorMsg",
-			"type": "state",
-			"common": {
-				"role": "text",
-				"name": "Last error message",
-				"type": "string",
-				"read": true,
-				"write": false,
-				"def": ""
-			},
-			"native": {}
-		},
-		{
-			"_id": "heaterPower",
-			"type": "state",
-			"common": {
-				"role": "value.power",
-				"name": "Current heater power",
-				"type": "number",
-				"unit": "kW",
-				"read": true,
-				"write": false,
-				"def": 0
-			},
-			"native": {}
-		},
-		{
-			"_id": "panelTemp",
-			"type": "state",
-			"common": {
-				"role": "value.temperature",
-				"name": "Panel temperature",
-				"type": "number",
-				"unit": "°C",
-				"read": true,
-				"write": false,
-				"def": 0
-			},
-			"native": {}
-		},
-		{
-			"_id": "totalOperatingHours",
-			"type": "state",
-			"common": {
-				"role": "value.hours",
-				"name": "Total operating hours",
-				"type": "number",
-				"unit": "h",
-				"read": true,
-				"write": false,
-				"def": 0
-			},
-			"native": {}
-		}
-	]
+  "$schema": "https://raw.githubusercontent.com/ioBroker/ioBroker.js-controller/master/schemas/io-package.json",
+  "common": {
+    "name": "harvia-fenix",
+    "version": "0.0.17",
+    "news": {
+      "0.0.17": {
+        "en": "Removed invalid secret references to fix GitHub Action warnings.",
+        "de": "Ungültige Secret-Referenzen entfernt, um GitHub Action Warnungen zu beheben.",
+        "ru": "Удалены недействительные ссылки на секреты для исправления предупреждений GitHub Action.",
+        "pt": "Referências secretas inválidas removidas para corrigir avisos do GitHub Action.",
+        "nl": "Ongeldige geheime verwijzingen verwijderd om GitHub Action-waarschuwingen op te lossen.",
+        "fr": "Références secrètes invalides supprimées pour corriger les avertissements de GitHub Action.",
+        "it": "Rimosse le referenze segrete non valide per correggere gli avvisi di GitHub Action.",
+        "es": "Referencias secretas inválidas eliminadas para corregir advertencias de GitHub Action.",
+        "pl": "Usunięto nieprawidłowe odwołania do sekretów, aby naprawić ostrzeżenia GitHub Action.",
+        "uk": "Видалено недійсні посилання на секрети для виправлення попереджень GitHub Action.",
+        "zh-cn": "已删除无效的秘密引用以修复 GitHub Action 警告。"
+      },
+      "0.0.14": {
+        "en": "Retry Sentry integration with corrected authentication.",
+        "de": "Sentry-Integration mit korrigierter Authentifizierung erneut versuchen.",
+        "ru": "Повторная попытка интеграции Sentry с исправленной аутентификацией.",
+        "pt": "Tentar novamente a integração Sentry com autenticação corrigida.",
+        "nl": "Sentry-integratie opnieuw proberen met gecorrigeerde authenticatie.",
+        "fr": "Nouvelle tentative d'intégration Sentry avec authentification corrigée.",
+        "it": "Riprovare l'integrazione Sentry con autenticazione corretta.",
+        "es": "Reintentar la integración de Sentry con autenticación corregida.",
+        "pl": "Ponowna próba integracji Sentry z poprawioną autentykacją.",
+        "uk": "Повторна спроба інтеграції Sentry з виправленою автентифікацією.",
+        "zh-cn": "使用更正的身份验证重试 Sentry 集成。"
+      },
+      "0.0.13": {
+        "en": "Fix Sentry integration and minor linting issues.",
+        "de": "Fix Sentry Integration und kleinere Linting-Probleme.",
+        "ru": "Исправьте интеграцию Sentry и незначительные проблемы с подкладкой.",
+        "pt": "Corrigir integração Sentry e pequenos problemas de fiação.",
+        "nl": "Fix Sentry integratie en kleine linding kwesties.",
+        "fr": "Réparez l'intégration de Sentry et les problèmes mineurs de doublage.",
+        "it": "Fissare l'integrazione Sentry e problemi di linting minori.",
+        "es": "Arreglar la integración de Sentry y problemas de forro menor.",
+        "pl": "Fix Integracja Sentry i drobne problemy linting.",
+        "uk": "Фіксувати інтеграцію понять та неповнолітні проблеми.",
+        "zh-cn": "解决哨兵融合和细小林木问题."
+      },
+      "0.0.11": {
+        "en": "Add dummy unit test and fix CI test scripts",
+        "de": "Hinzufügen von Dummy Unit Test und Beheben von CI-Testskripten",
+        "ru": "Добавьте фиктивный модульный тест и исправьте тестовые сценарии CI",
+        "pt": "Adicionar teste de unidade simulada e corrigir scripts de teste CI",
+        "nl": "Voeg dummy unit test toe en bevestig CI test scripts",
+        "fr": "Ajouter l'essai de l'unité factice et fixer les scénarios d'essai de l'IC",
+        "it": "Aggiungere test di unità fittizio e correggere gli script di test CI",
+        "es": "Agregue el test de unidad de dummy y corrija scripts de prueba de CI",
+        "pl": "Dodaj test jednostkowy i ustaw skrypty testu CI",
+        "uk": "Додайте тест і зафіксуйте сценарії випробувань CI",
+        "zh-cn": "添加模拟单元测试并修正 CI 测试脚本"
+      }
+    },
+    "titleLang": {
+      "en": "Harvia-Fenix Sauna Control",
+      "de": "Harvia-Fenix Saunasteuerung",
+      "ru": "Управление сауной Harvia-Fenix",
+      "pt": "Controle de Sauna Harvia-Fenix",
+      "nl": "Harvia-Fenix ​​saunabediening",
+      "fr": "Contrôle du sauna HarviaFenix",
+      "it": "Controllo sauna Harvia-Fenix",
+      "es": "Control de sauna Harvia-Fenix",
+      "pl": "Sterowanie sauną Harvia-Fenix",
+      "uk": "Керування сауною Harvia-Fenix",
+      "zh-cn": "Harvia-Fenix 桑拿控制"
+    },
+    "desc": {
+      "en": "Control Harvia Fenix sauna units via MyHarvia cloud",
+      "de": "Steuerung von Harvia Fenix Sauna-Steuerungen über die MyHarvia Cloud",
+      "ru": "Управление саунами Harvia Fenix через облако MyHarvia",
+      "pt": "Controle as unidades de sauna Harvia Fenix via nuvem MyHarvia",
+      "nl": "Bestuur Harvia Fenix-sauna-units via de MyHarvia-cloud",
+      "fr": "Contrôlez les saunas Harvia Fenix via le cloud MyHarvia",
+      "it": "Controlla le unità sauna Harvia Fenix tramite il cloud MyHarvia",
+      "es": "Controle las unidades de sauna Harvia Fenix a través de la nube MyHarvia",
+      "pl": "Sterowanie saunami Harvia Fenix za pomocą chmury MyHarvia",
+      "uk": "Керування саунами Harvia Fenix через хмару MyHarvia",
+      "zh-cn": "通过 MyHarvia 云端控制 Harvia Fenix 桑拿房"
+    },
+    "authors": [
+      "meistermopper <meister.mopper@gmail.com>"
+    ],
+    "keywords": [
+      "harvia",
+      "fenix",
+      "sauna",
+      "myharvia",
+      "cloud"
+    ],
+    "licenseInformation": {
+      "type": "free",
+      "license": "MIT"
+    },
+    "platform": "Javascript/Node.js",
+    "icon": "harvia.png",
+    "enabled": true,
+    "extIcon": "https://raw.githubusercontent.com/meistermopper/ioBroker.harvia-fenix/main/admin/harvia.png",
+    "readme": "https://github.com/meistermopper/ioBroker.harvia-fenix/blob/main/README.md",
+    "loglevel": "info",
+    "tier": 3,
+    "mode": "daemon",
+    "type": "household",
+    "compact": true,
+    "connectionType": "cloud",
+    "dataSource": "poll",
+    "adminUI": {
+      "config": "json"
+    },
+    "dependencies": [
+      {
+        "js-controller": ">=6.0.11"
+      }
+    ],
+    "globalDependencies": [
+      {
+        "admin": ">=7.8.23"
+      }
+    ]
+  },
+  "native": {
+    "username": "",
+    "password": "",
+    "deviceId": "",
+    "pollInterval": 60
+  },
+  "protectedNative": [
+    "password"
+  ],
+  "encryptedNative": [
+    "password"
+  ],
+  "objects": [],
+  "instanceObjects": [
+    {
+      "_id": "info",
+      "type": "channel",
+      "common": {
+        "name": "Information"
+      },
+      "native": {}
+    },
+    {
+      "_id": "info.connection",
+      "type": "state",
+      "common": {
+        "role": "indicator.connected",
+        "name": "Device or service connected",
+        "type": "boolean",
+        "read": true,
+        "write": false,
+        "def": false
+      },
+      "native": {}
+    },
+    {
+      "_id": "online",
+      "type": "state",
+      "common": {
+        "role": "indicator.reachable",
+        "name": "Cloud connection status",
+        "type": "boolean",
+        "read": true,
+        "write": false,
+        "def": false
+      },
+      "native": {}
+    },
+    {
+      "_id": "heatOn",
+      "type": "state",
+      "common": {
+        "role": "switch.power",
+        "name": "Sauna heater power",
+        "type": "boolean",
+        "read": true,
+        "write": true,
+        "def": false
+      },
+      "native": {}
+    },
+    {
+      "_id": "lightOn",
+      "type": "state",
+      "common": {
+        "role": "switch.light",
+        "name": "Sauna light",
+        "type": "boolean",
+        "read": true,
+        "write": true,
+        "def": false
+      },
+      "native": {}
+    },
+    {
+      "_id": "temp",
+      "type": "state",
+      "common": {
+        "role": "value.temperature",
+        "name": "Current cabin temperature",
+        "type": "number",
+        "unit": "°C",
+        "read": true,
+        "write": false,
+        "def": 0
+      },
+      "native": {}
+    },
+    {
+      "_id": "targetTemp",
+      "type": "state",
+      "common": {
+        "role": "level.temperature",
+        "name": "Target temperature",
+        "type": "number",
+        "unit": "°C",
+        "read": true,
+        "write": true,
+        "def": 90
+      },
+      "native": {}
+    },
+    {
+      "_id": "doorSafety",
+      "type": "state",
+      "common": {
+        "role": "indicator.safety",
+        "name": "Door safety circuit",
+        "type": "boolean",
+        "read": true,
+        "write": false,
+        "def": false
+      },
+      "native": {}
+    },
+    {
+      "_id": "remoteControl",
+      "type": "state",
+      "common": {
+        "role": "indicator.state",
+        "name": "Remote control authorized",
+        "type": "boolean",
+        "read": true,
+        "write": false,
+        "def": false
+      },
+      "native": {}
+    },
+    {
+      "_id": "totalBathingHours",
+      "type": "state",
+      "common": {
+        "role": "value.number",
+        "name": "Total bathing hours",
+        "type": "number",
+        "unit": "h",
+        "read": true,
+        "write": false,
+        "def": 0
+      },
+      "native": {}
+    },
+    {
+      "_id": "totalSessions",
+      "type": "state",
+      "common": {
+        "role": "value.count",
+        "name": "Total sessions",
+        "type": "number",
+        "read": true,
+        "write": false,
+        "def": 0
+      },
+      "native": {}
+    },
+    {
+      "_id": "errorMsg",
+      "type": "state",
+      "common": {
+        "role": "text",
+        "name": "Last error message",
+        "type": "string",
+        "read": true,
+        "write": false,
+        "def": ""
+      },
+      "native": {}
+    },
+    {
+      "_id": "heaterPower",
+      "type": "state",
+      "common": {
+        "role": "value.power",
+        "name": "Current heater power",
+        "type": "number",
+        "unit": "kW",
+        "read": true,
+        "write": false,
+        "def": 0
+      },
+      "native": {}
+    },
+    {
+      "_id": "panelTemp",
+      "type": "state",
+      "common": {
+        "role": "value.temperature",
+        "name": "Panel temperature",
+        "type": "number",
+        "unit": "°C",
+        "read": true,
+        "write": false,
+        "def": 0
+      },
+      "native": {}
+    },
+    {
+      "_id": "totalOperatingHours",
+      "type": "state",
+      "common": {
+        "role": "value.hours",
+        "name": "Total operating hours",
+        "type": "number",
+        "unit": "h",
+        "read": true,
+        "write": false,
+        "def": 0
+      },
+      "native": {}
+    }
+  ]
 }

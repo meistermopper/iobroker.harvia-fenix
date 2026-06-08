@@ -83,6 +83,10 @@ The adapter maps your sauna's cloud states into structured ioBroker datapoints u
 ---
 
 ## Changelog
+
+### **WORK IN PROGRESS**
+- (ioBroker-Bot) Adapter requires admin >= 7.8.23 now.
+
 ### 0.0.17 (2026-06-08)
 * (meistermopper) Removed invalid secret references to fix GitHub Action warnings.
 
