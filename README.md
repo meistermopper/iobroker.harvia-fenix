@@ -83,6 +83,9 @@ The adapter maps your sauna's cloud states into structured ioBroker datapoints u
 ---
 
 ## Changelog
+### **WORK IN PROGRESS**
+- (copilot) Adapter requires node.js >= 22 now
+
 ### 0.0.17 (2026-06-08)
 * (meistermopper) Removed invalid secret references to fix GitHub Action warnings.
 
