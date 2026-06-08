@@ -6,19 +6,29 @@
 		"news": {
 			"0.0.17": {
 				"en": "Removed invalid secret references to fix GitHub Action warnings.",
-				"de": "Ungültige Secret-Referenzen entfernt, um GitHub Action Warnungen zu beheben."
-			},
-			"0.0.16": {
-				"en": "Disable Sentry integration to fix deployment errors due to missing token.",
-				"de": "Sentry-Integration deaktiviert, um Deployment-Fehler wegen fehlendem Token zu beheben."
-			},
-			"0.0.15": {
-				"en": "Retry Sentry integration with explicit environment token.",
-				"de": "Sentry-Integration mit explizitem Environment-Token erneut versuchen."
+				"de": "Ungültige Secret-Referenzen entfernt, um GitHub Action Warnungen zu beheben.",
+				"ru": "Удалены недействительные ссылки на секреты для исправления предупреждений GitHub Action.",
+				"pt": "Referências secretas inválidas removidas para corrigir avisos do GitHub Action.",
+				"nl": "Ongeldige geheime verwijzingen verwijderd om GitHub Action-waarschuwingen op te lossen.",
+				"fr": "Références secrètes invalides supprimées pour corriger les avertissements de GitHub Action.",
+				"it": "Rimosse le referenze segrete non valide per correggere gli avvisi di GitHub Action.",
+				"es": "Referencias secretas inválidas eliminadas para corregir advertencias de GitHub Action.",
+				"pl": "Usunięto nieprawidłowe odwołania do sekretów, aby naprawić ostrzeżenia GitHub Action.",
+				"uk": "Видалено недійсні посилання на секрети для виправлення попереджень GitHub Action.",
+				"zh-cn": "已删除无效的秘密引用以修复 GitHub Action 警告。"
 			},
 			"0.0.14": {
 				"en": "Retry Sentry integration with corrected authentication.",
-				"de": "Sentry-Integration mit korrigierter Authentifizierung erneut versuchen."
+				"de": "Sentry-Integration mit korrigierter Authentifizierung erneut versuchen.",
+				"ru": "Повторная попытка интеграции Sentry с исправленной аутентификацией.",
+				"pt": "Tentar novamente a integração Sentry com autenticação corrigida.",
+				"nl": "Sentry-integratie opnieuw proberen met gecorrigeerde authenticatie.",
+				"fr": "Nouvelle tentative d'intégration Sentry avec authentification corrigée.",
+				"it": "Riprovare l'integrazione Sentry con autenticazione corretta.",
+				"es": "Reintentar la integración de Sentry con autenticación corregida.",
+				"pl": "Ponowna próba integracji Sentry z poprawioną autentykacją.",
+				"uk": "Повторна спроба інтеграції Sentry з виправленою автентифікацією.",
+				"zh-cn": "使用更正的身份验证重试 Sentry 集成。"
 			},
 			"0.0.13": {
 				"en": "Fix Sentry integration and minor linting issues.",
@@ -35,7 +45,16 @@
 			},
 			"0.0.12": {
 				"en": "Fix Sentry integration and minor linting issues.",
-				"de": "Sentry-Integration und kleinere Linting-Fehler behoben."
+				"de": "Sentry-Integration und kleinere Linting-Fehler behoben.",
+				"ru": "Исправьте интеграцию Sentry и незначительные проблемы с подкладкой.",
+				"pt": "Corrigir integração Sentry e pequenos problemas de fiação.",
+				"nl": "Fix Sentry integratie en kleine linding kwesties.",
+				"fr": "Réparez l'intégration de Sentry et les problèmes mineurs de doublage.",
+				"it": "Fissare l'integrazione Sentry e problemi di linting minori.",
+				"es": "Arreglar la integración de Sentry y problemas de forro menor.",
+				"pl": "Fix Integracja Sentry i drobne problemy linting.",
+				"uk": "Фіксувати інтеграцію понять та неповнолітні проблеми.",
+				"zh-cn": "解决哨兵融合和细小林木问题."
 			},
 			"0.0.11": {
 				"en": "Add dummy unit test and fix CI test scripts",
