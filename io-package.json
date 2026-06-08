@@ -2,8 +2,20 @@
 	"$schema": "https://raw.githubusercontent.com/ioBroker/ioBroker.js-controller/master/schemas/io-package.json",
 	"common": {
 		"name": "harvia-fenix",
-		"version": "0.0.14",
+		"version": "0.0.17",
 		"news": {
+			"0.0.17": {
+				"en": "Removed invalid secret references to fix GitHub Action warnings.",
+				"de": "Ungültige Secret-Referenzen entfernt, um GitHub Action Warnungen zu beheben."
+			},
+			"0.0.16": {
+				"en": "Disable Sentry integration to fix deployment errors due to missing token.",
+				"de": "Sentry-Integration deaktiviert, um Deployment-Fehler wegen fehlendem Token zu beheben."
+			},
+			"0.0.15": {
+				"en": "Retry Sentry integration with explicit environment token.",
+				"de": "Sentry-Integration mit explizitem Environment-Token erneut versuchen."
+			},
 			"0.0.14": {
 				"en": "Retry Sentry integration with corrected authentication.",
 				"de": "Sentry-Integration mit korrigierter Authentifizierung erneut versuchen."

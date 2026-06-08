@@ -76,6 +76,15 @@ Der Adapter bildet die Cloud-Zustände Ihrer Sauna in strukturierten ioBroker-Da
 ---
 
 ## Änderungsprotokoll (Changelog)
+### 0.0.17 (2026-06-08)
+* (meistermopper) Ungültige Secret-Referenzen entfernt, um GitHub Action Warnungen zu beheben.
+
+### 0.0.16 (2026-06-08)
+* (meistermopper) Sentry-Integration deaktiviert, um Deployment-Fehler zu beheben.
+
+### 0.0.15 (2026-06-08)
+* (meistermopper) Weiterer Versuch, die Sentry-Authentifizierung zu beheben.
+
 ### 0.0.14 (2026-06-08)
 * (meistermopper) Sentry-Authentifizierung korrigiert und neuen Release angestoßen.
 
