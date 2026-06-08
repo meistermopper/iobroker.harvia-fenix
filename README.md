@@ -25,7 +25,8 @@ To use this adapter, you need:
    * **Email Address**
    * **Password**
 
-We recommend setting up a separate account for ioBroker in the Harvia 2 app and using those login credentials in the instance.
+*Note: We recommend setting up a separate account for ioBroker in the Harvia 2 app and using those login credentials in the instance.*
+
 ---
 
 ## Device Configuration & Multi-Device Support
