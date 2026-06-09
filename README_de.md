@@ -78,6 +78,12 @@ Der Adapter bildet die Cloud-Zustände Ihrer Sauna in strukturierten ioBroker-Da
 ---
 
 ## Änderungsprotokoll (Changelog)
+### 0.0.19 (2026-06-09)
+* (meistermopper) Letzte Korrekturen für das Reviewer-Feedback, i18n-Syntax und Lizenzformat korrigiert.
+
+### 0.0.18 (2026-06-09)
+* (meistermopper) Reviewer-Feedback umgesetzt, Abhängigkeiten aktualisiert und Trusted Publishing aktiviert.
+
 ### 0.0.17 (2026-06-08)
 * (meistermopper) Ungültige Secret-Referenzen entfernt, um GitHub Action Warnungen zu beheben.
 

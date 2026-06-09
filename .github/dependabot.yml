@@ -1,24 +1,25 @@
+# Dependabot will run on day 10 of each month at 01:22 (Europe/Berlin timezone)
 version: 2
 updates:
-  - package-ecosystem: npm
-    directory: "/"
+
+  - package-ecosystem: 'npm'
+    directory: '/'
     schedule:
-      interval: monthly
-      day: 17
-      time: "00:05"
-      timezone: Europe/Berlin
+      interval: monthly # Removed 'day' as it's not supported for monthly schedules
     open-pull-requests-limit: 5
     assignees:
       - meistermopper
     versioning-strategy: increase
+    cooldown:
+      default: 7 # Recommended cooldown to reduce supply chain risk
+    ignore:
+      - dependency-name: "@types/node" # Ignore major version updates for @types/node
+        update-types: ["version-update:semver-major"]
 
-  - package-ecosystem: github-actions
-    directory: "/"
+  - package-ecosystem: 'github-actions'
+    directory: '/'
     schedule:
-      interval: monthly
-      day: 17
-      time: "00:05"
-      timezone: Europe/Berlin
+      interval: monthly # Removed 'day' as it's not supported for monthly schedules
     open-pull-requests-limit: 5
     assignees:
-      - meistermopper
+      - 'meistermopper'
