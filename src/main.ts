@@ -195,14 +195,14 @@ class HarviaFenix extends utils.Adapter {
 			{
 				id: "doorSafety",
 				type: "boolean",
-				role: "indicator.safety",
+				role: "indicator",
 				write: false,
 				def: false,
 			},
 			{
 				id: "remoteControl",
 				type: "boolean",
-				role: "indicator.state",
+				role: "indicator",
 				write: false,
 				def: false,
 			},
@@ -218,7 +218,7 @@ class HarviaFenix extends utils.Adapter {
 			{
 				id: "totalBathingHours",
 				type: "number",
-				role: "value.number",
+				role: "value",
 				unit: "h",
 				write: false,
 				def: 0,
@@ -226,7 +226,7 @@ class HarviaFenix extends utils.Adapter {
 			{
 				id: "totalSessions",
 				type: "number",
-				role: "value.count",
+				role: "value",
 				write: false,
 				def: 0,
 			},
@@ -234,7 +234,7 @@ class HarviaFenix extends utils.Adapter {
 			{
 				id: "totalOperatingHours",
 				type: "number",
-				role: "value.hours",
+				role: "value",
 				unit: "h",
 				write: false,
 				def: 0,

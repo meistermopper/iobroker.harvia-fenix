@@ -1,9 +1,47 @@
 {
-	"$schema": "https://raw.githubusercontent.com/ioBroker/ioBroker.js-controller/master/schemas/io-package.json",
 	"common": {
 		"name": "harvia-fenix",
-		"version": "0.0.17",
+		"version": "0.0.21",
 		"news": {
+			"0.0.21": {
+				"en": "Retry release due to deployment issues (v0.0.20 already exists).",
+				"de": "Release-Wiederholung aufgrund von Deployment-Problemen (v0.0.20 existiert bereits).",
+				"ru": "Повторный выпуск из-за проблем с развертыванием (v0.0.20 уже существует).",
+				"pt": "Repetir o lançamento devido a problemas de implementação (v0.0.20 já existe).",
+				"nl": "Release herhalen vanwege implementatieproblemen (v0.0.20 bestaat al).",
+				"fr": "Nouvelle tentative de publication en raison de problèmes de déploiement (la v0.0.20 existe déjà).",
+				"it": "Riprova il rilascio a causa di problemi di distribuzione (la v0.0.20 esiste già).",
+				"es": "Reintentar el lanzamiento debido a problemas de despliegue (la v0.0.20 ya existe).",
+				"pl": "Ponowna próba wydania z powodu problemów z wdrożeniem (wersja 0.0.20 już istnieje).",
+				"uk": "Повторний випуск через проблеми з розгортанням (v0.0.20 вже існує).",
+				"zh-cn": "由于部署问题重试发布（v0.0.20 已存在）。"
+			},
+			"0.0.20": {
+				"en": "Retry release due to deployment issues.",
+				"de": "Release-Wiederholung aufgrund von Deployment-Problemen.",
+				"ru": "Повторный выпуск из-за проблем с развертыванием.",
+				"pt": "Repetir o lançamento devido a problemas de implementação.",
+				"nl": "Release herhalen vanwege implementatieproblemen.",
+				"fr": "Nouvelle tentative de publication en raison de problèmes de déploiement.",
+				"it": "Riprova il rilascio a causa di problemi di distribuzione.",
+				"es": "Reintentar el lanzamiento debido a problemas de despliegue.",
+				"pl": "Ponowna próba wydania z powodu problemów z wdrożeniem.",
+				"uk": "Повторний випуск через проблеми з розгортанням.",
+				"zh-cn": "由于部署问题重试发布。"
+			},
+			"0.0.19": {
+				"en": "Final fixes for reviewer feedback, corrected i18n syntax and license format.",
+				"de": "Letzte Korrekturen für das Reviewer-Feedback, i18n-Syntax und Lizenzformat korrigiert.",
+				"ru": "Обработка отзывов рецензентов, обновление зависимостей и включение доверенной публикации.",
+				"pt": "Aborda o feedback do revisor, atualiza as dependências e permite a publicação confiável.",
+				"nl": "Feedback van reviewers verwerken, afhankelijkheden bijwerken en vertrouwde publicatie inschakelen.",
+				"fr": "Prendre en compte les retours du réviseur, mettre à jour les dépendances et activer la publication sécurisée.",
+				"it": "Gestione del feedback del revisore, aggiornamento delle dipendenze e abilitazione della pubblicazione affidabile.",
+				"es": "Abordar los comentarios del revisor, actualizar las dependencias y habilitar la publicación de confianza.",
+				"pl": "Uwzględnienie opinii recenzenta, aktualizacja zależności i włączenie zaufanego publikowania.",
+				"uk": "Розгляд відгуків рецензентів, оновлення залежностей та ввімкнення довіреної публікації.",
+				"zh-cn": "解决审阅者反馈、更新依赖项并启用受信任的发布。"
+			},
 			"0.0.17": {
 				"en": "Removed invalid secret references to fix GitHub Action warnings.",
 				"de": "Ungültige Secret-Referenzen entfernt, um GitHub Action Warnungen zu beheben.",
@@ -111,7 +149,7 @@
 		],
 		"globalDependencies": [
 			{
-				"admin": ">=7.0.23"
+				"admin": ">=7.6.20"
 			}
 		]
 	},
@@ -217,7 +255,7 @@
 			"_id": "doorSafety",
 			"type": "state",
 			"common": {
-				"role": "indicator.safety",
+				"role": "indicator",
 				"name": "Door safety circuit",
 				"type": "boolean",
 				"read": true,
@@ -230,7 +268,7 @@
 			"_id": "remoteControl",
 			"type": "state",
 			"common": {
-				"role": "indicator.state",
+				"role": "indicator",
 				"name": "Remote control authorized",
 				"type": "boolean",
 				"read": true,
@@ -243,7 +281,7 @@
 			"_id": "totalBathingHours",
 			"type": "state",
 			"common": {
-				"role": "value.number",
+				"role": "value",
 				"name": "Total bathing hours",
 				"type": "number",
 				"unit": "h",
@@ -257,7 +295,7 @@
 			"_id": "totalSessions",
 			"type": "state",
 			"common": {
-				"role": "value.count",
+				"role": "value",
 				"name": "Total sessions",
 				"type": "number",
 				"read": true,
@@ -311,7 +349,7 @@
 			"_id": "totalOperatingHours",
 			"type": "state",
 			"common": {
-				"role": "value.hours",
+				"role": "value",
 				"name": "Total operating hours",
 				"type": "number",
 				"unit": "h",
