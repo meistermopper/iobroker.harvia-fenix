@@ -1,8 +1,21 @@
 {
 	"common": {
 		"name": "harvia-fenix",
-		"version": "0.0.19",
+		"version": "0.0.20",
 		"news": {
+			"0.0.20": {
+				"en": "Retry release due to deployment issues.",
+				"de": "Release-Wiederholung aufgrund von Deployment-Problemen.",
+				"ru": "Повторный выпуск из-за проблем с развертыванием.",
+				"pt": "Repetir o lançamento devido a problemas de implementação.",
+				"nl": "Release herhalen vanwege implementatieproblemen.",
+				"fr": "Nouvelle tentative de publication en raison de problèmes de déploiement.",
+				"it": "Riprova il rilascio a causa di problemi di distribuzione.",
+				"es": "Reintentar el lanzamiento debido a problemas de despliegue.",
+				"pl": "Ponowna próba wydania z powodu problemów z wdrożeniem.",
+				"uk": "Повторний випуск через проблеми з розгортанням.",
+				"zh-cn": "由于部署问题重试发布。"
+			},
 			"0.0.19": {
 				"en": "Final fixes for reviewer feedback, corrected i18n syntax and license format.",
 				"de": "Letzte Korrekturen für das Reviewer-Feedback, i18n-Syntax und Lizenzformat korrigiert.",
