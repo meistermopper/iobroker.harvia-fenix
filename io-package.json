@@ -1,11 +1,11 @@
 {
 	"common": {
 		"name": "harvia-fenix",
-		"version": "0.0.18",
+		"version": "0.0.19",
 		"news": {
-			"0.0.18": {
-				"en": "Address reviewer feedback, update dependencies and enable trusted publishing.",
-				"de": "Reviewer-Feedback umgesetzt, Abhängigkeiten aktualisiert und Trusted Publishing aktiviert.",
+			"0.0.19": {
+				"en": "Final fixes for reviewer feedback, corrected i18n syntax and license format.",
+				"de": "Letzte Korrekturen für das Reviewer-Feedback, i18n-Syntax und Lizenzformat korrigiert.",
 				"ru": "Обработка отзывов рецензентов, обновление зависимостей и включение доверенной публикации.",
 				"pt": "Aborda o feedback do revisor, atualiza as dependências e permite a publicação confiável.",
 				"nl": "Feedback van reviewers verwerken, afhankelijkheden bijwerken en vertrouwde publicatie inschakelen.",

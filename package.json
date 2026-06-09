@@ -1,6 +1,6 @@
 {
 	"name": "iobroker.harvia-fenix",
-	"version": "0.0.18",
+	"version": "0.0.19",
 	"description": "ioBroker adapter for Harvia Fenix Sauna Control",
 	"type": "commonjs",
 	"author": {
