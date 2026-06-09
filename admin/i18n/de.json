@@ -1,7 +1,8 @@
 {
 	"Device ID": "Geräte-ID",
 	"Harvia Fenix Sauna Control": "MyHarvia 2 Saunasteuerung (Fenix)",
-	"Leave this field empty and start the adapter to find the ID automatically in the ioBroker log (Discovery). Note: The ID is not visible in the MyHarvia 2 app.": "Lass dieses Feld leer und starte den Adapter, um die ID automatisch im ioBroker-Log zu finden (Discovery). Hinweis: Die ID ist in der MyHarvia 2 App nicht sichtbar.",
+	"Leave this field empty and start the adapter to find the ID automatically in the ioBroker log (Discovery). Note: The ID is not visible in the MyHarvia 2 app.": "Lass dieses Feld leer und starte den Adapter, um die ID automatisch im Log zu finden. Hinweis: Die ID ist in der MyHarvia 2 App nicht sichtbar.",
+	"Leave this field empty and start the adapter to find the ID automatically in the ioBroker log (Discovery).": "Lass dieses Feld leer und starte den Adapter, um die ID automatisch im ioBroker-Log zu finden (Discovery).",
 	"Login Settings": "Login-Einstellungen",
 	"Password": "Passwort",
 	"Polling Interval (seconds)": "Abfrageintervall (Sekunden)",
