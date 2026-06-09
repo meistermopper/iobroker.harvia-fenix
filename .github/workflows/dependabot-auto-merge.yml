@@ -15,7 +15,6 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-
       - name: Check if PR should be auto-merged
         uses: iobroker-bot-orga/action-automerge-dependabot@v1
         with:

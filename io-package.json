@@ -1,8 +1,21 @@
 {
 	"common": {
 		"name": "harvia-fenix",
-		"version": "0.0.20",
+		"version": "0.0.21",
 		"news": {
+			"0.0.21": {
+				"en": "Retry release due to deployment issues (v0.0.20 already exists).",
+				"de": "Release-Wiederholung aufgrund von Deployment-Problemen (v0.0.20 existiert bereits).",
+				"ru": "Повторный выпуск из-за проблем с развертыванием (v0.0.20 уже существует).",
+				"pt": "Repetir o lançamento devido a problemas de implementação (v0.0.20 já existe).",
+				"nl": "Release herhalen vanwege implementatieproblemen (v0.0.20 bestaat al).",
+				"fr": "Nouvelle tentative de publication en raison de problèmes de déploiement (la v0.0.20 existe déjà).",
+				"it": "Riprova il rilascio a causa di problemi di distribuzione (la v0.0.20 esiste già).",
+				"es": "Reintentar el lanzamiento debido a problemas de despliegue (la v0.0.20 ya existe).",
+				"pl": "Ponowna próba wydania z powodu problemów z wdrożeniem (wersja 0.0.20 już istnieje).",
+				"uk": "Повторний випуск через проблеми з розгортанням (v0.0.20 вже існує).",
+				"zh-cn": "由于部署问题重试发布（v0.0.20 已存在）。"
+			},
 			"0.0.20": {
 				"en": "Retry release due to deployment issues.",
 				"de": "Release-Wiederholung aufgrund von Deployment-Problemen.",
