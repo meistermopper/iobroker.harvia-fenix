@@ -1,8 +1,21 @@
 {
 	"common": {
 		"name": "harvia-fenix",
-		"version": "0.0.21",
+		"version": "0.0.22",
 		"news": {
+			"0.0.22": {
+				"en": "Fixed dependency issues and updated devDependencies.",
+				"de": "Abhängigkeitsprobleme behoben und devDependencies aktualisiert.",
+				"ru": "Исправлены проблемы с зависимостями и обновлены devDependencies.",
+				"pt": "Problemas de dependência corrigidos e devDependencies atualizadas.",
+				"nl": "Afhankelijkheidsproblemen opgelost en devDependencies bijgewerkt.",
+				"fr": "Correction des problèmes de dépendance et mise à jour des devDependencies.",
+				"it": "Corretti i problemi di dipendenza e aggiornate le devDependencies.",
+				"es": "Problemas de dependencia corregidos y devDependencies actualizadas.",
+				"pl": "Naprawiono problemy z zależnościami i zaktualizowano devDependencies.",
+				"uk": "Виправлено проблеми з залежностями та оновлено дев-залежності.",
+				"zh-cn": "修复了依赖项问题并更新了 devDependencies。"
+			},
 			"0.0.21": {
 				"en": "Retry release due to deployment issues (v0.0.20 already exists).",
 				"de": "Release-Wiederholung aufgrund von Deployment-Problemen (v0.0.20 existiert bereits).",

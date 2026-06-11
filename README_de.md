@@ -78,6 +78,10 @@ Der Adapter bildet die Cloud-Zustände Ihrer Sauna in strukturierten ioBroker-Da
 ---
 
 ## Änderungsprotokoll (Changelog)
+### 0.0.22 (2026-06-11)
+* (meistermopper) Abhängigkeitsprobleme behoben und devDependencies aktualisiert.
+* (iobroker-bot) Mindestanforderung für Node.js auf 22 aktualisiert (EOL Node.js 20).
+
 ### 0.0.19 (2026-06-09)
 * (meistermopper) Letzte Korrekturen für das Reviewer-Feedback, i18n-Syntax und Lizenzformat korrigiert.
 
@@ -128,4 +132,4 @@ Der Adapter bildet die Cloud-Zustände Ihrer Sauna in strukturierten ioBroker-Da
 Harvia und MyHarvia 2 sind eingetragene Marken der Harvia Group. Dieser Adapter ist ein unabhängiges, gemeinschaftsbasiertes Open-Source-Projekt und wird weder offiziell von Harvia unterstützt, gesponsert noch betreut.
 
 ## Lizenz
-MIT License - Copyright (c) 2026 meistermopper
+MIT License - Copyright (c) 2026 iobroker-community-adapters
