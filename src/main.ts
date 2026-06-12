@@ -12,6 +12,22 @@ const CLIENT_ID = "24emhb2mm0v4sscqhbdev86b2v";
 const MIN_TARGET_TEMP = 40; // Minimum allowed target temperature in C
 const MAX_TARGET_TEMP = 110; // Maximum allowed target temperature in C
 const LATENCY_MS = 5000;
+const API_TRUE_VALUES: unknown[] = [
+	1,
+	21,
+	23,
+	"1",
+	"21",
+	"23",
+	true,
+	"true",
+	"on",
+	"enabled",
+	"safe",
+	"ready",
+	"active",
+	"standby",
+];
 
 interface HarviaRestApiConfig {
 	data: { https: string };
@@ -269,25 +285,7 @@ class HarviaFenix extends utils.Adapter {
 			checkVal = val.toLowerCase().trim();
 		}
 
-		// extended for Fenix Remote Ready (21, 23) and other truthy indicators
-		const trueValues: unknown[] = [
-			1,
-			21,
-			23,
-			"1",
-			"21",
-			"23",
-			true,
-			"true",
-			"on",
-			"enabled",
-			"safe",
-			"ready",
-			"active",
-			"standby",
-		];
-
-		return trueValues.includes(checkVal);
+		return API_TRUE_VALUES.includes(checkVal);
 	}
 
 	/**
@@ -1060,10 +1058,9 @@ class HarviaFenix extends utils.Adapter {
 						(val as number) < MIN_TARGET_TEMP ||
 						(val as number) > MAX_TARGET_TEMP
 					) {
-						this.log.warn(
-							`Invalid target temperature (${state.val}°C) received. Allowed range: ${MIN_TARGET_TEMP}-${MAX_TARGET_TEMP}°C. Resetting to default (${MAX_TARGET_TEMP}°C).`,
+						this.log.error(
+							`Invalid target temperature (${state.val}°C) received. Range: ${MIN_TARGET_TEMP}-${MAX_TARGET_TEMP}°C. Command ignored.`,
 						);
-						await this.setState("targetTemp", MAX_TARGET_TEMP, true); // Reset to default or max
 						await this.setState(
 							"errorMsg",
 							`Invalid target temperature: ${state.val}°C`,

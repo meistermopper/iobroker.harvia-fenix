@@ -55,8 +55,10 @@
 		"README.md"
 	],
 	"scripts": {
-		"test:integration": "cross-env NODE_OPTIONS=\"--no-experimental-detect-module\" mocha test/integration --exit || exit 0",
-		"test": "npm run test:ts && npm run test:package",
+		"test:integration": "cross-env NODE_OPTIONS=\"--no-experimental-detect-module\" mocha test/integration --exit",
+		"test:ts": "tsc --noEmit",
+		"test:package": "iobroker-adapter-dev check-adapter-integrity",
+		"test": "npm run test:ts && npm run test:package && npm run test:integration",
 		"check": "biome check .",
 		"format": "biome format --write .",
 		"build": "node -e \"require('fs').rmSync('build', { recursive: true, force: true })\" && tsc -p tsconfig.build.json",
