@@ -37,7 +37,6 @@
 		"@alcalzone/release-script-plugin-version": "^5.2.0",
 		"@biomejs/biome": "^2.4.16",
 		"@iobroker/adapter-dev": "^1.5.0",
-		"@iobroker/adapter-dev": "^1.5.0",
 		"@iobroker/testing": "^5.2.2",
 		"@tsconfig/node20": "^20.1.9",
 		"@types/node": "^20.17.10",
@@ -57,7 +56,7 @@
 	"scripts": {
 		"test:integration": "cross-env NODE_OPTIONS=\"--no-experimental-detect-module\" mocha test/integration --exit",
 		"test:ts": "tsc --noEmit",
-		"test:package": "npx iobroker-adapter-dev check-adapter-integrity",
+		"test:package": "node node_modules/@iobroker/adapter-dev/bin/iobroker-adapter-dev.js check-adapter-integrity",
 		"test": "npm run test:ts && npm run test:package && npm run test:integration",
 		"check": "biome check .",
 		"format": "biome format --write .",
