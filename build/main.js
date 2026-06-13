@@ -269,7 +269,7 @@ class HarviaFenix extends utils.Adapter {
      * Helper to get value from multiple possible API keys
      */
     static getApiValue(p, keys) {
-        if (!p || typeof p !== "object")
+        if (!p || typeof p !== "object" || Array.isArray(p))
             return undefined;
         // 1. Search top level
         for (const key of keys) {
@@ -279,10 +279,8 @@ class HarviaFenix extends utils.Adapter {
             }
         }
         // 2. Search in status object (new Harvia API structure)
-        const status = p.status && typeof p.status === "object"
-            ? p.status
-            : undefined;
-        if (status) {
+        const status = p.status;
+        if (status && typeof status === "object" && !Array.isArray(status)) {
             for (const key of keys) {
                 const val = status[key];
                 if (val != null) {
@@ -386,17 +384,14 @@ class HarviaFenix extends utils.Adapter {
                         headers: this.getCloudHeaders(),
                     });
                     this.log.debug(`Discovery Response: ${JSON.stringify(response.data)}`);
-                    const rawDiscovery = response.data;
-                    const discoveryData = (rawDiscovery &&
-                        typeof rawDiscovery === "object" &&
-                        "data" in rawDiscovery
-                        ? rawDiscovery.data
-                        : rawDiscovery);
+                    const rawData = response.data;
+                    const discoveryData = rawData.data ?? rawData;
                     if (Array.isArray(discoveryData)) {
                         devices = discoveryData;
                     }
                     else if (discoveryData &&
                         typeof discoveryData === "object" &&
+                        !Array.isArray(discoveryData) && // Ensure it's not an array mistakenly cast to object
                         "devices" in discoveryData &&
                         Array.isArray(discoveryData.devices)) {
                         devices = discoveryData
@@ -499,20 +494,19 @@ class HarviaFenix extends utils.Adapter {
                 params: { deviceId },
                 headers: { ...this.getCloudHeaders(), Accept: "application/json" },
             });
-            if (response.data) {
-                this.log.debug(`Poll Response: ${JSON.stringify(response.data)}`);
-            }
-            // Improved Data Normalization
-            const rawData = response.data;
             let p;
-            if (rawData &&
-                typeof rawData === "object" &&
-                "data" in rawData &&
-                rawData.data) {
-                p = rawData.data;
-            }
-            else {
-                p = rawData;
+            if (response.data &&
+                typeof response.data === "object" &&
+                !Array.isArray(response.data)) {
+                this.log.debug(`Poll Response: ${JSON.stringify(response.data)}`);
+                if (response.data.data &&
+                    typeof response.data.data === "object" &&
+                    !Array.isArray(response.data.data)) {
+                    p = response.data.data;
+                }
+                else {
+                    p = response.data;
+                }
             }
             if (p &&
                 (p.online !== undefined ||
