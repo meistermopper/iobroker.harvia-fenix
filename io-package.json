@@ -1,363 +1,375 @@
 {
-	"common": {
-		"name": "harvia-fenix",
-		"version": "0.0.23",
-		"news": {
-			"0.0.23": {
-				"en": "Update adapter-dev check to repochecker\nFix license and metadata issues",
-				"de": "Aktualisieren Sie den Adapter-Dev-Check auf Repochecker\nFix Lizenz- und Metadatenprobleme",
-				"ru": "Обновление Adapter-dev check to repochecker\nИсправление проблем с лицензиями и метаданными",
-				"pt": "Atualizar a verificação do adaptador- dev para o repochecker\nCorrigir problemas de licença e metadados",
-				"nl": "Controleer adapter-dev bijwerken naar repochecker\nFix licentie en metagegevens problemen",
-				"fr": "Mettre à jour adaptateur-dev vérifier pour repochecker\nCorrection des problèmes de licence et de métadonnées",
-				"it": "Aggiornare il controllo adattatore-dev per il repochecker\nFissare i problemi di licenza e metadati",
-				"es": "Actualizar la comprobación del adaptador-dev para repochecker\nArreglar temas de licencia y metadatos",
-				"pl": "Aktualizuj sprawdzanie adaptera-dev do repochecker\nPopraw kwestie licencji i metadanych",
-				"uk": "Оновлення адаптера-розробки для репочекера\nВиправлення ліцензійних та метаданих",
-				"zh-cn": "更新适配器- dev 检查到再检查器\n解决许可证和元数据问题"
-			},
-			"0.0.22": {
-				"en": "Fixed dependency issues and updated devDependencies.",
-				"de": "Abhängigkeitsprobleme behoben und devDependencies aktualisiert.",
-				"ru": "Исправлены проблемы с зависимостями и обновлены devDependencies.",
-				"pt": "Problemas de dependência corrigidos e devDependencies atualizadas.",
-				"nl": "Afhankelijkheidsproblemen opgelost en devDependencies bijgewerkt.",
-				"fr": "Correction des problèmes de dépendance et mise à jour des devDependencies.",
-				"it": "Corretti i problemi di dipendenza e aggiornate le devDependencies.",
-				"es": "Problemas de dependencia corregidos y devDependencies actualizadas.",
-				"pl": "Naprawiono problemy z zależnościami i zaktualizowano devDependencies.",
-				"uk": "Виправлено проблеми з залежностями та оновлено дев-залежності.",
-				"zh-cn": "修复了依赖项问题并更新了 devDependencies。"
-			},
-			"0.0.21": {
-				"en": "Retry release due to deployment issues (v0.0.20 already exists).",
-				"de": "Release-Wiederholung aufgrund von Deployment-Problemen (v0.0.20 existiert bereits).",
-				"ru": "Повторный выпуск из-за проблем с развертыванием (v0.0.20 уже существует).",
-				"pt": "Repetir o lançamento devido a problemas de implementação (v0.0.20 já existe).",
-				"nl": "Release herhalen vanwege implementatieproblemen (v0.0.20 bestaat al).",
-				"fr": "Nouvelle tentative de publication en raison de problèmes de déploiement (la v0.0.20 existe déjà).",
-				"it": "Riprova il rilascio a causa di problemi di distribuzione (la v0.0.20 esiste già).",
-				"es": "Reintentar el lanzamiento debido a problemas de despliegue (la v0.0.20 ya existe).",
-				"pl": "Ponowna próba wydania z powodu problemów z wdrożeniem (wersja 0.0.20 już istnieje).",
-				"uk": "Повторний випуск через проблеми з розгортанням (v0.0.20 вже існує).",
-				"zh-cn": "由于部署问题重试发布（v0.0.20 已存在）。"
-			},
-			"0.0.20": {
-				"en": "Retry release due to deployment issues.",
-				"de": "Release-Wiederholung aufgrund von Deployment-Problemen.",
-				"ru": "Повторный выпуск из-за проблем с развертыванием.",
-				"pt": "Repetir o lançamento devido a problemas de implementação.",
-				"nl": "Release herhalen vanwege implementatieproblemen.",
-				"fr": "Nouvelle tentative de publication en raison de problèmes de déploiement.",
-				"it": "Riprova il rilascio a causa di problemi di distribuzione.",
-				"es": "Reintentar el lanzamiento debido a problemas de despliegue.",
-				"pl": "Ponowna próba wydania z powodu problemów z wdrożeniem.",
-				"uk": "Повторний випуск через проблеми з розгортанням.",
-				"zh-cn": "由于部署问题重试发布。"
-			},
-			"0.0.19": {
-				"en": "Final fixes for reviewer feedback, corrected i18n syntax and license format.",
-				"de": "Letzte Korrekturen für das Reviewer-Feedback, i18n-Syntax und Lizenzformat korrigiert.",
-				"ru": "Обработка отзывов рецензентов, обновление зависимостей и включение доверенной публикации.",
-				"pt": "Aborda o feedback do revisor, atualiza as dependências e permite a publicação confiável.",
-				"nl": "Feedback van reviewers verwerken, afhankelijkheden bijwerken en vertrouwde publicatie inschakelen.",
-				"fr": "Prendre en compte les retours du réviseur, mettre à jour les dépendances et activer la publication sécurisée.",
-				"it": "Gestione del feedback del revisore, aggiornamento delle dipendenze e abilitazione della pubblicazione affidabile.",
-				"es": "Abordar los comentarios del revisor, actualizar las dependencias y habilitar la publicación de confianza.",
-				"pl": "Uwzględnienie opinii recenzenta, aktualizacja zależności i włączenie zaufanego publikowania.",
-				"uk": "Розгляд відгуків рецензентів, оновлення залежностей та ввімкнення довіреної публікації.",
-				"zh-cn": "解决审阅者反馈、更新依赖项并启用受信任的发布。"
-			},
-			"0.0.17": {
-				"en": "Removed invalid secret references to fix GitHub Action warnings.",
-				"de": "Ungültige Secret-Referenzen entfernt, um GitHub Action Warnungen zu beheben.",
-				"ru": "Удалены недействительные ссылки на секреты для исправления предупреждений GitHub Action.",
-				"pt": "Referências secretas inválidas removidas para corrigir avisos do GitHub Action.",
-				"nl": "Ongeldige geheime verwijzingen verwijderd om GitHub Action-waarschuwingen op te lossen.",
-				"fr": "Références secrètes invalides supprimées pour corriger les avertissements de GitHub Action.",
-				"it": "Rimosse le referenze segrete non valide per correggere gli avvisi di GitHub Action.",
-				"es": "Referencias secretas inválidas eliminadas para corregir advertencias de GitHub Action.",
-				"pl": "Usunięto nieprawidłowe odwołania do sekretów, aby naprawić ostrzeżenia GitHub Action.",
-				"uk": "Видалено недійсні посилання на секрети для виправлення попереджень GitHub Action.",
-				"zh-cn": "已删除无效的秘密引用以修复 GitHub Action 警告。"
-			},
-			"0.0.14": {
-				"en": "Retry Sentry integration with corrected authentication.",
-				"de": "Sentry-Integration mit korrigierter Authentifizierung erneut versuchen.",
-				"ru": "Повторная попытка интеграции Sentry с исправленной аутентификацией.",
-				"pt": "Tentar novamente a integração Sentry com autenticação corrigida.",
-				"nl": "Sentry-integratie opnieuw proberen met gecorrigeerde authenticatie.",
-				"fr": "Nouvelle tentative d'intégration Sentry avec authentification corrigée.",
-				"it": "Riprovare l'integrazione Sentry con autenticazione corretta.",
-				"es": "Reintentar la integración de Sentry con autenticación corregida.",
-				"pl": "Ponowna próba integracji Sentry z poprawioną autentykacją.",
-				"uk": "Повторна спроба інтеграції Sentry з виправленою автентифікацією.",
-				"zh-cn": "使用更正的身份验证重试 Sentry 集成。"
-			}
-		},
-		"titleLang": {
-			"en": "Harvia-Fenix Sauna Control",
-			"de": "Harvia-Fenix Saunasteuerung",
-			"ru": "Управление сауной Harvia-Fenix",
-			"pt": "Controle de Sauna Harvia-Fenix",
-			"nl": "Harvia-Fenix ​​saunabediening",
-			"fr": "Contrôle du sauna HarviaFenix",
-			"it": "Controllo sauna Harvia-Fenix",
-			"es": "Control de sauna Harvia-Fenix",
-			"pl": "Sterowanie sauną Harvia-Fenix",
-			"uk": "Керування сауною Harvia-Fenix",
-			"zh-cn": "Harvia-Fenix 桑拿控制"
-		},
-		"desc": {
-			"en": "Control Harvia Fenix sauna units via MyHarvia cloud",
-			"de": "Steuerung von Harvia Fenix Sauna-Steuerungen über die MyHarvia Cloud",
-			"ru": "Управление саунами Harvia Fenix через облако MyHarvia",
-			"pt": "Controle as unidades de sauna Harvia Fenix via nuvem MyHarvia",
-			"nl": "Bestuur Harvia Fenix-sauna-units via de MyHarvia-cloud",
-			"fr": "Contrôlez les saunas Harvia Fenix via le cloud MyHarvia",
-			"it": "Controlla le unità sauna Harvia Fenix tramite il cloud MyHarvia",
-			"es": "Controle las unidades de sauna Harvia Fenix a través de la nube MyHarvia",
-			"pl": "Sterowanie saunami Harvia Fenix za pomocą chmury MyHarvia",
-			"uk": "Керування саунами Harvia Fenix через хмару MyHarvia",
-			"zh-cn": "通过 MyHarvia 云端控制 Harvia Fenix 桑拿房"
-		},
-		"authors": ["meistermopper <meister.mopper@gmail.com>"],
-		"keywords": ["harvia", "fenix", "sauna", "myharvia", "cloud"],
-		"licenseInformation": {
-			"type": "free",
-			"license": "MIT"
-		},
-		"platform": "Javascript/Node.js",
-		"icon": "harvia.png",
-		"enabled": true,
-		"extIcon": "https://raw.githubusercontent.com/meistermopper/ioBroker.harvia-fenix/main/admin/harvia.png",
-		"readme": "https://github.com/meistermopper/ioBroker.harvia-fenix/blob/main/README.md",
-		"loglevel": "info",
-		"tier": 3,
-		"mode": "daemon",
-		"type": "household",
-		"compact": true,
-		"connectionType": "cloud",
-		"dataSource": "poll",
-		"adminUI": {
-			"config": "json"
-		},
-		"dependencies": [
-			{
-				"js-controller": ">=6.0.11"
-			}
-		],
-		"globalDependencies": [
-			{
-				"admin": ">=7.6.20"
-			}
-		]
-	},
-	"native": {
-		"username": "",
-		"password": "",
-		"deviceId": "",
-		"pollInterval": 60
-	},
-	"protectedNative": ["password"],
-	"encryptedNative": ["password"],
-	"objects": [],
-	"instanceObjects": [
-		{
-			"_id": "info",
-			"type": "channel",
-			"common": {
-				"name": "Information"
-			},
-			"native": {}
-		},
-		{
-			"_id": "info.connection",
-			"type": "state",
-			"common": {
-				"role": "indicator.connected",
-				"name": "Device or service connected",
-				"type": "boolean",
-				"read": true,
-				"write": false,
-				"def": false
-			},
-			"native": {}
-		},
-		{
-			"_id": "online",
-			"type": "state",
-			"common": {
-				"role": "indicator.reachable",
-				"name": "Cloud connection status",
-				"type": "boolean",
-				"read": true,
-				"write": false,
-				"def": false
-			},
-			"native": {}
-		},
-		{
-			"_id": "heatOn",
-			"type": "state",
-			"common": {
-				"role": "switch.power",
-				"name": "Sauna heater power",
-				"type": "boolean",
-				"read": true,
-				"write": true,
-				"def": false
-			},
-			"native": {}
-		},
-		{
-			"_id": "lightOn",
-			"type": "state",
-			"common": {
-				"role": "switch.light",
-				"name": "Sauna light",
-				"type": "boolean",
-				"read": true,
-				"write": true,
-				"def": false
-			},
-			"native": {}
-		},
-		{
-			"_id": "temp",
-			"type": "state",
-			"common": {
-				"role": "value.temperature",
-				"name": "Current cabin temperature",
-				"type": "number",
-				"unit": "°C",
-				"read": true,
-				"write": false,
-				"def": 0
-			},
-			"native": {}
-		},
-		{
-			"_id": "targetTemp",
-			"type": "state",
-			"common": {
-				"role": "level.temperature",
-				"name": "Target temperature",
-				"type": "number",
-				"unit": "°C",
-				"read": true,
-				"write": true,
-				"def": 90
-			},
-			"native": {}
-		},
-		{
-			"_id": "doorSafety",
-			"type": "state",
-			"common": {
-				"role": "sensor.door.safety",
-				"name": "Door safety circuit",
-				"type": "boolean",
-				"read": true,
-				"write": false,
-				"def": false
-			},
-			"native": {}
-		},
-		{
-			"_id": "remoteControl",
-			"type": "state",
-			"common": {
-				"role": "indicator.state",
-				"name": "Remote control authorized",
-				"type": "boolean",
-				"read": true,
-				"write": false,
-				"def": false
-			},
-			"native": {}
-		},
-		{
-			"_id": "totalBathingHours",
-			"type": "state",
-			"common": {
-				"role": "value.number",
-				"name": "Total bathing hours",
-				"type": "number",
-				"unit": "h",
-				"read": true,
-				"write": false,
-				"def": 0
-			},
-			"native": {}
-		},
-		{
-			"_id": "totalSessions",
-			"type": "state",
-			"common": {
-				"role": "value.count",
-				"name": "Total sessions",
-				"type": "number",
-				"read": true,
-				"write": false,
-				"def": 0
-			},
-			"native": {}
-		},
-		{
-			"_id": "errorMsg",
-			"type": "state",
-			"common": {
-				"role": "text",
-				"name": "Last error message",
-				"type": "string",
-				"read": true,
-				"write": false,
-				"def": ""
-			},
-			"native": {}
-		},
-		{
-			"_id": "heaterPower",
-			"type": "state",
-			"common": {
-				"role": "value.power",
-				"name": "Current heater power",
-				"type": "number",
-				"unit": "kW",
-				"read": true,
-				"write": false,
-				"def": 0
-			},
-			"native": {}
-		},
-		{
-			"_id": "panelTemp",
-			"type": "state",
-			"common": {
-				"role": "value.temperature",
-				"name": "Panel temperature",
-				"type": "number",
-				"unit": "°C",
-				"read": true,
-				"write": false,
-				"def": 0
-			},
-			"native": {}
-		},
-		{
-			"_id": "totalOperatingHours",
-			"type": "state",
-			"common": {
-				"role": "value.hours",
-				"name": "Total operating hours",
-				"type": "number",
-				"unit": "h",
-				"read": true,
-				"write": false,
-				"def": 0
-			},
-			"native": {}
-		}
-	]
+  "common": {
+    "name": "harvia-fenix",
+    "version": "0.0.24",
+    "news": {
+      "0.0.24": {
+        "en": "Fix Biome linting and formatting for CI",
+        "de": "Fix Biome Linting und Formatierung für CI",
+        "ru": "Исправьте подкладку и форматирование Biome для CI",
+        "pt": "Corrigir o linting e formatação do Biome para o CI",
+        "nl": "Repareren Biome plinten en formatteren voor CI",
+        "fr": "Correction du linage et du formatage du biome pour CI",
+        "it": "Fissare linting Biome e la formattazione per CI",
+        "es": "Fijar el forro de bioma y el formato para CI",
+        "pl": "Fix Biome linting i formatowanie dla CI",
+        "uk": "Фіксація та форматування біоме для CI",
+        "zh-cn": "修复 CI 的生物衬垫和格式"
+      },
+      "0.0.23": {
+        "en": "Update adapter-dev check to repochecker\nFix license and metadata issues",
+        "de": "Aktualisieren Sie den Adapter-Dev-Check auf Repochecker\nFix Lizenz- und Metadatenprobleme",
+        "ru": "Обновление Adapter-dev check to repochecker\nИсправление проблем с лицензиями и метаданными",
+        "pt": "Atualizar a verificação do adaptador- dev para o repochecker\nCorrigir problemas de licença e metadados",
+        "nl": "Controleer adapter-dev bijwerken naar repochecker\nFix licentie en metagegevens problemen",
+        "fr": "Mettre à jour adaptateur-dev vérifier pour repochecker\nCorrection des problèmes de licence et de métadonnées",
+        "it": "Aggiornare il controllo adattatore-dev per il repochecker\nFissare i problemi di licenza e metadati",
+        "es": "Actualizar la comprobación del adaptador-dev para repochecker\nArreglar temas de licencia y metadatos",
+        "pl": "Aktualizuj sprawdzanie adaptera-dev do repochecker\nPopraw kwestie licencji i metadanych",
+        "uk": "Оновлення адаптера-розробки для репочекера\nВиправлення ліцензійних та метаданих",
+        "zh-cn": "更新适配器- dev 检查到再检查器\n解决许可证和元数据问题"
+      },
+      "0.0.22": {
+        "en": "Fixed dependency issues and updated devDependencies.",
+        "de": "Abhängigkeitsprobleme behoben und devDependencies aktualisiert.",
+        "ru": "Исправлены проблемы с зависимостями и обновлены devDependencies.",
+        "pt": "Problemas de dependência corrigidos e devDependencies atualizadas.",
+        "nl": "Afhankelijkheidsproblemen opgelost en devDependencies bijgewerkt.",
+        "fr": "Correction des problèmes de dépendance et mise à jour des devDependencies.",
+        "it": "Corretti i problemi di dipendenza e aggiornate le devDependencies.",
+        "es": "Problemas de dependencia corregidos y devDependencies actualizadas.",
+        "pl": "Naprawiono problemy z zależnościami i zaktualizowano devDependencies.",
+        "uk": "Виправлено проблеми з залежностями та оновлено дев-залежності.",
+        "zh-cn": "修复了依赖项问题并更新了 devDependencies。"
+      },
+      "0.0.21": {
+        "en": "Retry release due to deployment issues (v0.0.20 already exists).",
+        "de": "Release-Wiederholung aufgrund von Deployment-Problemen (v0.0.20 existiert bereits).",
+        "ru": "Повторный выпуск из-за проблем с развертыванием (v0.0.20 уже существует).",
+        "pt": "Repetir o lançamento devido a problemas de implementação (v0.0.20 já existe).",
+        "nl": "Release herhalen vanwege implementatieproblemen (v0.0.20 bestaat al).",
+        "fr": "Nouvelle tentative de publication en raison de problèmes de déploiement (la v0.0.20 existe déjà).",
+        "it": "Riprova il rilascio a causa di problemi di distribuzione (la v0.0.20 esiste già).",
+        "es": "Reintentar el lanzamiento debido a problemas de despliegue (la v0.0.20 ya existe).",
+        "pl": "Ponowna próba wydania z powodu problemów z wdrożeniem (wersja 0.0.20 już istnieje).",
+        "uk": "Повторний випуск через проблеми з розгортанням (v0.0.20 вже існує).",
+        "zh-cn": "由于部署问题重试发布（v0.0.20 已存在）。"
+      },
+      "0.0.20": {
+        "en": "Retry release due to deployment issues.",
+        "de": "Release-Wiederholung aufgrund von Deployment-Problemen.",
+        "ru": "Повторный выпуск из-за проблем с развертыванием.",
+        "pt": "Repetir o lançamento devido a problemas de implementação.",
+        "nl": "Release herhalen vanwege implementatieproblemen.",
+        "fr": "Nouvelle tentative de publication en raison de problèmes de déploiement.",
+        "it": "Riprova il rilascio a causa di problemi di distribuzione.",
+        "es": "Reintentar el lanzamiento debido a problemas de despliegue.",
+        "pl": "Ponowna próba wydania z powodu problemów z wdrożeniem.",
+        "uk": "Повторний випуск через проблеми з розгортанням.",
+        "zh-cn": "由于部署问题重试发布。"
+      },
+      "0.0.19": {
+        "en": "Final fixes for reviewer feedback, corrected i18n syntax and license format.",
+        "de": "Letzte Korrekturen für das Reviewer-Feedback, i18n-Syntax und Lizenzformat korrigiert.",
+        "ru": "Обработка отзывов рецензентов, обновление зависимостей и включение доверенной публикации.",
+        "pt": "Aborda o feedback do revisor, atualiza as dependências e permite a publicação confiável.",
+        "nl": "Feedback van reviewers verwerken, afhankelijkheden bijwerken en vertrouwde publicatie inschakelen.",
+        "fr": "Prendre en compte les retours du réviseur, mettre à jour les dépendances et activer la publication sécurisée.",
+        "it": "Gestione del feedback del revisore, aggiornamento delle dipendenze e abilitazione della pubblicazione affidabile.",
+        "es": "Abordar los comentarios del revisor, actualizar las dependencias y habilitar la publicación de confianza.",
+        "pl": "Uwzględnienie opinii recenzenta, aktualizacja zależności i włączenie zaufanego publikowania.",
+        "uk": "Розгляд відгуків рецензентів, оновлення залежностей та ввімкнення довіреної публікації.",
+        "zh-cn": "解决审阅者反馈、更新依赖项并启用受信任的发布。"
+      },
+      "0.0.17": {
+        "en": "Removed invalid secret references to fix GitHub Action warnings.",
+        "de": "Ungültige Secret-Referenzen entfernt, um GitHub Action Warnungen zu beheben.",
+        "ru": "Удалены недействительные ссылки на секреты для исправления предупреждений GitHub Action.",
+        "pt": "Referências secretas inválidas removidas para corrigir avisos do GitHub Action.",
+        "nl": "Ongeldige geheime verwijzingen verwijderd om GitHub Action-waarschuwingen op te lossen.",
+        "fr": "Références secrètes invalides supprimées pour corriger les avertissements de GitHub Action.",
+        "it": "Rimosse le referenze segrete non valide per correggere gli avvisi di GitHub Action.",
+        "es": "Referencias secretas inválidas eliminadas para corregir advertencias de GitHub Action.",
+        "pl": "Usunięto nieprawidłowe odwołania do sekretów, aby naprawić ostrzeżenia GitHub Action.",
+        "uk": "Видалено недійсні посилання на секрети для виправлення попереджень GitHub Action.",
+        "zh-cn": "已删除无效的秘密引用以修复 GitHub Action 警告。"
+      }
+    },
+    "titleLang": {
+      "en": "Harvia-Fenix Sauna Control",
+      "de": "Harvia-Fenix Saunasteuerung",
+      "ru": "Управление сауной Harvia-Fenix",
+      "pt": "Controle de Sauna Harvia-Fenix",
+      "nl": "Harvia-Fenix ​​saunabediening",
+      "fr": "Contrôle du sauna HarviaFenix",
+      "it": "Controllo sauna Harvia-Fenix",
+      "es": "Control de sauna Harvia-Fenix",
+      "pl": "Sterowanie sauną Harvia-Fenix",
+      "uk": "Керування сауною Harvia-Fenix",
+      "zh-cn": "Harvia-Fenix 桑拿控制"
+    },
+    "desc": {
+      "en": "Control Harvia Fenix sauna units via MyHarvia cloud",
+      "de": "Steuerung von Harvia Fenix Sauna-Steuerungen über die MyHarvia Cloud",
+      "ru": "Управление саунами Harvia Fenix через облако MyHarvia",
+      "pt": "Controle as unidades de sauna Harvia Fenix via nuvem MyHarvia",
+      "nl": "Bestuur Harvia Fenix-sauna-units via de MyHarvia-cloud",
+      "fr": "Contrôlez les saunas Harvia Fenix via le cloud MyHarvia",
+      "it": "Controlla le unità sauna Harvia Fenix tramite il cloud MyHarvia",
+      "es": "Controle las unidades de sauna Harvia Fenix a través de la nube MyHarvia",
+      "pl": "Sterowanie saunami Harvia Fenix za pomocą chmury MyHarvia",
+      "uk": "Керування саунами Harvia Fenix через хмару MyHarvia",
+      "zh-cn": "通过 MyHarvia 云端控制 Harvia Fenix 桑拿房"
+    },
+    "authors": [
+      "meistermopper <meister.mopper@gmail.com>"
+    ],
+    "keywords": [
+      "harvia",
+      "fenix",
+      "sauna",
+      "myharvia",
+      "cloud"
+    ],
+    "licenseInformation": {
+      "type": "free",
+      "license": "MIT"
+    },
+    "platform": "Javascript/Node.js",
+    "icon": "harvia.png",
+    "enabled": true,
+    "extIcon": "https://raw.githubusercontent.com/meistermopper/ioBroker.harvia-fenix/main/admin/harvia.png",
+    "readme": "https://github.com/meistermopper/ioBroker.harvia-fenix/blob/main/README.md",
+    "loglevel": "info",
+    "tier": 3,
+    "mode": "daemon",
+    "type": "household",
+    "compact": true,
+    "connectionType": "cloud",
+    "dataSource": "poll",
+    "adminUI": {
+      "config": "json"
+    },
+    "dependencies": [
+      {
+        "js-controller": ">=6.0.11"
+      }
+    ],
+    "globalDependencies": [
+      {
+        "admin": ">=7.6.20"
+      }
+    ]
+  },
+  "native": {
+    "username": "",
+    "password": "",
+    "deviceId": "",
+    "pollInterval": 60
+  },
+  "protectedNative": [
+    "password"
+  ],
+  "encryptedNative": [
+    "password"
+  ],
+  "objects": [],
+  "instanceObjects": [
+    {
+      "_id": "info",
+      "type": "channel",
+      "common": {
+        "name": "Information"
+      },
+      "native": {}
+    },
+    {
+      "_id": "info.connection",
+      "type": "state",
+      "common": {
+        "role": "indicator.connected",
+        "name": "Device or service connected",
+        "type": "boolean",
+        "read": true,
+        "write": false,
+        "def": false
+      },
+      "native": {}
+    },
+    {
+      "_id": "online",
+      "type": "state",
+      "common": {
+        "role": "indicator.reachable",
+        "name": "Cloud connection status",
+        "type": "boolean",
+        "read": true,
+        "write": false,
+        "def": false
+      },
+      "native": {}
+    },
+    {
+      "_id": "heatOn",
+      "type": "state",
+      "common": {
+        "role": "switch.power",
+        "name": "Sauna heater power",
+        "type": "boolean",
+        "read": true,
+        "write": true,
+        "def": false
+      },
+      "native": {}
+    },
+    {
+      "_id": "lightOn",
+      "type": "state",
+      "common": {
+        "role": "switch.light",
+        "name": "Sauna light",
+        "type": "boolean",
+        "read": true,
+        "write": true,
+        "def": false
+      },
+      "native": {}
+    },
+    {
+      "_id": "temp",
+      "type": "state",
+      "common": {
+        "role": "value.temperature",
+        "name": "Current cabin temperature",
+        "type": "number",
+        "unit": "°C",
+        "read": true,
+        "write": false,
+        "def": 0
+      },
+      "native": {}
+    },
+    {
+      "_id": "targetTemp",
+      "type": "state",
+      "common": {
+        "role": "level.temperature",
+        "name": "Target temperature",
+        "type": "number",
+        "unit": "°C",
+        "read": true,
+        "write": true,
+        "def": 90
+      },
+      "native": {}
+    },
+    {
+      "_id": "doorSafety",
+      "type": "state",
+      "common": {
+        "role": "sensor.door.safety",
+        "name": "Door safety circuit",
+        "type": "boolean",
+        "read": true,
+        "write": false,
+        "def": false
+      },
+      "native": {}
+    },
+    {
+      "_id": "remoteControl",
+      "type": "state",
+      "common": {
+        "role": "indicator.state",
+        "name": "Remote control authorized",
+        "type": "boolean",
+        "read": true,
+        "write": false,
+        "def": false
+      },
+      "native": {}
+    },
+    {
+      "_id": "totalBathingHours",
+      "type": "state",
+      "common": {
+        "role": "value.number",
+        "name": "Total bathing hours",
+        "type": "number",
+        "unit": "h",
+        "read": true,
+        "write": false,
+        "def": 0
+      },
+      "native": {}
+    },
+    {
+      "_id": "totalSessions",
+      "type": "state",
+      "common": {
+        "role": "value.count",
+        "name": "Total sessions",
+        "type": "number",
+        "read": true,
+        "write": false,
+        "def": 0
+      },
+      "native": {}
+    },
+    {
+      "_id": "errorMsg",
+      "type": "state",
+      "common": {
+        "role": "text",
+        "name": "Last error message",
+        "type": "string",
+        "read": true,
+        "write": false,
+        "def": ""
+      },
+      "native": {}
+    },
+    {
+      "_id": "heaterPower",
+      "type": "state",
+      "common": {
+        "role": "value.power",
+        "name": "Current heater power",
+        "type": "number",
+        "unit": "kW",
+        "read": true,
+        "write": false,
+        "def": 0
+      },
+      "native": {}
+    },
+    {
+      "_id": "panelTemp",
+      "type": "state",
+      "common": {
+        "role": "value.temperature",
+        "name": "Panel temperature",
+        "type": "number",
+        "unit": "°C",
+        "read": true,
+        "write": false,
+        "def": 0
+      },
+      "native": {}
+    },
+    {
+      "_id": "totalOperatingHours",
+      "type": "state",
+      "common": {
+        "role": "value.hours",
+        "name": "Total operating hours",
+        "type": "number",
+        "unit": "h",
+        "read": true,
+        "write": false,
+        "def": 0
+      },
+      "native": {}
+    }
+  ]
 }
