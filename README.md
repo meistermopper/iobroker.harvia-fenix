@@ -83,6 +83,8 @@ The adapter maps your sauna's cloud states into structured ioBroker datapoints u
 ---
 
 ## Changelog
+### **WORK IN PROGRESS**
+* (meistermopper) Ensure formatting during release process
 ### 0.0.24 (2026-06-13)
 * (meistermopper) Fix Biome linting and formatting for CI
 
