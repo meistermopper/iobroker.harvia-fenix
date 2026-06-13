@@ -83,6 +83,9 @@ The adapter maps your sauna's cloud states into structured ioBroker datapoints u
 ---
 
 ## Changelog
+### **WORK IN PROGRESS**
+* (meistermopper) Update adapter-dev check to repochecker
+* (meistermopper) Fix license and metadata issues
 ### 0.0.22 (2026-06-11)
 * (meistermopper) Fixed dependency issues and updated devDependencies.
 * (iobroker-bot) Updated Node.js minimum requirement to 22 (EOL Node.js 20).
@@ -151,4 +154,6 @@ Older changelogs can be found [here](CHANGELOG_OLD.md).
 Harvia and MyHarvia 2 are registered trademarks of Harvia Group. This adapter is an independent, community-driven open-source project and is neither officially endorsed, sponsored, nor supported by Harvia.
 
 ## License
-MIT License - Copyright (c) 2026 iobroker-community-adapters
+MIT License
+
+Copyright (c) 2026 meistermopper <meister.mopper@gmail.com>

@@ -12,7 +12,7 @@ const CLIENT_ID = "24emhb2mm0v4sscqhbdev86b2v";
 const MIN_TARGET_TEMP = 40; // Minimum allowed target temperature in C
 const MAX_TARGET_TEMP = 110; // Maximum allowed target temperature in C
 const LATENCY_MS = 5000;
-const API_TRUE_VALUES: unknown[] = [
+const API_TRUE_VALUES = new Set<unknown>([
 	1,
 	21,
 	23,
@@ -27,7 +27,7 @@ const API_TRUE_VALUES: unknown[] = [
 	"ready",
 	"active",
 	"standby",
-];
+]);
 
 interface HarviaRestApiConfig {
 	data: { https: string };
@@ -101,7 +101,7 @@ interface HarviaCommandResponse {
 	failureReason?: string;
 }
 
-class HarviaFenix extends utils.Adapter {
+export class HarviaFenix extends utils.Adapter {
 	private client: AxiosInstance;
 	private idToken = "";
 	private dataBaseUrl = "";
@@ -132,6 +132,17 @@ class HarviaFenix extends utils.Adapter {
 		this.client = axios.create({
 			timeout: 20000,
 		});
+	}
+
+	/**
+	 * Centralized headers for Harvia Cloud API
+	 */
+	private getCloudHeaders(): Record<string, string> {
+		return {
+			Authorization: `Bearer ${this.idToken}`,
+			"x-harvia-partner-id": this.partnerId,
+			"x-harvia-app-id": CLIENT_ID,
+		};
 	}
 
 	/**
@@ -211,14 +222,14 @@ class HarviaFenix extends utils.Adapter {
 			{
 				id: "doorSafety",
 				type: "boolean",
-				role: "indicator",
+				role: "sensor.door.safety",
 				write: false,
 				def: false,
 			},
 			{
 				id: "remoteControl",
 				type: "boolean",
-				role: "indicator",
+				role: "indicator.remote",
 				write: false,
 				def: false,
 			},
@@ -234,7 +245,7 @@ class HarviaFenix extends utils.Adapter {
 			{
 				id: "totalBathingHours",
 				type: "number",
-				role: "value",
+				role: "value.hours",
 				unit: "h",
 				write: false,
 				def: 0,
@@ -242,7 +253,7 @@ class HarviaFenix extends utils.Adapter {
 			{
 				id: "totalSessions",
 				type: "number",
-				role: "value",
+				role: "value.count",
 				write: false,
 				def: 0,
 			},
@@ -250,7 +261,7 @@ class HarviaFenix extends utils.Adapter {
 			{
 				id: "totalOperatingHours",
 				type: "number",
-				role: "value",
+				role: "value.hours",
 				unit: "h",
 				write: false,
 				def: 0,
@@ -277,7 +288,7 @@ class HarviaFenix extends utils.Adapter {
 	/**
 	 * Robust check for truthy values from Harvia API
 	 */
-	private static isTrue(val: unknown): boolean {
+	public static isTrue(val: unknown): boolean {
 		if (val === undefined || val === null) return false;
 
 		let checkVal: unknown = val;
@@ -285,7 +296,28 @@ class HarviaFenix extends utils.Adapter {
 			checkVal = val.toLowerCase().trim();
 		}
 
-		return API_TRUE_VALUES.includes(checkVal);
+		return API_TRUE_VALUES.has(checkVal);
+	}
+
+	/**
+	 * Internal helper to calculate and format a numeric value from API data with scaling and rounding.
+	 */
+	public static calculateNumericValue(
+		val: unknown,
+		scale = 1,
+		decimals = 1,
+	): number | undefined {
+		if (val === undefined || val === null || val === "") return undefined;
+
+		const num = typeof val === "number" ? val : Number(val);
+		if (Number.isNaN(num)) return undefined;
+
+		let result = num * scale;
+		if (decimals >= 0) {
+			const factor = 10 ** decimals;
+			result = Math.round(result * factor) / factor;
+		}
+		return result;
 	}
 
 	/**
@@ -295,7 +327,7 @@ class HarviaFenix extends utils.Adapter {
 		p: Record<string, unknown> | null | undefined,
 		keys: string[],
 	): unknown {
-		if (!p || typeof p !== "object") return undefined;
+		if (!p || typeof p !== "object" || Array.isArray(p)) return undefined;
 
 		// 1. Search top level
 		for (const key of keys) {
@@ -306,11 +338,11 @@ class HarviaFenix extends utils.Adapter {
 		}
 
 		// 2. Search in status object (new Harvia API structure)
-		const status = p.status as Record<string, unknown> | undefined;
-		if (status && typeof status === "object") {
+		const status = p.status;
+		if (status && typeof status === "object" && !Array.isArray(status)) {
 			for (const key of keys) {
-				const val = status[key];
-				if (val !== undefined && val !== null) {
+				const val = (status as Record<string, unknown>)[key];
+				if (val != null) {
 					return val;
 				}
 			}
@@ -449,31 +481,22 @@ class HarviaFenix extends utils.Adapter {
 					const response = await this.client.get<
 						{ devices: HarviaDevice[] } | HarviaDevice[]
 					>(url, {
-						headers: {
-							Authorization: `Bearer ${this.idToken}`,
-							"x-harvia-partner-id": this.partnerId,
-							"x-harvia-app-id": CLIENT_ID,
-						},
+						headers: this.getCloudHeaders(),
 					});
 
 					this.log.debug(
 						`Discovery Response: ${JSON.stringify(response.data)}`,
 					);
 
-					const rawDiscovery = response.data;
-					const discoveryData = (
-						rawDiscovery &&
-						typeof rawDiscovery === "object" &&
-						"data" in rawDiscovery
-							? (rawDiscovery as Record<string, unknown>).data
-							: rawDiscovery
-					) as { devices: HarviaDevice[] } | HarviaDevice[];
+					const rawData = response.data as unknown as Record<string, unknown>;
+					const discoveryData: unknown = rawData.data ?? rawData;
 
 					if (Array.isArray(discoveryData)) {
-						devices = discoveryData;
+						devices = discoveryData as HarviaDevice[];
 					} else if (
 						discoveryData &&
 						typeof discoveryData === "object" &&
+						!Array.isArray(discoveryData) && // Ensure it's not an array mistakenly cast to object
 						"devices" in discoveryData &&
 						Array.isArray((discoveryData as Record<string, unknown>).devices)
 					) {
@@ -524,37 +547,26 @@ class HarviaFenix extends utils.Adapter {
 									break;
 								case "stats.totalSessions.C1":
 									{
-										const num =
-											typeof val === "number"
-												? val
-												: Number.parseInt(String(val), 10);
-										await this.setState("totalSessions", Math.round(num), true);
+										const result = HarviaFenix.calculateNumericValue(val, 1, 0);
+										if (result !== undefined) {
+											await this.setState("totalSessions", result, true);
+										}
 									}
 									break;
 								case "stats.totalBathingHours.C1":
 									{
-										const num =
-											typeof val === "number"
-												? val
-												: Number.parseFloat(String(val));
-										await this.setState(
-											"totalBathingHours",
-											Math.round(num * 100) / 100,
-											true,
-										);
+										const result = HarviaFenix.calculateNumericValue(val, 1, 2);
+										if (result !== undefined) {
+											await this.setState("totalBathingHours", result, true);
+										}
 									}
 									break;
 								case "stats.totalOperatingHours.C1":
 									{
-										const num =
-											typeof val === "number"
-												? val
-												: Number.parseFloat(String(val));
-										await this.setState(
-											"totalOperatingHours",
-											Math.round(num * 100) / 100,
-											true,
-										);
+										const result = HarviaFenix.calculateNumericValue(val, 1, 2);
+										if (result !== undefined) {
+											await this.setState("totalOperatingHours", result, true);
+										}
 									}
 									break;
 								case "BT_MAC":
@@ -602,35 +614,29 @@ class HarviaFenix extends utils.Adapter {
 
 			this.log.debug(`Poll Status: ${url} (ID: ${deviceId})`);
 
-			const response = await this.client.get<
-				{ data?: HarviaStatusData } | HarviaStatusData
-			>(url, {
+			const response = await this.client.get<Record<string, unknown>>(url, {
 				params: { deviceId },
-				headers: {
-					// Headers from JS-script and successful calls
-					Accept: "application/json",
-					"x-harvia-app-id": CLIENT_ID,
-					"x-harvia-partner-id": this.partnerId,
-					Authorization: `Bearer ${this.idToken}`,
-				},
+				headers: { ...this.getCloudHeaders(), Accept: "application/json" },
 			});
 
-			if (response.data) {
-				this.log.debug(`Poll Response: ${JSON.stringify(response.data)}`);
-			}
+			let p: HarviaStatusData | undefined;
 
-			// Improved Data Normalization
-			const rawData = response.data;
-			let p: HarviaStatusData;
 			if (
-				rawData &&
-				typeof rawData === "object" &&
-				"data" in rawData &&
-				(rawData as Record<string, unknown>).data
+				response.data &&
+				typeof response.data === "object" &&
+				!Array.isArray(response.data)
 			) {
-				p = (rawData as { data: HarviaStatusData }).data;
-			} else {
-				p = rawData as HarviaStatusData;
+				this.log.debug(`Poll Response: ${JSON.stringify(response.data)}`);
+
+				if (
+					response.data.data &&
+					typeof response.data.data === "object" &&
+					!Array.isArray(response.data.data)
+				) {
+					p = response.data.data as HarviaStatusData;
+				} else {
+					p = response.data as unknown as HarviaStatusData;
+				}
 			}
 
 			if (
@@ -645,166 +651,107 @@ class HarviaFenix extends utils.Adapter {
 					return;
 				}
 
-				// Temperatures
-				const currentTemp = HarviaFenix.getApiValue(p, [
-					"temperature",
+				// Update Numeric States
+				await this.updateNumericState(
 					"temp",
-					"current_temperature",
-					"ambient_temperature",
-				]);
-				if (currentTemp !== undefined) {
-					const val =
-						typeof currentTemp === "number"
-							? currentTemp
-							: Number.parseFloat(String(currentTemp));
-					await this.setState("temp", Math.round(val * 10) / 10, true);
-				}
-
-				const pPanelTemp = HarviaFenix.getApiValue(p, [
+					["temperature", "temp", "current_temperature", "ambient_temperature"],
+					p,
+					1,
+					1,
+				);
+				await this.updateNumericState(
 					"panelTemp",
-					"panelTemperature",
-					"panel_temperature",
-				]);
-				if (pPanelTemp !== undefined) {
-					const val =
-						typeof pPanelTemp === "number"
-							? pPanelTemp
-							: Number.parseFloat(String(pPanelTemp));
-					await this.setState("panelTemp", Math.round(val * 10) / 10, true);
-				}
-
-				// Power
-				const rawPower = HarviaFenix.getApiValue(p, [
+					["panelTemp", "panelTemperature", "panel_temperature"],
+					p,
+					1,
+					1,
+				);
+				await this.updateNumericState(
 					"heaterPower",
-					"power",
-					"heater_power",
-				]);
-				if (rawPower !== undefined) {
-					const currentPower =
-						Math.round((Number.parseFloat(String(rawPower)) / 1000) * 100) /
-						100;
-					await this.setState("heaterPower", currentPower, true);
-				}
-
-				// Stats
-				const bathHours = HarviaFenix.getApiValue(p, [
+					["heaterPower", "power", "heater_power"],
+					p,
+					0.001,
+					2,
+				);
+				await this.updateNumericState(
 					"totalBathingHours",
-					"total_bathing_hours",
-					"bathing_hours",
-				]);
-				if (bathHours !== undefined) {
-					const val =
-						typeof bathHours === "number"
-							? bathHours
-							: Number.parseFloat(String(bathHours));
-					await this.setState(
-						"totalBathingHours",
-						Math.round(val * 100) / 100,
-						true,
-					);
-				}
-				const sessions = HarviaFenix.getApiValue(p, [
+					["totalBathingHours", "total_bathing_hours", "bathing_hours"],
+					p,
+					1,
+					2,
+				);
+				await this.updateNumericState(
 					"totalSessions",
-					"total_sessions",
-					"sessions",
-				]);
-				if (sessions !== undefined) {
-					const val =
-						typeof sessions === "number"
-							? sessions
-							: Number.parseInt(String(sessions), 10);
-					await this.setState("totalSessions", Math.round(val), true);
-				}
-				const opHours = HarviaFenix.getApiValue(p, [
+					["totalSessions", "total_sessions", "sessions"],
+					p,
+					1,
+					0,
+				);
+				await this.updateNumericState(
 					"totalOperatingHours",
-					"totalHours",
-					"total_hours",
-					"operating_hours",
-				]);
-				if (opHours !== undefined) {
-					const val =
-						typeof opHours === "number"
-							? opHours
-							: Number.parseFloat(String(opHours));
-					await this.setState(
+					[
 						"totalOperatingHours",
-						Math.round(val * 100) / 100,
-						true,
-					);
-				}
-
-				const tTemp = HarviaFenix.getApiValue(p, [
-					"targetTemperature",
+						"totalHours",
+						"total_hours",
+						"operating_hours",
+					],
+					p,
+					1,
+					2,
+				);
+				await this.updateNumericState(
 					"targetTemp",
-					"target_temperature",
-					"setpoint_temperature",
-				]);
-				if (tTemp !== undefined) {
-					const targetValue =
-						typeof tTemp === "number"
-							? tTemp
-							: Number.parseFloat(String(tTemp));
-					await this.setState("targetTemp", targetValue, true);
-				}
+					[
+						"targetTemperature",
+						"targetTemp",
+						"target_temperature",
+						"setpoint_temperature",
+					],
+					p,
+				);
 
-				// Boolean States with fallbacks
-				const actualHeat = HarviaFenix.getApiValue(p, [
+				// Update Boolean States
+				await this.updateBooleanState(
 					"heatOn",
-					"heatState",
-					"heat",
-					"heater",
-					"heat_on",
-					"is_heating",
-				]);
-				if (actualHeat !== undefined) {
-					await this.setState("heatOn", HarviaFenix.isTrue(actualHeat), true);
-				}
-
-				const actualLight = HarviaFenix.getApiValue(p, [
+					["heatOn", "heatState", "heat", "heater", "heat_on", "is_heating"],
+					p,
+				);
+				await this.updateBooleanState(
 					"lightOn",
-					"lightState",
-					"light",
-					"light_on",
-				]);
-				if (actualLight !== undefined) {
-					await this.setState("lightOn", HarviaFenix.isTrue(actualLight), true);
-				}
-
-				// Remote Control Ready (Fenix priority: onOffTrigger === 21)
-				const remoteReady = HarviaFenix.getApiValue(p, [
+					["lightOn", "lightState", "light", "light_on"],
+					p,
+				);
+				await this.updateBooleanState(
 					"remoteControl",
-					"remoteReady",
-					"onOffTrigger",
-					"remote_control",
-					"remote_ready",
-					"is_remote_ready",
-					"safetyRelay",
-					"remoteControlState",
-					"remote",
-					"isRemoteReady",
-					"remoteStart",
-					"remoteStartEnabled",
-					"remoteReadyState",
-				]);
-				if (remoteReady !== undefined) {
-					await this.setState(
+					[
 						"remoteControl",
-						HarviaFenix.isTrue(remoteReady),
-						true,
-					);
-				}
-
-				const doorSafe = HarviaFenix.getApiValue(p, [
-					"doorSafetyState",
+						"remoteReady",
+						"onOffTrigger",
+						"remote_control",
+						"remote_ready",
+						"is_remote_ready",
+						"safetyRelay",
+						"remoteControlState",
+						"remote",
+						"isRemoteReady",
+						"remoteStart",
+						"remoteStartEnabled",
+						"remoteReadyState",
+					],
+					p,
+				);
+				await this.updateBooleanState(
 					"doorSafety",
-					"door",
-					"door_closed",
-					"door_safety_state",
-					"door_safety",
-				]);
-				if (doorSafe !== undefined) {
-					await this.setState("doorSafety", HarviaFenix.isTrue(doorSafe), true);
-				}
+					[
+						"doorSafetyState",
+						"doorSafety",
+						"door",
+						"door_closed",
+						"door_safety_state",
+						"door_safety",
+					],
+					p,
+				);
 
 				await this.setState("online", true, true);
 			} else {
@@ -853,6 +800,37 @@ class HarviaFenix extends utils.Adapter {
 		}
 	}
 
+	/**
+	 * Internal helper to update a numeric state from API data with scaling and rounding.
+	 */
+	private async updateNumericState(
+		stateId: string,
+		keys: string[],
+		data: HarviaStatusData,
+		scale = 1,
+		decimals = 1,
+	): Promise<void> {
+		const raw = HarviaFenix.getApiValue(data, keys);
+		const result = HarviaFenix.calculateNumericValue(raw, scale, decimals);
+		if (result !== undefined) {
+			await this.setState(stateId, result, true);
+		}
+	}
+
+	/**
+	 * Internal helper to update a boolean state from API data.
+	 */
+	private async updateBooleanState(
+		stateId: string,
+		keys: string[],
+		data: HarviaStatusData,
+	): Promise<void> {
+		const raw = HarviaFenix.getApiValue(data, keys);
+		if (raw !== undefined) {
+			await this.setState(stateId, HarviaFenix.isTrue(raw), true);
+		}
+	}
+
 	private async setSaunaState(
 		stateName: string,
 		value: string | number | boolean | null,
@@ -897,12 +875,9 @@ class HarviaFenix extends utils.Adapter {
 					url,
 					payload,
 					{
-						// Headers from JS-script and successful calls
 						headers: {
-							Authorization: `Bearer ${this.idToken}`,
+							...this.getCloudHeaders(),
 							"Content-Type": "application/json",
-							"x-harvia-partner-id": this.partnerId,
-							"x-harvia-app-id": CLIENT_ID,
 						},
 					},
 				);
@@ -934,10 +909,8 @@ class HarviaFenix extends utils.Adapter {
 
 				await this.client.patch<HarviaCommandResponse>(url, payload, {
 					headers: {
-						Authorization: `Bearer ${this.idToken}`,
+						...this.getCloudHeaders(),
 						"Content-Type": "application/json",
-						"x-harvia-partner-id": this.partnerId,
-						"x-harvia-app-id": CLIENT_ID,
 					},
 				});
 				this.log.info(`Target temperature -> ${value}°C`);
@@ -952,7 +925,7 @@ class HarviaFenix extends utils.Adapter {
 		} catch (err: unknown) {
 			let detail: string;
 			if (axios.isAxiosError(err) && err.response?.data) {
-				detail = JSON.stringify(err.response.data);
+				detail = JSON.stringify(err.response.data as unknown);
 			} else if (err instanceof Error) {
 				detail = err.message;
 			} else {
@@ -1018,60 +991,56 @@ class HarviaFenix extends utils.Adapter {
 		id: string,
 		state: ioBroker.State | null | undefined,
 	): Promise<void> => {
-		if (state && !state.ack) {
-			const stateId = id.split(".").pop();
-			if (!stateId) {
-				return;
-			}
-			if (stateId === "heatOn") {
-				if (!this.shouldProcess(id)) {
-					return;
-				}
+		if (!state || state.ack) return;
+
+		const stateId = id.split(".").pop();
+		if (!stateId || !this.shouldProcess(id)) return;
+
+		switch (stateId) {
+			case "heatOn": {
 				const val = HarviaFenix.isTrue(state.val);
-				const isRemoteReady = HarviaFenix.isTrue(
-					(await this.getStateAsync("remoteControl"))?.val,
-				);
-				if (val && !isRemoteReady) {
-					this.log.warn("Remote start not ready!");
-					await this.setState("heatOn", false, true);
+				const remoteReadyState = await this.getStateAsync("remoteControl");
+
+				if (val && !HarviaFenix.isTrue(remoteReadyState?.val)) {
+					this.log.warn("Remote start not ready (safety loop or panel lock)!");
+					await this.setState("heatOn", false, true); // Revert UI
 					await this.setState(
 						"errorMsg",
 						"Remote start not ready at panel!",
 						true,
 					);
-				} else {
-					await this.setSaunaState("heatOn", val);
-				}
-			} else if (stateId === "lightOn" || stateId === "targetTemp") {
-				if (!this.shouldProcess(id)) {
 					return;
 				}
-				// Ensure type conversion
-				let val: string | number | boolean | null = state.val;
-				if (stateId === "targetTemp") {
-					val =
-						typeof state.val === "number"
-							? state.val
-							: Number.parseFloat(String(state.val));
-					if (
-						Number.isNaN(val) ||
-						(val as number) < MIN_TARGET_TEMP ||
-						(val as number) > MAX_TARGET_TEMP
-					) {
-						this.log.error(
-							`Invalid target temperature (${state.val}°C) received. Range: ${MIN_TARGET_TEMP}-${MAX_TARGET_TEMP}°C. Command ignored.`,
-						);
-						await this.setState(
-							"errorMsg",
-							`Invalid target temperature: ${state.val}°C`,
-							true,
-						);
-						return;
-					}
-				} else {
-					val = HarviaFenix.isTrue(state.val);
+				await this.setSaunaState("heatOn", val);
+				break;
+			}
+
+			case "lightOn":
+				await this.setSaunaState("lightOn", HarviaFenix.isTrue(state.val));
+				break;
+
+			case "targetTemp": {
+				const val =
+					typeof state.val === "number"
+						? state.val
+						: Number.parseFloat(String(state.val));
+				if (
+					Number.isNaN(val) ||
+					val < MIN_TARGET_TEMP ||
+					val > MAX_TARGET_TEMP
+				) {
+					this.log.error(
+						`Invalid target temperature (${state.val}°C) received. Range: ${MIN_TARGET_TEMP}-${MAX_TARGET_TEMP}°C.`,
+					);
+					await this.setState(
+						"errorMsg",
+						`Invalid target temperature: ${state.val}°C`,
+						true,
+					);
+					return;
 				}
-				await this.setSaunaState(stateId, val);
+				await this.setSaunaState("targetTemp", val);
+				break;
 			}
 		}
 	};

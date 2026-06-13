@@ -1,157 +1,21 @@
+MIT License
 
-╭╴at …\iobroker.harvia-fenix on  main (  ) is 📦 v0.0.21 
-╰─ npm install   
-npm warn deprecated node-domexception@1.0.0: Use your platform's native DOMException instead
-npm warn deprecated glob@11.1.0: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
+Copyright (c) 2026 meistermopper <meister.mopper@gmail.com>
 
-added 448 packages, removed 1 package, and audited 561 packages in 31s
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
 
-189 packages are looking for funding
-  run `npm fund` for details
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
 
-6 vulnerabilities (1 low, 4 moderate, 1 high)
-
-To address all issues (including breaking changes), run:
-  npm audit fix --force
-
-Run `npm audit` for details.
-npm warn allow-scripts 3 packages have install scripts not yet covered by allowScripts:
-npm warn allow-scripts   esbuild@0.25.12 (postinstall: node install.js)
-npm warn allow-scripts   esbuild@0.11.23 (postinstall: node install.js)
-npm warn allow-scripts   protobufjs@7.6.3 (postinstall: node scripts/postinstall)
-npm warn allow-scripts
-npm warn allow-scripts Run `npm approve-scripts --allow-scripts-pending` to review, or `npm approve-scripts <pkg>` to allow.
-
-╭╴at …\iobroker.harvia-fenix on  main (  ) is 📦 v0.0.21 took 31s 
-╰─ npm run format                        
-
-> iobroker.harvia-fenix@0.0.21 format
-> biome format --write .
-
-Formatted 34 files in 24ms. No fixes applied.
-
-╭╴at …\iobroker.harvia-fenix on  main (  ) is 📦 v0.0.21 
-╰─ npm run build 
-
-> iobroker.harvia-fenix@0.0.21 build
-> node -e "require('fs').rmSync('build', { recursive: true, force: true })" && tsc -p tsconfig.build.json
-
-
-╭╴at …\iobroker.harvia-fenix on  main (  ) is 📦 v0.0.21 
-╰─ npm run lint
-
-> iobroker.harvia-fenix@0.0.21 lint
-> biome check .
-
-Checked 34 files in 68ms. No fixes applied.
-
-╭╴at …\iobroker.harvia-fenix on  main (  ) is 📦 v0.0.21 
-╰─ npm run test
-
-> iobroker.harvia-fenix@0.0.21 test
-> npm run test:ts && npm run test:package
-
-
-> iobroker.harvia-fenix@0.0.21 test:ts
-> cross-env NODE_OPTIONS="--no-experimental-detect-module" mocha --config test/mocharc.build.json
-
-
-
-  module to test => function to test
-    ✔ should return 5
-
-
-  1 passing (6ms)
-
-
-> iobroker.harvia-fenix@0.0.21 test:package
-> cross-env NODE_OPTIONS="--no-experimental-detect-module" mocha test/package --exit
-
-
-
-  Validate the package files
-    Ensure they are readable
-      package.json
-        ✔ exists
-        ✔ contains valid JSON
-        ✔ is an object
-      io-package.json
-        ✔ exists
-        ✔ contains valid JSON
-        ✔ is an object
-    Check contents of package.json
-      ✔ The property "name" exists
-      ✔ The property "version" exists
-      ✔ The property "description" exists
-      ✔ The property "author" exists
-      ✔ The property "license" exists
-      ✔ The property "repository" exists
-      ✔ The property "repository.type" exists
-      ✔ The package name is correct
-      ✔ property main is defined for non onlyWWW adapters
-      ✔ The repository type is "git"
-      ✔ npm is not listed as a dependency
-      ✔ iobroker.js-controller is not listed as a dependency
-    Check contents of io-package.json
-      ✔ The property "common.name" exists
-      ✔ The property "common.titleLang" exists
-      ✔ The property "common.version" exists
-      ✔ The property "common.news" exists
-      ✔ The property "common.desc" exists
-      ✔ The property "common.icon" exists
-      ✔ The property "common.extIcon" exists
-      ✔ The property "common.type" exists
-      ✔ The property "common.authors" exists
-      ✔ The property "native" exists
-      ✔ The title does not contain "adapter" or "iobroker"
-      ✔ titleLang is an object to support multiple languages
-      ✔ titleLang does not contain "adapter" or "iobroker"
-      ✔ The description is an object to support multiple languages
-      ✔ common.authors is an array that is not empty
-      ✔ common.news is an object that contains maximum 20 entries
-      ✔ if common.licenseInformation exists, it is an object with required properties
-      ✔ common.license should not exist together with common.licenseInformation
-      ✔ common.tier must be 1, 2 or 3
-      ✔ The adapter uses a supported admin UI
-    Compare contents of package.json and io-package.json
-      ✔ The name matches
-      ✔ The version matches
-      ✔ The license matches
-    Validate JSON files
-      Base directory JSON files
-        ✔ package.json contains valid JSON
-        ✔ io-package.json contains valid JSON
-      admin/*.json files
-        ✔ admin\jsonConfig.json contains valid JSON
-      admin/i18n/**/*.json files
-        ✔ admin\i18n\de.json contains valid JSON
-        ✔ admin\i18n\en.json contains valid JSON
-        ✔ admin\i18n\es.json contains valid JSON
-        ✔ admin\i18n\fr.json contains valid JSON
-        ✔ admin\i18n\it.json contains valid JSON
-        ✔ admin\i18n\nl.json contains valid JSON
-        ✔ admin\i18n\pl.json contains valid JSON
-        ✔ admin\i18n\pt.json contains valid JSON
-        ✔ admin\i18n\ru.json contains valid JSON
-        ✔ admin\i18n\uk.json contains valid JSON
-        ✔ admin\i18n\zh-cn.json contains valid JSON
-
-  Check additional files
-    ✔ README.md exists
-    ✔ LICENSE exists or is present in the README.md
-
-
-  57 passing (46ms)
-
-
-╭╴at …\iobroker.harvia-fenix on  main (  ) is 📦 v0.0.21 took 3s 
-╰─                      
-git commit -m "Bump version to 0.0.22 and update changelog"
-git tag v0.0.22                                            
-git push origin main
-git push origin v0.0.22
-
-Nach pull request auf der Konsole:
-git checkout main #wenn noch nicht im branch main
-git pull origin main
-
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.

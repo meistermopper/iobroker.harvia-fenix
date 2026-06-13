@@ -38,8 +38,8 @@
 		"@biomejs/biome": "^2.4.16",
 		"@iobroker/adapter-dev": "^1.5.0",
 		"@iobroker/testing": "^5.2.2",
-		"@tsconfig/node20": "^20.1.9",
-		"@types/node": "^20.17.10",
+		"@tsconfig/node22": "^22.0.0",
+		"@types/node": "^22.13.0",
 		"cross-env": "^10.1.0",
 		"source-map-support": "^0.5.21",
 		"ts-node": "^10.9.2",
@@ -56,8 +56,8 @@
 	"scripts": {
 		"test:integration": "cross-env NODE_OPTIONS=\"--no-experimental-detect-module\" mocha test/integration --exit",
 		"test:ts": "tsc --noEmit",
-		"test:package": "iobroker-adapter-dev check-adapter-integrity",
-		"test": "npm run test:ts && npm run test:package && npm run test:integration",
+		"test:package": "npx -y @iobroker/repochecker https://github.com/meistermopper/ioBroker.harvia-fenix --local",
+		"test": "npm run build && npm run test:package && npm run test:integration",
 		"check": "biome check .",
 		"format": "biome format --write .",
 		"build": "node -e \"require('fs').rmSync('build', { recursive: true, force: true })\" && tsc -p tsconfig.build.json",
@@ -68,6 +68,9 @@
 	"bugs": "https://github.com/meistermopper/ioBroker.harvia-fenix/issues",
 	"readmeFilename": "README.md",
 	"overrides": {
+		"glob": "11.1.0",
+		"minimatch": "10.0.1"
+	},
 	"publishConfig": {
 		"provenance": true
 	}

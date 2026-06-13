@@ -93,19 +93,6 @@
 				"pl": "Fix Integracja Sentry i drobne problemy linting.",
 				"uk": "Фіксувати інтеграцію понять та неповнолітні проблеми.",
 				"zh-cn": "解决哨兵融合和细小林木问题."
-			},
-			"0.0.11": {
-				"en": "Add dummy unit test and fix CI test scripts",
-				"de": "Hinzufügen von Dummy Unit Test und Beheben von CI-Testskripten",
-				"ru": "Добавьте фиктивный модульный тест и исправьте тестовые сценарии CI",
-				"pt": "Adicionar teste de unidade simulada e corrigir scripts de teste CI",
-				"nl": "Voeg dummy unit test toe en bevestig CI test scripts",
-				"fr": "Ajouter l'essai de l'unité factice et fixer les scénarios d'essai de l'IC",
-				"it": "Aggiungere test di unità fittizio e correggere gli script di test CI",
-				"es": "Agregue el test de unidad de dummy y corrija scripts de prueba de CI",
-				"pl": "Dodaj test jednostkowy i ustaw skrypty testu CI",
-				"uk": "Додайте тест і зафіксуйте сценарії випробувань CI",
-				"zh-cn": "添加模拟单元测试并修正 CI 测试脚本"
 			}
 		},
 		"titleLang": {
@@ -268,7 +255,7 @@
 			"_id": "doorSafety",
 			"type": "state",
 			"common": {
-				"role": "indicator",
+				"role": "sensor.door.safety",
 				"name": "Door safety circuit",
 				"type": "boolean",
 				"read": true,
@@ -281,7 +268,7 @@
 			"_id": "remoteControl",
 			"type": "state",
 			"common": {
-				"role": "indicator",
+				"role": "indicator.state",
 				"name": "Remote control authorized",
 				"type": "boolean",
 				"read": true,
@@ -294,7 +281,7 @@
 			"_id": "totalBathingHours",
 			"type": "state",
 			"common": {
-				"role": "value",
+				"role": "value.number",
 				"name": "Total bathing hours",
 				"type": "number",
 				"unit": "h",
@@ -308,7 +295,7 @@
 			"_id": "totalSessions",
 			"type": "state",
 			"common": {
-				"role": "value",
+				"role": "value.count",
 				"name": "Total sessions",
 				"type": "number",
 				"read": true,
@@ -362,7 +349,7 @@
 			"_id": "totalOperatingHours",
 			"type": "state",
 			"common": {
-				"role": "value",
+				"role": "value.hours",
 				"name": "Total operating hours",
 				"type": "number",
 				"unit": "h",
